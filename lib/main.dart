@@ -29,7 +29,7 @@ class InitialScreen extends StatelessWidget {
             mainAxisAlignment: MainAxisAlignment.center,
             children: [
               Text(
-                'FitGym',
+                'GymForce',
                 style: TextStyle(
                   color: Colors.white,
                   fontSize: 24,
