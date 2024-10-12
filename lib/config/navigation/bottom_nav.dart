@@ -21,19 +21,19 @@ class _BottomNavState extends State<BottomNav> {
 
     switch (index) {
       case 0:
-        context.go('/'); // Home
+        context.push('/'); // Home
         break;
       case 1:
-        context.go('/workouts'); // Workouts
+        context.push('/workouts'); // Workouts
         break;
       case 2:
-        context.go('/qr'); // QR
+        context.push('/qr'); // QR
         break;
       case 3:
-        context.go('/calories'); // Calories
+        context.push('/calories'); // Calories
         break;
       case 4:
-        context.go('/profile'); // Profile
+        context.push('/profile'); // Profile
         break;
     }
   }
@@ -58,7 +58,7 @@ class _BottomNavState extends State<BottomNav> {
           ),
           const BottomNavigationBarItem(
             icon: Icon(Icons.fitness_center),
-            label: 'Workouts',
+            label: 'Entrenamientos',
           ),
           BottomNavigationBarItem(
             icon: Stack(
@@ -92,11 +92,11 @@ class _BottomNavState extends State<BottomNav> {
           ),
           const BottomNavigationBarItem(
             icon: Icon(Icons.local_fire_department),
-            label: 'Calories',
+            label: 'Calorías',
           ),
           const BottomNavigationBarItem(
             icon: Icon(Icons.person),
-            label: 'Profile',
+            label: 'Perfil',
           ),
         ],
       ),

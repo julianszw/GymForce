@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:gym_force/config/navigation/drawer_nav_menu.dart';
 
 class ProfileScreen extends StatelessWidget {
   const ProfileScreen({super.key});
@@ -9,6 +10,7 @@ class ProfileScreen extends StatelessWidget {
       appBar: AppBar(
         title: const Text('Profile'),
       ),
+      drawer: const DrawerNavMenu(),
       body: const Center(
         child: Placeholder(
           fallbackHeight: 200, // Altura predeterminada del placeholder

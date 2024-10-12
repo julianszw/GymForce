@@ -1,7 +1,10 @@
 import 'package:go_router/go_router.dart';
 import 'package:gym_force/config/navigation/bottom_nav.dart';
+import 'package:gym_force/presentation/screens/calendar_screen.dart';
 import 'package:gym_force/presentation/screens/calories_screen.dart';
+import 'package:gym_force/presentation/screens/headquarter_screen.dart';
 import 'package:gym_force/presentation/screens/home_screen.dart';
+import 'package:gym_force/presentation/screens/membership_screen.dart';
 import 'package:gym_force/presentation/screens/profile_screen.dart';
 import 'package:gym_force/presentation/screens/qr_customer_scren.dart';
 import 'package:gym_force/presentation/screens/workouts_screen.dart';
@@ -33,6 +36,18 @@ final GoRouter appRouter = GoRouter(
           builder: (context, state) => const ProfileScreen(),
         ),
       ],
+    ),
+    GoRoute(
+      path: '/headquarter', // Ruta del Drawer para Sedes
+      builder: (context, state) => const HeadquarterScreen(),
+    ),
+    GoRoute(
+      path: '/calendar', // Ruta del Drawer para el calendario
+      builder: (context, state) => const CalendarScreen(),
+    ),
+    GoRoute(
+      path: '/membership', // Ruta del Drawer para Membresías
+      builder: (context, state) => const MembershipScreen(),
     ),
   ],
 );

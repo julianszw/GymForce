@@ -1,16 +1,21 @@
 import 'package:flutter/material.dart';
-import 'package:gym_force/config/navigation/drawer_nav_menu.dart';
+import 'package:go_router/go_router.dart';
 
-class HomeScreen extends StatelessWidget {
-  const HomeScreen({super.key});
+class HeadquarterScreen extends StatelessWidget {
+  const HeadquarterScreen({super.key});
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: const Text('Home'),
+        title: const Text('Sedes'),
+        leading: IconButton(
+          icon: const Icon(Icons.arrow_back), // Ícono de retroceso
+          onPressed: () {
+            context.pop();
+          },
+        ),
       ),
-      drawer: const DrawerNavMenu(),
       body: const Center(
         child: Placeholder(
           fallbackHeight: 200, // Altura predeterminada del placeholder
