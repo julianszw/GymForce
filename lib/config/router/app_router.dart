@@ -1,5 +1,12 @@
+import 'package:flutter/src/widgets/framework.dart';
 import 'package:go_router/go_router.dart';
-import 'package:gym_force/config/navigation/bottom_nav.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:gym_force/config/providers/user_provider.dart';
+import 'package:gym_force/domain/user_state_domain.dart';
+import 'package:gym_force/presentation/screens/login_screen.dart';
+import 'package:gym_force/presentation/screens/splash_screen.dart';
+import 'package:gym_force/presentation/widgets/auth_guarrd.dart';
+import 'package:gym_force/presentation/widgets/navigation/bottom_nav.dart';
 import 'package:gym_force/presentation/screens/calendar_screen.dart';
 import 'package:gym_force/presentation/screens/calories_screen.dart';
 import 'package:gym_force/presentation/screens/headquarter_screen.dart';
@@ -10,14 +17,26 @@ import 'package:gym_force/presentation/screens/qr_customer_scren.dart';
 import 'package:gym_force/presentation/screens/workouts_screen.dart';
 
 final GoRouter appRouter = GoRouter(
+  initialLocation: '/splash',
   routes: [
+    GoRoute(
+      path: '/splash',
+      builder: (context, state) => const SplashScreen(),
+    ),
+    GoRoute(
+      path: '/login',
+      builder: (context, state) => const LoginScreen(),
+    ),
     ShellRoute(
       // Este builder devuelve el BottomNav con el child proporcionado
       builder: (context, state, child) => BottomNav(child: child),
       routes: [
         GoRoute(
           path: '/', // Ruta Home
-          builder: (context, state) => const HomeScreen(),
+          builder: (context, state) => AuthGuard(
+            fallbackRoute: '/login',
+            child: HomeScreen(),
+          ),
         ),
         GoRoute(
           path: '/workouts', // Ruta Workouts

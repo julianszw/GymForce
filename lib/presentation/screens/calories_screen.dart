@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:gym_force/config/navigation/drawer_nav_menu.dart';
+import 'package:gym_force/presentation/widgets/navigation/drawer_nav_menu.dart';
 
 class CaloriesScreen extends StatelessWidget {
   const CaloriesScreen({super.key});
