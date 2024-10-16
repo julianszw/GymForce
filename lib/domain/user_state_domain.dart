@@ -1,6 +1,6 @@
 class UserState {
   final String email;
-  final bool isLoggedIn; // Agregamos el estado de autenticación
+  final bool isLoggedIn;
 
   UserState({required this.email, this.isLoggedIn = false});
 }

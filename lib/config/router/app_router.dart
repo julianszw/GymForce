@@ -1,11 +1,7 @@
-import 'package:flutter/src/widgets/framework.dart';
 import 'package:go_router/go_router.dart';
-import 'package:flutter_riverpod/flutter_riverpod.dart';
-import 'package:gym_force/config/providers/user_provider.dart';
-import 'package:gym_force/domain/user_state_domain.dart';
 import 'package:gym_force/presentation/screens/login_screen.dart';
 import 'package:gym_force/presentation/screens/splash_screen.dart';
-import 'package:gym_force/presentation/widgets/auth_guarrd.dart';
+import 'package:gym_force/utils/auth_guard.dart';
 import 'package:gym_force/presentation/widgets/navigation/bottom_nav.dart';
 import 'package:gym_force/presentation/screens/calendar_screen.dart';
 import 'package:gym_force/presentation/screens/calories_screen.dart';
@@ -28,44 +24,43 @@ final GoRouter appRouter = GoRouter(
       builder: (context, state) => const LoginScreen(),
     ),
     ShellRoute(
-      // Este builder devuelve el BottomNav con el child proporcionado
       builder: (context, state, child) => BottomNav(child: child),
       routes: [
         GoRoute(
-          path: '/', // Ruta Home
-          builder: (context, state) => AuthGuard(
+          path: '/',
+          builder: (context, state) => const AuthGuard(
             fallbackRoute: '/login',
             child: HomeScreen(),
           ),
         ),
         GoRoute(
-          path: '/workouts', // Ruta Workouts
+          path: '/workouts',
           builder: (context, state) => const WorkoutsScreen(),
         ),
         GoRoute(
-          path: '/qr', // Ruta QR
+          path: '/qr',
           builder: (context, state) => const QrCustomerScren(),
         ),
         GoRoute(
-          path: '/calories', // Ruta Calories
+          path: '/calories',
           builder: (context, state) => const CaloriesScreen(),
         ),
         GoRoute(
-          path: '/profile', // Ruta Profile
+          path: '/profile',
           builder: (context, state) => const ProfileScreen(),
         ),
       ],
     ),
     GoRoute(
-      path: '/headquarter', // Ruta del Drawer para Sedes
+      path: '/headquarter',
       builder: (context, state) => const HeadquarterScreen(),
     ),
     GoRoute(
-      path: '/calendar', // Ruta del Drawer para el calendario
+      path: '/calendar',
       builder: (context, state) => const CalendarScreen(),
     ),
     GoRoute(
-      path: '/membership', // Ruta del Drawer para Membresías
+      path: '/membership',
       builder: (context, state) => const MembershipScreen(),
     ),
   ],

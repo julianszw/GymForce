@@ -4,13 +4,10 @@ import 'package:go_router/go_router.dart';
 import 'package:gym_force/config/providers/user_provider.dart';
 
 class DrawerNavMenu extends ConsumerWidget {
-  // Cambiar de StatelessWidget a ConsumerWidget
   const DrawerNavMenu({super.key});
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
-    // Agregar el WidgetRef
-    // Accede al notifier del estado de usuario
     final userNotifier = ref.read(userProvider.notifier);
 
     return Drawer(
@@ -45,10 +42,7 @@ class DrawerNavMenu extends ConsumerWidget {
             leading: const Icon(Icons.logout, color: Colors.red),
             title: const Text('Salir', style: TextStyle(color: Colors.white)),
             onTap: () {
-              // Llama a la función logOut del UserNotifier
               userNotifier.logOut();
-
-              // Redirigir al login después de cerrar sesión
               context.go('/login');
             },
           ),

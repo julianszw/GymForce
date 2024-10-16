@@ -8,28 +8,22 @@ class AuthGuard extends ConsumerWidget {
   final Widget child;
 
   const AuthGuard({
-    Key? key,
+    super.key,
     required this.fallbackRoute,
     required this.child,
-  }) : super(key: key);
+  });
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
     final userState = ref.watch(userProvider);
 
-    if (userState.isLoggedIn == null) {
-      // Podrías mostrar un indicador de progreso mientras se verifica
-      return const Center(child: CircularProgressIndicator());
-    }
-
     if (!userState.isLoggedIn) {
-      // Redirige si no está autenticado
       WidgetsBinding.instance.addPostFrameCallback((_) {
         GoRouter.of(context).go(fallbackRoute);
       });
-      return Container(); // No muestra nada mientras redirige
+      return Container();
     }
 
-    return child; // Muestra el contenido protegido
+    return child;
   }
 }
