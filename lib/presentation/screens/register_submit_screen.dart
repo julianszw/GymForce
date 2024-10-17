@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
-import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:gym_force/presentation/screens/login_screen.dart';
+import 'package:gym_force/services/auth_services.dart';
 
 class RegisterSubmitScreen extends StatefulWidget {
   final String email;
@@ -9,7 +9,8 @@ class RegisterSubmitScreen extends StatefulWidget {
   final String password;
   final String birthdate;
 
-  RegisterSubmitScreen({
+  const RegisterSubmitScreen({
+    super.key,
     required this.email,
     required this.name,
     required this.password,
@@ -21,13 +22,12 @@ class RegisterSubmitScreen extends StatefulWidget {
 }
 
 class _RegisterSubmitScreenState extends State<RegisterSubmitScreen> {
+  bool _isLoading = false;
   final _addressController = TextEditingController();
   final _genderController = TextEditingController();
   final _phoneController = TextEditingController();
   final _emergencyPhoneController = TextEditingController();
-
-  final FirebaseAuth _auth = FirebaseAuth.instance;
-  final FirebaseFirestore _firestore = FirebaseFirestore.instance;
+  final AuthService _authService = AuthService();
 
   void registerUser() async {
     String address = _addressController.text;
@@ -35,27 +35,26 @@ class _RegisterSubmitScreenState extends State<RegisterSubmitScreen> {
     String phone = _phoneController.text;
     String emergencyPhone = _emergencyPhoneController.text;
 
-    // Validación de campos
     if (address.isEmpty ||
         gender.isEmpty ||
         phone.isEmpty ||
         emergencyPhone.isEmpty) {
       ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(content: Text('Por favor completa todos los campos')),
+        const SnackBar(content: Text('Por favor completa todos los campos')),
       );
       return;
     }
 
     try {
-      // Crear el usuario en Firebase Auth
-      UserCredential userCredential =
-          await _auth.createUserWithEmailAndPassword(
-        email: widget.email,
-        password: widget.password,
+      setState(() {
+        _isLoading = true;
+      });
+      UserCredential userCredential = await _authService.registerUser(
+        widget.email,
+        widget.password,
       );
 
-      // Agregar el usuario a Firestore
-      await _firestore.collection('users').doc(userCredential.user!.uid).set({
+      await _authService.saveUserData(userCredential, {
         'email': widget.email,
         'name': widget.name,
         'birthdate': widget.birthdate,
@@ -65,12 +64,8 @@ class _RegisterSubmitScreenState extends State<RegisterSubmitScreen> {
         'emergencyPhone': emergencyPhone,
       });
 
-      // Redirigir a la pantalla de inicio o login
-      Navigator.pushReplacement(
-          context,
-          MaterialPageRoute(
-              builder: (context) =>
-                  LoginScreen())); // Reemplaza con la pantalla deseada
+      Navigator.pushReplacement(context,
+          MaterialPageRoute(builder: (context) => const LoginScreen()));
     } on FirebaseAuthException catch (e) {
       String message = 'Error al registrar el usuario';
       if (e.code == 'weak-password') {
@@ -83,41 +78,48 @@ class _RegisterSubmitScreenState extends State<RegisterSubmitScreen> {
 
       ScaffoldMessenger.of(context)
           .showSnackBar(SnackBar(content: Text(message)));
+    } finally {
+      setState(() {
+        _isLoading = false;
+      });
     }
   }
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(title: Text('¡Ingresa tus datos!')),
+      appBar: AppBar(title: const Text('¡Ingresa tus datos!')),
       body: Padding(
         padding: const EdgeInsets.all(16.0),
         child: Column(
           children: [
             TextField(
               controller: _addressController,
-              decoration: InputDecoration(labelText: 'Domicilio'),
+              decoration: const InputDecoration(labelText: 'Domicilio'),
             ),
             TextField(
               controller: _genderController,
-              decoration: InputDecoration(labelText: 'Sexo'),
+              decoration: const InputDecoration(labelText: 'Sexo'),
             ),
             TextField(
               controller: _phoneController,
-              decoration: InputDecoration(labelText: 'Número de Celular'),
+              decoration: const InputDecoration(labelText: 'Número de Celular'),
             ),
             TextField(
               controller: _emergencyPhoneController,
-              decoration: InputDecoration(labelText: 'Número de Emergencia'),
+              decoration:
+                  const InputDecoration(labelText: 'Número de Emergencia'),
             ),
-            SizedBox(height: 20),
-            ElevatedButton(
-              onPressed: registerUser,
-              child: Text('Crear usuario'),
-              style: ElevatedButton.styleFrom(
-                backgroundColor: Colors.yellow,
-              ),
-            ),
+            const SizedBox(height: 20),
+            _isLoading
+                ? const CircularProgressIndicator()
+                : ElevatedButton(
+                    onPressed: registerUser,
+                    style: ElevatedButton.styleFrom(
+                      backgroundColor: Colors.yellow,
+                    ),
+                    child: const Text('Crear usuario'),
+                  ),
           ],
         ),
       ),
