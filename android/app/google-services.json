@@ -1,0 +1,48 @@
+{
+  "project_info": {
+    "project_number": "840636761514",
+    "project_id": "gymforce-cde2c",
+    "storage_bucket": "gymforce-cde2c.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:840636761514:android:ebbfee7b880c0f5006d7d3",
+        "android_client_info": {
+          "package_name": "com.example.gym_force"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyCmDIxOi3CLDazSmmxvJ2gVRGOg62pu93E"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    },
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:840636761514:android:f0ec09aa0dd09fb006d7d3",
+        "android_client_info": {
+          "package_name": "com.gym_force.app"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyCmDIxOi3CLDazSmmxvJ2gVRGOg62pu93E"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}

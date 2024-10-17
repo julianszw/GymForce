@@ -1,5 +1,7 @@
 import 'package:go_router/go_router.dart';
 import 'package:gym_force/presentation/screens/login_screen.dart';
+import 'package:gym_force/presentation/screens/register_screen.dart';
+import 'package:gym_force/presentation/screens/register_submit_screen.dart';
 import 'package:gym_force/presentation/screens/splash_screen.dart';
 import 'package:gym_force/utils/auth_guard.dart';
 import 'package:gym_force/presentation/widgets/navigation/bottom_nav.dart';
@@ -22,6 +24,19 @@ final GoRouter appRouter = GoRouter(
     GoRoute(
       path: '/login',
       builder: (context, state) => const LoginScreen(),
+    ),
+    GoRoute(
+      path: '/register',
+      builder: (context, state) => RegisterScreen(),
+    ),
+    GoRoute(
+      path: '/register_submit',
+      builder: (context, state) => RegisterSubmitScreen(
+        email: '',
+        name: '',
+        password: '',
+        birthdate: '',
+      ),
     ),
     ShellRoute(
       builder: (context, state, child) => BottomNav(child: child),

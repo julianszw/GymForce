@@ -128,19 +128,19 @@ class _BottomNavState extends State<BottomNav> {
 
     switch (index) {
       case 0:
-        context.go('/');
+        context.push('/');
         break;
       case 1:
-        context.go('/workouts');
+        context.push('/workouts');
         break;
       case 2:
-        context.go('/qr');
+        context.push('/qr');
         break;
       case 3:
-        context.go('/calories');
+        context.push('/calories');
         break;
       case 4:
-        context.go('/profile');
+        context.push('/profile');
         break;
     }
   }
