@@ -41,21 +41,31 @@ class _LoginScreenState extends ConsumerState<LoginScreen> {
 
         String uid = userCredential.user!.uid;
 
-        DocumentSnapshot userDoc = await _authService.getUserData(uid);
-
-        if (userDoc.exists) {
-          ref.read(userProvider.notifier).setUser(
-                uid: uid,
-                email: email,
-                name: userDoc['name'],
-                birthdate: userDoc['birthdate'],
-                address: userDoc['address'],
-                gender: userDoc['gender'],
-                phone: userDoc['phone'],
-                emergencyPhone: userDoc['emergencyPhone'],
-              );
-
-          GoRouter.of(context).go('/');
+        DocumentSnapshot? userDoc = await _authService.getUserData(uid);
+        if (userDoc != null) {
+          final role = userDoc['role'];
+          if (role == 'user') {
+            ref.read(userProvider.notifier).setUser(
+                  uid: uid,
+                  email: email,
+                  name: userDoc['name'],
+                  birthdate: userDoc['birthdate'],
+                  address: userDoc['address'],
+                  gender: userDoc['gender'],
+                  phone: userDoc['phone'],
+                  emergencyPhone: userDoc['emergencyPhone'],
+                  role: role,
+                );
+            GoRouter.of(context).go('/');
+          } else if (role == 'employee') {
+            ref.read(userProvider.notifier).setUser(
+                  uid: uid,
+                  email: email,
+                  name: userDoc['name'],
+                  role: role,
+                );
+            GoRouter.of(context).go('/help');
+          }
         } else {
           ScaffoldMessenger.of(context).showSnackBar(
             const SnackBar(

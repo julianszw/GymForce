@@ -62,6 +62,7 @@ class _RegisterSubmitScreenState extends State<RegisterSubmitScreen> {
         'gender': gender,
         'phone': phone,
         'emergencyPhone': emergencyPhone,
+        'role': 'user'
       });
 
       Navigator.pushReplacement(context,

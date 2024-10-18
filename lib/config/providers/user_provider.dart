@@ -9,36 +9,31 @@ class UserNotifier extends StateNotifier<UserState> {
     required String uid,
     required String email,
     required String name,
-    required String birthdate,
-    required String address,
-    required String gender,
-    required String phone,
-    required String emergencyPhone,
+    required String role,
+    String? birthdate,
+    String? address,
+    String? gender,
+    String? phone,
+    String? emergencyPhone,
   }) {
     state = UserState(
-      uid: uid,
-      email: email,
-      name: name,
-      birthdate: birthdate,
-      address: address,
-      gender: gender,
-      phone: phone,
-      emergencyPhone: emergencyPhone,
-    );
+        uid: uid,
+        email: email,
+        name: name,
+        birthdate: birthdate,
+        address: address,
+        gender: gender,
+        phone: phone,
+        emergencyPhone: emergencyPhone,
+        role: role);
   }
 
-  // void logOut() {
-  //   state = UserState.empty();
-  // }
   Future<void> logOut() async {
     try {
-      // Cerrar sesión en Firebase
       await FirebaseAuth.instance.signOut();
 
-      // Limpiar el estado del usuario en la app
       state = UserState.empty();
     } catch (e) {
-      // Manejar errores de logout si es necesario
       print("Error al cerrar sesión: $e");
     }
   }
