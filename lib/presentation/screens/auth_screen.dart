@@ -47,13 +47,6 @@ class AuthScreen extends StatelessWidget {
                       onPressed: () {
                         context.push('/login');
                       },
-                      style: ElevatedButton.styleFrom(
-                        backgroundColor: Theme.of(context).colorScheme.primary,
-                        padding: const EdgeInsets.symmetric(vertical: 8),
-                        shape: RoundedRectangleBorder(
-                          borderRadius: BorderRadius.circular(8),
-                        ),
-                      ),
                       child: const Text(
                         'Iniciar Sesión',
                         style: TextStyle(
@@ -70,13 +63,6 @@ class AuthScreen extends StatelessWidget {
                       onPressed: () {
                         context.push('/register');
                       },
-                      style: ElevatedButton.styleFrom(
-                        backgroundColor: Theme.of(context).colorScheme.primary,
-                        padding: const EdgeInsets.symmetric(vertical: 8),
-                        shape: RoundedRectangleBorder(
-                          borderRadius: BorderRadius.circular(8),
-                        ),
-                      ),
                       child: const Text(
                         'Registrarse',
                         style: TextStyle(
