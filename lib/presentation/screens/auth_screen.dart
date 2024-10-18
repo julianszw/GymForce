@@ -47,19 +47,12 @@ class AuthScreen extends StatelessWidget {
                       onPressed: () {
                         context.push('/login');
                       },
-                      style: ElevatedButton.styleFrom(
-                        backgroundColor: Theme.of(context).colorScheme.primary,
-                        padding: const EdgeInsets.symmetric(vertical: 8),
-                        shape: RoundedRectangleBorder(
-                          borderRadius: BorderRadius.circular(8),
-                        ),
-                      ),
                       child: const Text(
                         'Iniciar Sesión',
                         style: TextStyle(
-                          color: Colors.black,
-                          fontSize: 18,
-                        ),
+                            color: Colors.black,
+                            fontSize: 18,
+                            fontWeight: FontWeight.bold),
                       ),
                     ),
                   ),
@@ -70,19 +63,12 @@ class AuthScreen extends StatelessWidget {
                       onPressed: () {
                         context.push('/register');
                       },
-                      style: ElevatedButton.styleFrom(
-                        backgroundColor: Theme.of(context).colorScheme.primary,
-                        padding: const EdgeInsets.symmetric(vertical: 8),
-                        shape: RoundedRectangleBorder(
-                          borderRadius: BorderRadius.circular(8),
-                        ),
-                      ),
                       child: const Text(
                         'Registrarse',
                         style: TextStyle(
-                          color: Colors.black,
-                          fontSize: 18,
-                        ),
+                            color: Colors.black,
+                            fontSize: 18,
+                            fontWeight: FontWeight.bold),
                       ),
                     ),
                   ),

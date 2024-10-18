@@ -24,10 +24,22 @@ final ThemeData customTheme = ThemeData(
   elevatedButtonTheme: ElevatedButtonThemeData(
     style: ElevatedButton.styleFrom(
       backgroundColor: const Color(0xFFFFD202),
+      padding: const EdgeInsets.symmetric(vertical: 8),
       shape: RoundedRectangleBorder(
         borderRadius: BorderRadius.circular(8),
       ),
     ),
+  ),
+
+  inputDecorationTheme: InputDecorationTheme(
+    filled: true,
+    fillColor: Colors.white,
+    border: OutlineInputBorder(
+      borderRadius: BorderRadius.circular(10),
+      borderSide: BorderSide.none,
+    ),
+    hintStyle: const TextStyle(color: Colors.grey),
+    errorStyle: const TextStyle(color: Colors.red),
   ),
 
   // Definir estilo del texto
