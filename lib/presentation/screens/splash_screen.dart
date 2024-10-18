@@ -20,14 +20,16 @@ class SplashScreen extends ConsumerWidget {
         GoRouter.of(context).go('/');
       } else {
         // Redirige a Login si no está autenticado después del retraso
-        GoRouter.of(context).go('/login');
+        GoRouter.of(context).go('/auth');
       }
     });
 
     // Muestra una pantalla de carga mientras decide a dónde redirigir
-    return const Scaffold(
+    return Scaffold(
       body: Center(
-        child: CircularProgressIndicator(),
+        child: CircularProgressIndicator(
+          color: Theme.of(context).colorScheme.primary,
+        ),
       ),
     );
   }
