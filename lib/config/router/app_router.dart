@@ -1,8 +1,13 @@
+import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
+import 'package:gym_force/config/providers/user_provider.dart';
+import 'package:gym_force/presentation/screens/employee/help_screen.dart';
+import 'package:gym_force/presentation/screens/employee/qr_employee_screen.dart';
 import 'package:gym_force/presentation/screens/login_screen.dart';
 import 'package:gym_force/presentation/screens/register_screen.dart';
 import 'package:gym_force/presentation/screens/register_submit_screen.dart';
 import 'package:gym_force/presentation/screens/splash_screen.dart';
+import 'package:gym_force/presentation/widgets/navigation/employee_bottom_nav.dart';
 import 'package:gym_force/utils/auth_guard.dart';
 import 'package:gym_force/presentation/widgets/navigation/bottom_nav.dart';
 import 'package:gym_force/presentation/screens/calendar_screen.dart';
@@ -31,7 +36,7 @@ final GoRouter appRouter = GoRouter(
     ),
     GoRoute(
       path: '/register_submit',
-      builder: (context, state) => RegisterSubmitScreen(
+      builder: (context, state) => const RegisterSubmitScreen(
         email: '',
         name: '',
         password: '',
@@ -39,7 +44,17 @@ final GoRouter appRouter = GoRouter(
       ),
     ),
     ShellRoute(
-      builder: (context, state, child) => BottomNav(child: child),
+      builder: (context, state, child) {
+        return Consumer(
+          builder: (context, ref, child) {
+            final user = ref.watch(userProvider);
+            return user.role == 'employee'
+                ? EmployeeBottomNav(child: child!)
+                : BottomNav(child: child!);
+          },
+          child: child,
+        );
+      },
       routes: [
         GoRoute(
           path: '/',
@@ -64,6 +79,10 @@ final GoRouter appRouter = GoRouter(
           path: '/profile',
           builder: (context, state) => const ProfileScreen(),
         ),
+        GoRoute(path: '/help', builder: (context, state) => const HelpScreen()),
+        GoRoute(
+            path: '/qr-employee',
+            builder: (context, state) => const QrEmployeeScreen())
       ],
     ),
     GoRoute(

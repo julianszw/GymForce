@@ -23,7 +23,21 @@ class AuthService {
         .set(userData);
   }
 
-  Future<DocumentSnapshot> getUserData(String uid) async {
-    return await _firestore.collection('users').doc(uid).get();
+  Future<DocumentSnapshot?> getUserData(String uid) async {
+    DocumentSnapshot userDoc =
+        await _firestore.collection('users').doc(uid).get();
+
+    if (userDoc.exists) {
+      return userDoc;
+    }
+
+    DocumentSnapshot employeeDoc =
+        await _firestore.collection('employees').doc(uid).get();
+
+    if (employeeDoc.exists) {
+      return employeeDoc;
+    }
+
+    return null;
   }
 }
