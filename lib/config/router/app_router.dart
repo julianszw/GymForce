@@ -1,12 +1,14 @@
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 import 'package:gym_force/config/providers/user_provider.dart';
-import 'package:gym_force/presentation/screens/auth_screen.dart';
+import 'package:gym_force/presentation/screens/auth/auth_screen.dart';
+import 'package:gym_force/presentation/screens/auth/register_selfie_screen.dart';
+import 'package:gym_force/presentation/screens/auth/register_dni_screen.dart';
 import 'package:gym_force/presentation/screens/employee/help_screen.dart';
 import 'package:gym_force/presentation/screens/employee/qr_employee_screen.dart';
-import 'package:gym_force/presentation/screens/login_screen.dart';
-import 'package:gym_force/presentation/screens/register_screen.dart';
-import 'package:gym_force/presentation/screens/register_submit_screen.dart';
+import 'package:gym_force/presentation/screens/auth/login_screen.dart';
+import 'package:gym_force/presentation/screens/auth/register_basic_data.dart';
+import 'package:gym_force/presentation/screens/auth/register_extra_data_screen.dart';
 import 'package:gym_force/presentation/screens/splash_screen.dart';
 import 'package:gym_force/presentation/widgets/navigation/employee_bottom_nav.dart';
 import 'package:gym_force/utils/auth_guard.dart';
@@ -37,16 +39,19 @@ final GoRouter appRouter = GoRouter(
     ),
     GoRoute(
       path: '/register',
-      builder: (context, state) => RegisterScreen(),
+      builder: (context, state) => const RegisterBasicDataScreen(),
     ),
     GoRoute(
-      path: '/register_submit',
-      builder: (context, state) => const RegisterSubmitScreen(
-        email: '',
-        name: '',
-        password: '',
-        birthdate: '',
-      ),
+      path: '/register_extra_data',
+      builder: (context, state) => const RegisterExtraDataScreen(),
+    ),
+    GoRoute(
+      path: '/register_dni',
+      builder: (context, state) => const RegisterDniScreen(),
+    ),
+    GoRoute(
+      path: '/register_selfie',
+      builder: (context, state) => const RegisterSelfieScreen(),
     ),
     ShellRoute(
       builder: (context, state, child) {

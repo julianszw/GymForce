@@ -23,8 +23,8 @@ final ThemeData customTheme = ThemeData(
   // Personalizar los botones
   elevatedButtonTheme: ElevatedButtonThemeData(
     style: ElevatedButton.styleFrom(
-      backgroundColor: const Color(0xFFFFD202), // Color de fondo
-      padding: const EdgeInsets.symmetric(vertical: 8), // Relleno
+      backgroundColor: const Color(0xFFFFD202),
+      padding: const EdgeInsets.symmetric(vertical: 8),
       shape: RoundedRectangleBorder(
         borderRadius: BorderRadius.circular(8), // Bordes redondeados
       ),

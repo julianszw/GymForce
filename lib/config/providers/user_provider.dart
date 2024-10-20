@@ -5,17 +5,17 @@ import 'package:gym_force/domain/user_state_domain.dart';
 class UserNotifier extends StateNotifier<UserState> {
   UserNotifier() : super(UserState.empty());
 
-  void setUser({
-    required String uid,
-    required String email,
-    required String name,
-    required String role,
-    String? birthdate,
-    String? address,
-    String? gender,
-    String? phone,
-    String? emergencyPhone,
-  }) {
+  void setUser(
+      {required String uid,
+      required String email,
+      required String name,
+      required String role,
+      String? birthdate,
+      String? address,
+      String? gender,
+      String? phone,
+      String? emergencyPhone,
+      String? profile}) {
     state = UserState(
         uid: uid,
         email: email,
@@ -25,6 +25,7 @@ class UserNotifier extends StateNotifier<UserState> {
         gender: gender,
         phone: phone,
         emergencyPhone: emergencyPhone,
+        profile: profile,
         role: role);
   }
 

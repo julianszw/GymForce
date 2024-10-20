@@ -5,15 +5,16 @@ import 'package:firebase_auth/firebase_auth.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:gym_force/config/providers/user_provider.dart';
 import 'package:gym_force/services/auth_services.dart';
+import 'package:gym_force/utils/validators.dart';
 
 class LoginScreen extends ConsumerStatefulWidget {
   const LoginScreen({super.key});
 
   @override
-  _LoginScreenState createState() => _LoginScreenState();
+  LoginScreenState createState() => LoginScreenState();
 }
 
-class _LoginScreenState extends ConsumerState<LoginScreen> {
+class LoginScreenState extends ConsumerState<LoginScreen> {
   final TextEditingController _emailController = TextEditingController();
   final TextEditingController _passwordController = TextEditingController();
 
@@ -22,20 +23,13 @@ class _LoginScreenState extends ConsumerState<LoginScreen> {
   bool _isLoading = false;
   final AuthService _authService = AuthService();
 
-  bool _validateEmail(String email) {
-    final RegExp emailRegex = RegExp(
-      r'^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$',
-    );
-    return emailRegex.hasMatch(email);
-  }
-
   Future<void> _login() async {
     final email = _emailController.text.trim();
     final password = _passwordController.text.trim();
 
     setState(() {
-      _isEmailValid = _validateEmail(email);
-      _isPasswordValid = password.isNotEmpty;
+      _isEmailValid = validateEmail(email);
+      _isPasswordValid = validatePassword(password);
     });
 
     if (_isEmailValid && _isPasswordValid) {
@@ -43,12 +37,12 @@ class _LoginScreenState extends ConsumerState<LoginScreen> {
         setState(() {
           _isLoading = true;
         });
-        UserCredential userCredential =
+        UserCredential? userCredential =
             await _authService.loginUser(email, password);
 
-        String uid = userCredential.user!.uid;
+        String? uid = userCredential?.user!.uid;
 
-        DocumentSnapshot? userDoc = await _authService.getUserData(uid);
+        DocumentSnapshot? userDoc = await _authService.getUserData(uid!);
         if (userDoc != null) {
           final role = userDoc['role'];
           if (role == 'user') {
@@ -61,9 +55,10 @@ class _LoginScreenState extends ConsumerState<LoginScreen> {
                   gender: userDoc['gender'],
                   phone: userDoc['phone'],
                   emergencyPhone: userDoc['emergencyPhone'],
+                  profile: userDoc['profile'],
                   role: role,
                 );
-            GoRouter.of(context).go('/');
+            context.go('/');
           } else if (role == 'employee') {
             ref.read(userProvider.notifier).setUser(
                   uid: uid,
@@ -71,7 +66,7 @@ class _LoginScreenState extends ConsumerState<LoginScreen> {
                   name: userDoc['name'],
                   role: role,
                 );
-            GoRouter.of(context).go('/help');
+            context.go('/help');
           }
         } else {
           ScaffoldMessenger.of(context).showSnackBar(
@@ -79,10 +74,16 @@ class _LoginScreenState extends ConsumerState<LoginScreen> {
                 content: Text('No se encontraron datos del usuario')),
           );
         }
-      } on FirebaseAuthException {
+      } on FirebaseAuthException catch (e) {
         ScaffoldMessenger.of(context).showSnackBar(
-          const SnackBar(
-            content: Text('Error de autenticación: credenciales inválidas'),
+          SnackBar(
+            content: Text(e.message ?? 'Error de autenticación: ${e.code}'),
+          ),
+        );
+      } catch (e) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(
+            content: Text('Error inesperado: $e'),
           ),
         );
       } finally {
@@ -150,9 +151,9 @@ class _LoginScreenState extends ConsumerState<LoginScreen> {
                           child: const Text(
                             'Ingresar',
                             style: TextStyle(
-                              color: Colors.black,
-                              fontSize: 18,
-                            ),
+                                color: Colors.black,
+                                fontSize: 18,
+                                fontWeight: FontWeight.bold),
                           ),
                         ),
                       ),

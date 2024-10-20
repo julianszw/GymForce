@@ -50,9 +50,9 @@ class AuthScreen extends StatelessWidget {
                       child: const Text(
                         'Iniciar Sesión',
                         style: TextStyle(
-                          color: Colors.black,
-                          fontSize: 18,
-                        ),
+                            color: Colors.black,
+                            fontSize: 18,
+                            fontWeight: FontWeight.bold),
                       ),
                     ),
                   ),
@@ -66,9 +66,9 @@ class AuthScreen extends StatelessWidget {
                       child: const Text(
                         'Registrarse',
                         style: TextStyle(
-                          color: Colors.black,
-                          fontSize: 18,
-                        ),
+                            color: Colors.black,
+                            fontSize: 18,
+                            fontWeight: FontWeight.bold),
                       ),
                     ),
                   ),
