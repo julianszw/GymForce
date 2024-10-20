@@ -26,7 +26,7 @@ final ThemeData customTheme = ThemeData(
       backgroundColor: const Color(0xFFFFD202),
       padding: const EdgeInsets.symmetric(vertical: 8),
       shape: RoundedRectangleBorder(
-        borderRadius: BorderRadius.circular(8),
+        borderRadius: BorderRadius.circular(8), // Bordes redondeados
       ),
     ),
   ),
