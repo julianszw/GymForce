@@ -19,3 +19,26 @@ bool validateName(String name) {
 
   return true;
 }
+
+bool validateAddress(String value) {
+  final addressRegExp = RegExp(r'^(?=.*[a-zA-Z])(?=.*\d).+$');
+
+  if (value.isEmpty || !addressRegExp.hasMatch(value)) {
+    return false;
+  }
+  return true;
+}
+
+bool validateDNI(String dni) {
+  if (dni.length < 7 || !RegExp(r'^[0-9]+$').hasMatch(dni)) {
+    return false;
+  }
+  return true;
+}
+
+bool validatePhoneNumber(String phoneNumber) {
+  if (phoneNumber.length < 10 || !RegExp(r'^[0-9]+$').hasMatch(phoneNumber)) {
+    return false;
+  }
+  return true;
+}

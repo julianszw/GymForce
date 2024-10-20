@@ -1,15 +1,19 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:go_router/go_router.dart';
+import 'package:gym_force/config/providers/user_registration_provider.dart';
 import 'package:intl/date_symbol_data_local.dart';
 import 'package:intl/intl.dart';
-import 'package:gym_force/presentation/screens/register_submit_screen.dart';
 import 'package:gym_force/utils/validators.dart';
 
-class RegisterScreen extends StatefulWidget {
+class RegisterBasicDataScreen extends ConsumerStatefulWidget {
+  const RegisterBasicDataScreen({super.key});
+
   @override
-  _RegisterScreenState createState() => _RegisterScreenState();
+  RegisterBasicDataState createState() => RegisterBasicDataState();
 }
 
-class _RegisterScreenState extends State<RegisterScreen> {
+class RegisterBasicDataState extends ConsumerState<RegisterBasicDataScreen> {
   final _emailController = TextEditingController();
   final _nameController = TextEditingController();
   final _passwordController = TextEditingController();
@@ -27,6 +31,9 @@ class _RegisterScreenState extends State<RegisterScreen> {
   }
 
   void goToNextScreen() {
+    final userRegistrationNotifier =
+        ref.read(userRegistrationProvider.notifier);
+
     String email = _emailController.text;
     String name = _nameController.text;
     String password = _passwordController.text;
@@ -46,17 +53,13 @@ class _RegisterScreenState extends State<RegisterScreen> {
       return;
     }
 
-    Navigator.push(
-      context,
-      MaterialPageRoute(
-        builder: (context) => RegisterSubmitScreen(
-          email: email,
-          name: name,
-          password: password,
-          birthdate: birthdate,
-        ),
-      ),
-    );
+    userRegistrationNotifier.updateBasicData(email, name, password, birthdate);
+
+    context.push('/register_extra_data');
+    // Navigator.push(
+    //   context,
+    //   MaterialPageRoute(builder: (context) => const RegisterExtraDataScreen()),
+    // );
   }
 
   Future<void> _selectDate() async {

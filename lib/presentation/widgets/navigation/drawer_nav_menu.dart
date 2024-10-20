@@ -43,7 +43,7 @@ class DrawerNavMenu extends ConsumerWidget {
             title: const Text('Salir', style: TextStyle(color: Colors.white)),
             onTap: () {
               userNotifier.logOut();
-              context.go('/login');
+              context.go('/auth');
             },
           ),
         ],
