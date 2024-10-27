@@ -3,8 +3,10 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:gym_force/config/providers/payment_provider.dart';
 import 'package:gym_force/config/providers/user_provider.dart';
 import 'package:gym_force/services/auth_services.dart';
+import 'package:gym_force/services/payment_service.dart';
 import 'package:gym_force/utils/validators.dart';
 
 class LoginScreen extends ConsumerStatefulWidget {
@@ -26,6 +28,8 @@ class LoginScreenState extends ConsumerState<LoginScreen> {
   Future<void> _login() async {
     final email = _emailController.text.trim();
     final password = _passwordController.text.trim();
+    final userState = ref.watch(userProvider);
+    final paymentState = ref.read(paymentProvider.notifier);
 
     setState(() {
       _isEmailValid = validateEmail(email);
@@ -58,6 +62,20 @@ class LoginScreenState extends ConsumerState<LoginScreen> {
                   profile: userDoc['profile'],
                   role: role,
                 );
+
+            final payment =
+                await PaymentService().getLatestPaymentForUser(userState.uid);
+
+            if (payment != null) {
+              paymentState.setPayment(
+                amount: payment['amount'],
+                date: payment['date'],
+                duration: payment['duration'],
+                title: payment['title'],
+                transactionId: payment['transactionId'],
+                userId: payment['userId'],
+              );
+            }
             context.go('/');
           } else if (role == 'employee') {
             ref.read(userProvider.notifier).setUser(
