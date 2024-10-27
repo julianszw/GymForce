@@ -63,8 +63,7 @@ class LoginScreenState extends ConsumerState<LoginScreen> {
                   role: role,
                 );
 
-            final payment =
-                await PaymentService().getLatestPaymentForUser(userState.uid);
+            final payment = await PaymentService().getLatestPaymentForUser(uid);
 
             if (payment != null) {
               paymentState.setPayment(
