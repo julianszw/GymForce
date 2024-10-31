@@ -67,13 +67,13 @@ class LoginScreenState extends ConsumerState<LoginScreen> {
 
             if (payment != null) {
               paymentState.setPayment(
-                amount: payment['amount'],
-                date: payment['date'],
-                duration: payment['duration'],
-                title: payment['title'],
-                transactionId: payment['transactionId'],
-                userId: payment['userId'],
-              );
+                  amount: payment['amount'],
+                  date: payment['date'],
+                  duration: payment['duration'],
+                  title: payment['title'],
+                  transactionId: payment['transactionId'],
+                  userId: payment['userId'],
+                  expirationDate: payment['expirationDate']);
             }
             context.go('/');
           } else if (role == 'employee') {

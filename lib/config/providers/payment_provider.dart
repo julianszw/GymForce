@@ -20,20 +20,9 @@ class PaymentNotifier extends StateNotifier<PaymentData> {
     required String title,
     required String transactionId,
     required String userId,
+    required DateTime? expirationDate,
   }) {
-    DateTime expirationDate = date ?? DateTime.now();
-
-    if (duration == '6 meses') {
-      expirationDate = expirationDate.add(const Duration(days: 180));
-    } else if (duration == 'mensual') {
-      expirationDate = DateTime(
-          expirationDate.year, expirationDate.month + 1, expirationDate.day);
-    } else if (duration == '1 año') {
-      expirationDate = DateTime(
-          expirationDate.year + 1, expirationDate.month, expirationDate.day);
-    }
-
-    bool isActive = DateTime.now().isBefore(expirationDate);
+    bool isActive = DateTime.now().isBefore(expirationDate!);
 
     state = PaymentData(
       amount: amount,

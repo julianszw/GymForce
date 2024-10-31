@@ -19,6 +19,11 @@ class PaymentService {
           data['date'] = (data['date'] as Timestamp).toDate();
         }
 
+        if (data['expirationDate'] is Timestamp) {
+          data['expirationDate'] =
+              (data['expirationDate'] as Timestamp).toDate();
+        }
+
         return data;
       } else {
         return null;

@@ -80,13 +80,13 @@ class MembershipScreenState extends ConsumerState<MembershipScreen>
 
       if (payment != null) {
         paymentState.setPayment(
-          amount: payment['amount'],
-          date: payment['date'],
-          duration: payment['duration'],
-          title: payment['title'],
-          transactionId: payment['transactionId'],
-          userId: payment['userId'],
-        );
+            amount: payment['amount'],
+            date: payment['date'],
+            duration: payment['duration'],
+            title: payment['title'],
+            transactionId: payment['transactionId'],
+            userId: payment['userId'],
+            expirationDate: payment['expirationDate']);
 
         ScaffoldMessenger.of(context).showSnackBar(
           const SnackBar(
