@@ -4,6 +4,7 @@ import 'package:gym_force/config/providers/user_provider.dart';
 import 'package:gym_force/presentation/screens/auth/auth_screen.dart';
 import 'package:gym_force/presentation/screens/auth/register_selfie_screen.dart';
 import 'package:gym_force/presentation/screens/auth/register_dni_screen.dart';
+import 'package:gym_force/presentation/screens/create_manually_workout_screen.dart';
 import 'package:gym_force/presentation/screens/employee/help_screen.dart';
 import 'package:gym_force/presentation/screens/employee/qr_employee_screen.dart';
 import 'package:gym_force/presentation/screens/auth/login_screen.dart';
@@ -107,5 +108,8 @@ final GoRouter appRouter = GoRouter(
       path: '/membership',
       builder: (context, state) => const MembershipScreen(),
     ),
+    GoRoute(
+        path: '/create-manually-workout',
+        builder: (context, state) => CreateManuallyWorkoutScreen())
   ],
 );
