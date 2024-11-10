@@ -28,24 +28,31 @@ class _ProfileScreenState extends ConsumerState<ProfileScreen> {
           crossAxisAlignment: CrossAxisAlignment.center,
           children: [
             // Foto de perfil
-            CircleAvatar(
-              radius: 50,
-              backgroundImage: AssetImage(user?.profile ?? 'assets/profile_picture.jpg'),
-            ),
-            const SizedBox(height: 16),
+CircleAvatar(
+  radius: 50,
+  backgroundImage: (user?.profile != null && user!.profile!.isNotEmpty)
+      ? NetworkImage(user!.profile!)
+      : AssetImage('assets/profile_picture.jpg') as ImageProvider,
+),
+const SizedBox(height: 16),
 
             // Botón "Aplicar cambios"
-            ElevatedButton(
-              onPressed: () {},
-              style: ElevatedButton.styleFrom(
-                foregroundColor: Colors.black, backgroundColor: Colors.yellow,
-                shape: RoundedRectangleBorder(
-                  borderRadius: BorderRadius.circular(20),
-                ),
-              ),
-              child: const Text('Aplicar cambios'),
-            ),
-            const SizedBox(height: 16),
+            SizedBox(
+  width: double.infinity, // Hace que el botón ocupe todo el ancho disponible
+  child: ElevatedButton(
+    onPressed: () {},
+    style: ElevatedButton.styleFrom(
+      foregroundColor: Colors.black,
+      backgroundColor: Colors.yellow,
+      shape: RoundedRectangleBorder(
+        borderRadius: BorderRadius.circular(10),
+      ),
+    ),
+    child: const Text('Aplicar cambios'),
+  ),
+),
+const SizedBox(height: 16),
+
 
             // Campo "Nombre y Apellido"
             _ProfileTextField(label: 'Nombre y Apellido', hint: user?.name ?? ''),
@@ -55,7 +62,7 @@ class _ProfileScreenState extends ConsumerState<ProfileScreen> {
   crossAxisAlignment: CrossAxisAlignment.start,
   children: [
     const Text(
-      'Sexo',
+      'Género',
       style: TextStyle(color: Colors.white),
     ),
     const SizedBox(height: 8),
