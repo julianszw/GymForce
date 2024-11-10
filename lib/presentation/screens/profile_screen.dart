@@ -30,7 +30,7 @@ class _ProfileScreenState extends ConsumerState<ProfileScreen> {
             // Foto de perfil
             CircleAvatar(
               radius: 50,
-              backgroundImage: AssetImage(user?.profile ?? 'assets/profile_picture.jpg'), // Cambia a la imagen deseada
+              backgroundImage: AssetImage(user?.profile ?? 'assets/profile_picture.jpg'),
             ),
             const SizedBox(height: 16),
 
@@ -50,49 +50,45 @@ class _ProfileScreenState extends ConsumerState<ProfileScreen> {
             // Campo "Nombre y Apellido"
             _ProfileTextField(label: 'Nombre y Apellido', hint: user?.name ?? ''),
 
-            // Selector de género
+            // Selector de género usando DropDownButton
             Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                const Text(
-                  'Sexo',
-                  style: TextStyle(color: Colors.white),
-                ),
-                const SizedBox(height: 8),
-                Row(
-                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                  children: [
-                    _GenderButton(
-                      label: 'Masculino',
-                      isSelected: selectedGender == 'Masculino',
-                      onTap: () {
-                        setState(() {
-                          selectedGender = 'Masculino';
-                        });
-                      },
-                    ),
-                    _GenderButton(
-                      label: 'Femenino',
-                      isSelected: selectedGender == 'Femenino',
-                      onTap: () {
-                        setState(() {
-                          selectedGender = 'Femenino';
-                        });
-                      },
-                    ),
-                    _GenderButton(
-                      label: 'Otro',
-                      isSelected: selectedGender == 'Otro',
-                      onTap: () {
-                        setState(() {
-                          selectedGender = 'Otro';
-                        });
-                      },
-                    ),
-                  ],
-                ),
-              ],
-            ),
+  crossAxisAlignment: CrossAxisAlignment.start,
+  children: [
+    const Text(
+      'Sexo',
+      style: TextStyle(color: Colors.white),
+    ),
+    const SizedBox(height: 8),
+    Container(
+      width: double.infinity, // Para que ocupe todo el ancho disponible
+      padding: const EdgeInsets.symmetric(horizontal: 8.0),
+      decoration: BoxDecoration(
+        color: Colors.white,
+        borderRadius: BorderRadius.circular(10),
+        border: Border.all(color: Colors.grey),
+      ),
+      child: DropdownButton<String>(
+        value: selectedGender,
+        isExpanded: true, // Asegura que el DropdownButton ocupe todo el ancho del contenedor
+        underline: SizedBox(), // Remueve la línea por defecto del DropdownButton
+        items: <String>['Masculino', 'Femenino', 'Otro']
+            .map<DropdownMenuItem<String>>((String value) {
+          return DropdownMenuItem<String>(
+            value: value,
+            child: Text(value),
+          );
+        }).toList(),
+        onChanged: (String? newValue) {
+          setState(() {
+            selectedGender = newValue!;
+          });
+        },
+        dropdownColor: Colors.white, // Fondo del menú desplegable
+        style: const TextStyle(color: Colors.black), // Estilo del texto en el DropdownButton
+      ),
+    ),
+  ],
+),
 
             // Campo "Fecha de nacimiento"
             _ProfileTextField(label: 'Fecha de nacimiento', hint: user?.birthdate ?? '09/03/2005'),
@@ -153,33 +149,6 @@ class _ProfileTextField extends StatelessWidget {
           ),
         ],
       ),
-    );
-  }
-}
-
-// Widget personalizado para los botones de género
-class _GenderButton extends StatelessWidget {
-  final String label;
-  final bool isSelected;
-  final VoidCallback onTap;
-
-  const _GenderButton({
-    required this.label,
-    required this.isSelected,
-    required this.onTap,
-  });
-
-  @override
-  Widget build(BuildContext context) {
-    return ElevatedButton(
-      onPressed: onTap,
-      style: ElevatedButton.styleFrom(
-        foregroundColor: Colors.black, backgroundColor: isSelected ? Colors.yellow : Colors.grey[800],
-        shape: RoundedRectangleBorder(
-          borderRadius: BorderRadius.circular(20),
-        ),
-      ),
-      child: Text(label),
     );
   }
 }
