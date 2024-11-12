@@ -19,7 +19,7 @@ import 'package:gym_force/presentation/screens/headquarter_screen.dart';
 import 'package:gym_force/presentation/screens/home_screen.dart';
 import 'package:gym_force/presentation/screens/membership_screen.dart';
 import 'package:gym_force/presentation/screens/profile_screen.dart';
-import 'package:gym_force/presentation/screens/qr_customer_scren.dart';
+import 'package:gym_force/presentation/screens/qr_customer_screen.dart';
 import 'package:gym_force/presentation/screens/workouts_screen.dart';
 
 final GoRouter appRouter = GoRouter(
@@ -79,7 +79,7 @@ final GoRouter appRouter = GoRouter(
         ),
         GoRoute(
           path: '/qr',
-          builder: (context, state) => const QrCustomerScren(),
+          builder: (context, state) => BranchListScreen(),
         ),
         GoRoute(
           path: '/calories',

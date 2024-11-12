@@ -108,7 +108,7 @@ import 'package:go_router/go_router.dart';
 import 'package:gym_force/presentation/screens/calories_screen.dart';
 import 'package:gym_force/presentation/screens/home_screen.dart';
 import 'package:gym_force/presentation/screens/profile_screen.dart';
-import 'package:gym_force/presentation/screens/qr_customer_scren.dart';
+import 'package:gym_force/presentation/screens/qr_customer_screen.dart';
 import 'package:gym_force/presentation/screens/workouts_screen.dart';
 
 class BottomNav extends StatefulWidget {
@@ -206,7 +206,7 @@ class _BottomNavState extends State<BottomNav> {
       case 1:
         return const WorkoutsScreen();
       case 2:
-        return const QrCustomerScren();
+        return BranchListScreen();
       case 3:
         return const CaloriesScreen();
       case 4:
