@@ -16,7 +16,6 @@ class BranchListScreen extends ConsumerStatefulWidget {
 
 class _BranchListScreenState extends ConsumerState<BranchListScreen> {
   bool isLocationLoading = false;
-
   List<BranchData> branches = [];
   BranchData? selectedBranch;
   bool showSaludo = false;
@@ -60,27 +59,22 @@ class _BranchListScreenState extends ConsumerState<BranchListScreen> {
   }
 
   Future<bool> isWithinRange(GeoPoint branchGeoPoint, double maxDistanceMeters) async {
-    
     try {
-      // Solicita los permisos de ubicación
       LocationPermission permission = await Geolocator.checkPermission();
       if (permission == LocationPermission.denied) {
         permission = await Geolocator.requestPermission();
         if (permission == LocationPermission.denied) {
-          return false; // Permisos denegados
+          return false;
         }
       }
-
       if (permission == LocationPermission.deniedForever) {
-        return false; // Permisos denegados permanentemente
+        return false;
       }
 
-      // Obtiene la ubicación actual del usuario
       Position position = await Geolocator.getCurrentPosition(
         desiredAccuracy: LocationAccuracy.high,
       );
 
-      // Calcula la distancia en metros entre la ubicación del usuario y el branch
       double distanceInMeters = Geolocator.distanceBetween(
         position.latitude,
         position.longitude,
@@ -88,11 +82,9 @@ class _BranchListScreenState extends ConsumerState<BranchListScreen> {
         branchGeoPoint.longitude,
       );
 
-      // Retorna true si la distancia es menor o igual a maxDistanceMeters
-
       return distanceInMeters <= maxDistanceMeters;
     } catch (e) {
-      return false; //error obteniendo la ubicacion
+      return false;
     }
   }
 
@@ -102,93 +94,89 @@ class _BranchListScreenState extends ConsumerState<BranchListScreen> {
 
     return Scaffold(
       appBar: AppBar(
-        title: Text("Sucursales"),
+        title: Text("Generacion de QR"),
       ),
       body: isLocationLoading
           ? const Center(
               child: CircularProgressIndicator(),
             )
           : Padding(
-        padding: const EdgeInsets.all(8.0),
-        child: Column(
-          children: [
-            if (!showSaludo)
-              Expanded(
-                child: ListView.builder(
-                  itemCount: branches.length,
-                  itemBuilder: (context, index) {
-                    final branch = branches[index];
-                    return BranchCard(
-                      branch: branch,
-                      isSelected: selectedBranch == branch,
-                      onTap: () {
-                        ref.read(branchProvider.notifier).setBranch(
-                          apertura: branch.apertura ?? DateTime.now(),
-                          barrio: branch.barrio,
-                          capacity: branch.capacity ?? 0,
-                          cierre: branch.cierre ?? DateTime.now(),
-                          geoPoint: branch.geoPoint ?? GeoPoint(0, 0),
-                          outsidePic: branch.outsidePic,
-                          remodeling: branch.remodeling,
-                          sectors: branch.sectors ?? [],
-                          telefono: branch.telefono,
-                          ubicacion: branch.ubicacion,
-                        );
-                        setState(() {
-                          selectedBranch = branch;
-                        });
-                      },
-                    );
-                  },
-                ),
-              ),
-            if (!showSaludo)
-              Padding(
-                padding: const EdgeInsets.symmetric(vertical: 200.0),
-                child: YellowButton(
-                  onPressed: selectedBranch != null
-                      ? () async {
-                        setState(() {
-                          isLocationLoading = true;
-                        });
-                          
-                          bool withinRange = await isWithinRange(
-                            selectedBranch!.geoPoint!,
-                            500.0, // distancia máxima en metros
+              padding: const EdgeInsets.all(8.0),
+              child: Column(
+                children: [
+                  if (!showSaludo) Text("Nuestras sucursales"),
+                  if (!showSaludo)
+                    Expanded(
+                      child: ListView.builder(
+                        itemCount: branches.length,
+                        itemBuilder: (context, index) {
+                          final branch = branches[index];
+                          return BranchCard(
+                            branch: branch,
+                            isSelected: selectedBranch == branch,
+                            onTap: () {
+                              ref.read(branchProvider.notifier).setBranch(
+                                apertura: branch.apertura ?? DateTime.now(),
+                                barrio: branch.barrio,
+                                capacity: branch.capacity ?? 0,
+                                cierre: branch.cierre ?? DateTime.now(),
+                                geoPoint: branch.geoPoint ?? GeoPoint(0, 0),
+                                outsidePic: branch.outsidePic,
+                                remodeling: branch.remodeling,
+                                sectors: branch.sectors ?? [],
+                                telefono: branch.telefono,
+                                ubicacion: branch.ubicacion,
+                              );
+                              setState(() {
+                                selectedBranch = branch;
+                              });
+                            },
                           );
-
-                          if (withinRange) {
-                        setState(() {
-                          isLocationLoading = false;
-                        });
-                            mostrarSaludoTemporal();
-                          } else {
-                        setState(() {
-                          isLocationLoading = false;
-                        });
-                            ScaffoldMessenger.of(context).showSnackBar(
-                              SnackBar(
-                                content: Text(
-                                  "Te encuentras a más de 500 metros del gimnasio. Para acceder al saludo, debes estar más cerca.",
-                                ),
-                                behavior: SnackBarBehavior.floating,
-                              ),
-                            );
-                          }
-                        }
-                      : null,
-                  text: "Mostrar saludo",
-                  isEnabled: selectedBranch != null,
-                ),
+                        },
+                      ),
+                    ),
+                  if (!showSaludo)
+                    Padding(
+                      padding: const EdgeInsets.symmetric(vertical: 200.0),
+                      child: YellowButton(
+                        onPressed: selectedBranch != null
+                            ? () async {
+                                setState(() {
+                                  isLocationLoading = true;
+                                });
+                                bool withinRange = await isWithinRange(
+                                  selectedBranch!.geoPoint!,
+                                  500.0,
+                                );
+                                setState(() {
+                                  isLocationLoading = false;
+                                });
+                                if (withinRange) {
+                                  mostrarSaludoTemporal();
+                                } else {
+                                  ScaffoldMessenger.of(context).showSnackBar(
+                                    const SnackBar(
+                                      content: Text(
+                                        "Te encuentras a más de 500 metros del gimnasio. Para acceder al saludo, debes estar más cerca.",
+                                      ),
+                                      behavior: SnackBarBehavior.floating,
+                                    ),
+                                  );
+                                }
+                              }
+                            : null,
+                        text: "Generar QR",
+                        isEnabled: selectedBranch != null,
+                      ),
+                    ),
+                  if (showSaludo)
+                    SaludoScreen(
+                      barrio: selectedBranch?.barrio ?? "",
+                      onCancel: cancelarSaludo,
+                    ),
+                ],
               ),
-            if (showSaludo)
-              SaludoScreen(
-                barrio: branchProviderState.barrio,
-                onCancel: cancelarSaludo,
-              ),
-          ],
-        ),
-      ),
+            ),
     );
   }
 }

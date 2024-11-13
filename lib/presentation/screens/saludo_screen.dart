@@ -1,5 +1,6 @@
 import 'dart:async';
 import 'package:flutter/material.dart';
+import 'package:pretty_qr_code/pretty_qr_code.dart';
 
 class SaludoScreen extends StatefulWidget {
   final String barrio;
@@ -17,11 +18,13 @@ class SaludoScreen extends StatefulWidget {
 class _SaludoScreenState extends State<SaludoScreen> {
   late int _remainingTime; // Tiempo en segundos
   Timer? _timer;
+  late String _qrData; // Datos del QR generados una sola vez
 
   @override
   void initState() {
     super.initState();
     _remainingTime = 30; // Iniciamos con 30 segundos
+    _qrData = "Hora: ${DateTime.now().toIso8601String()}, Barrio: ${widget.barrio}"; // Generamos el QR una vez
     _startCountdown();
   }
 
@@ -51,13 +54,23 @@ class _SaludoScreenState extends State<SaludoScreen> {
         mainAxisAlignment: MainAxisAlignment.center,
         children: [
           Text(
-            "Hola, ${widget.barrio}",
-            style: TextStyle(fontSize: 24, fontWeight: FontWeight.bold),
+            "Mostra tu QR",
+            style: TextStyle(fontSize: 24, fontWeight: FontWeight.bold, color: Colors.white),
+          ),
+          SizedBox(height: 20),
+          Container(
+            color: Colors.white, // Fondo blanco para el QR
+            padding: EdgeInsets.all(10), // Espacio alrededor del QR
+            child: PrettyQr(
+              data: _qrData, // Usamos los datos generados una vez
+              size: 200, // Ajusta el tamaño del QR aquí
+              roundEdges: true,
+            ),
           ),
           SizedBox(height: 20),
           Text(
-            "Volviendo en $_remainingTime segundos", // Mostramos el tiempo restante
-            style: TextStyle(fontSize: 16, color: Colors.grey[700]),
+            "Te quedan $_remainingTime segundos...",
+            style: TextStyle(fontSize: 16, color: Colors.white),
           ),
           SizedBox(height: 20),
           ElevatedButton(
@@ -65,7 +78,7 @@ class _SaludoScreenState extends State<SaludoScreen> {
               _timer?.cancel(); // Cancelamos el temporizador al presionar cancelar
               widget.onCancel();
             },
-            child: Text("Cancelar saludo"),
+            child: Text("Cancelar QR"),
             style: ElevatedButton.styleFrom(
               backgroundColor: Colors.red,
               foregroundColor: Colors.white,
