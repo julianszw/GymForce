@@ -115,10 +115,10 @@ class BottomNav extends StatefulWidget {
   const BottomNav({super.key, required Widget child});
 
   @override
-  _BottomNavState createState() => _BottomNavState();
+  BottomNavState createState() => BottomNavState();
 }
 
-class _BottomNavState extends State<BottomNav> {
+class BottomNavState extends State<BottomNav> {
   int _selectedIndex = 0;
 
   void _onItemTapped(int index) {

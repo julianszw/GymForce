@@ -5,8 +5,11 @@ import 'package:firebase_auth/firebase_auth.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:gym_force/config/providers/payment_provider.dart';
 import 'package:gym_force/config/providers/user_provider.dart';
+import 'package:gym_force/config/providers/workout_provider.dart';
+import 'package:gym_force/domain/workout_domain.dart';
 import 'package:gym_force/services/auth_services.dart';
 import 'package:gym_force/services/payment_service.dart';
+import 'package:gym_force/services/workout_services.dart';
 import 'package:gym_force/utils/validators.dart';
 
 class LoginScreen extends ConsumerStatefulWidget {
@@ -30,6 +33,7 @@ class LoginScreenState extends ConsumerState<LoginScreen> {
     final password = _passwordController.text.trim();
     final userState = ref.watch(userProvider);
     final paymentState = ref.read(paymentProvider.notifier);
+    final workoutState = ref.read(workoutProvider.notifier);
 
     setState(() {
       _isEmailValid = validateEmail(email);
@@ -62,6 +66,14 @@ class LoginScreenState extends ConsumerState<LoginScreen> {
                   profile: userDoc['profile'],
                   role: role,
                 );
+
+            List<Map<String, dynamic>> workoutsData =
+                await WorkoutService().getUserWorkouts();
+
+            List<Workout> workouts =
+                workoutsData.map((data) => Workout.fromJson(data)).toList();
+
+            workoutState.setWorkouts(workouts);
 
             final payment = await PaymentService().getLatestPaymentForUser(uid);
 

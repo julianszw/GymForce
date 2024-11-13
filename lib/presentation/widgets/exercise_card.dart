@@ -1,13 +1,16 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
+import 'package:gym_force/domain/exercise_domain.dart';
 
-class ExerciseCard extends StatelessWidget {
+class ExerciseCard extends StatefulWidget {
   final int index;
-  final List<dynamic> exercise;
+  final Exercise exercise;
   final Function(int) deleteExercise;
   final Function(int) addSet;
   final Function(int, int) deleteSet;
   final Function(int, int, String, String) updateSetValue;
+  final Function(int, String) updateExerciseName;
+  final List<dynamic> controllers;
 
   const ExerciseCard(
       {super.key,
@@ -16,8 +19,15 @@ class ExerciseCard extends StatelessWidget {
       required this.deleteExercise,
       required this.addSet,
       required this.deleteSet,
-      required this.updateSetValue});
+      required this.updateSetValue,
+      required this.updateExerciseName,
+      required this.controllers});
 
+  @override
+  ExerciseCardState createState() => ExerciseCardState();
+}
+
+class ExerciseCardState extends State<ExerciseCard> {
   @override
   Widget build(BuildContext context) {
     return Card(
@@ -31,7 +41,7 @@ class ExerciseCard extends StatelessWidget {
               mainAxisAlignment: MainAxisAlignment.spaceBetween,
               children: [
                 Text(
-                  'Ejercicio ${index + 1}',
+                  'Ejercicio ${widget.index + 1}',
                   style: TextStyle(
                     color: Theme.of(context).colorScheme.primary,
                     fontSize: 18,
@@ -43,12 +53,13 @@ class ExerciseCard extends StatelessWidget {
                   icon: Icon(Icons.delete_outline,
                       color: Theme.of(context).colorScheme.primary),
                   onPressed: () {
-                    deleteExercise(index);
+                    widget.deleteExercise(widget.index);
                   },
                 ),
               ],
             ),
             TextField(
+              controller: widget.controllers[0],
               style: const TextStyle(color: Colors.black),
               decoration: InputDecoration(
                 contentPadding:
@@ -62,9 +73,12 @@ class ExerciseCard extends StatelessWidget {
                   borderSide: BorderSide.none,
                 ),
               ),
+              onChanged: (value) {
+                widget.updateExerciseName(widget.index, value);
+              },
             ),
             const SizedBox(height: 18),
-            exercise[index].isNotEmpty
+            widget.exercise.sets.isNotEmpty
                 ? Container(
                     decoration: BoxDecoration(
                         color: Colors.black,
@@ -127,9 +141,11 @@ class ExerciseCard extends StatelessWidget {
                                 )
                               ],
                             ),
-                            ...exercise[index].asMap().entries.map((entry) {
+                            ...widget.exercise.sets
+                                .asMap()
+                                .entries
+                                .map((entry) {
                               int setIndex = entry.key;
-                              var set = entry.value;
                               return TableRow(
                                   decoration: BoxDecoration(
                                       borderRadius: const BorderRadius.all(
@@ -140,13 +156,15 @@ class ExerciseCard extends StatelessWidget {
                                   children: [
                                     TableCell(
                                         child: Text(
-                                      '${exercise[index].indexOf(set) + 1}',
+                                      '${setIndex + 1}',
                                       style:
                                           const TextStyle(color: Colors.white),
                                       textAlign: TextAlign.center,
                                     )),
                                     TableCell(
                                       child: TextField(
+                                        controller:
+                                            widget.controllers[setIndex + 1][0],
                                         keyboardType: TextInputType.number,
                                         inputFormatters: [
                                           FilteringTextInputFormatter.allow(
@@ -165,13 +183,15 @@ class ExerciseCard extends StatelessWidget {
                                           filled: false,
                                         ),
                                         onChanged: (value) {
-                                          updateSetValue(
-                                              index, setIndex, 'kg', value);
+                                          widget.updateSetValue(widget.index,
+                                              setIndex, 'kg', value);
                                         },
                                       ),
                                     ),
                                     TableCell(
                                       child: TextField(
+                                        controller:
+                                            widget.controllers[setIndex + 1][1],
                                         keyboardType: TextInputType.number,
                                         inputFormatters: [
                                           FilteringTextInputFormatter.allow(
@@ -190,8 +210,8 @@ class ExerciseCard extends StatelessWidget {
                                           filled: false,
                                         ),
                                         onChanged: (value) {
-                                          updateSetValue(
-                                              index, setIndex, 'reps', value);
+                                          widget.updateSetValue(widget.index,
+                                              setIndex, 'reps', value);
                                         },
                                       ),
                                     ),
@@ -202,7 +222,8 @@ class ExerciseCard extends StatelessWidget {
                                                 .colorScheme
                                                 .primary),
                                         onPressed: () {
-                                          deleteSet(index, setIndex);
+                                          widget.deleteSet(
+                                              widget.index, setIndex);
                                         },
                                       ),
                                     ),
@@ -217,9 +238,7 @@ class ExerciseCard extends StatelessWidget {
               mainAxisAlignment: MainAxisAlignment.spaceAround,
               children: [
                 ElevatedButton.icon(
-                  onPressed: () {
-                    addSet(index);
-                  },
+                  onPressed: () => widget.addSet(widget.index),
                   icon: const Icon(Icons.add, color: Colors.black),
                   label: const Text(
                     'Agregar Set',

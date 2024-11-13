@@ -4,7 +4,6 @@ import 'package:gym_force/config/providers/user_provider.dart';
 import 'package:gym_force/presentation/screens/auth/auth_screen.dart';
 import 'package:gym_force/presentation/screens/auth/register_selfie_screen.dart';
 import 'package:gym_force/presentation/screens/auth/register_dni_screen.dart';
-import 'package:gym_force/presentation/screens/create_manually_workout_screen.dart';
 import 'package:gym_force/presentation/screens/employee/help_screen.dart';
 import 'package:gym_force/presentation/screens/employee/qr_employee_screen.dart';
 import 'package:gym_force/presentation/screens/auth/login_screen.dart';
@@ -12,6 +11,7 @@ import 'package:gym_force/presentation/screens/auth/register_basic_data.dart';
 import 'package:gym_force/presentation/screens/auth/register_extra_data_screen.dart';
 import 'package:gym_force/presentation/screens/splash_screen.dart';
 import 'package:gym_force/presentation/widgets/navigation/employee_bottom_nav.dart';
+import 'package:gym_force/presentation/widgets/workout_form.dart';
 import 'package:gym_force/utils/auth_guard.dart';
 import 'package:gym_force/presentation/widgets/navigation/bottom_nav.dart';
 import 'package:gym_force/presentation/screens/calendar_screen.dart';
@@ -109,7 +109,11 @@ final GoRouter appRouter = GoRouter(
       builder: (context, state) => const MembershipScreen(),
     ),
     GoRoute(
-        path: '/create-manually-workout',
-        builder: (context, state) => CreateManuallyWorkoutScreen())
+      path: '/workout-form/:id',
+      builder: (context, state) {
+        final workoutId = state.pathParameters['id']!;
+        return WorkoutFormScreen(workoutId: workoutId);
+      },
+    ),
   ],
 );
