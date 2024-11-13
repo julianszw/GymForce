@@ -6,7 +6,7 @@ import 'package:gym_force/domain/branch_domain.dart';
 import 'package:gym_force/presentation/widgets/qr/branch_card.dart';
 import 'package:gym_force/presentation/widgets/yellow_button.dart';
 import 'package:gym_force/services/branch_services.dart';
-
+import 'package:geolocator/geolocator.dart';
 import 'saludo_screen.dart';
 
 class BranchListScreen extends ConsumerStatefulWidget {
@@ -15,6 +15,8 @@ class BranchListScreen extends ConsumerStatefulWidget {
 }
 
 class _BranchListScreenState extends ConsumerState<BranchListScreen> {
+  bool isLocationLoading = false;
+
   List<BranchData> branches = [];
   BranchData? selectedBranch;
   bool showSaludo = false;
@@ -57,6 +59,43 @@ class _BranchListScreenState extends ConsumerState<BranchListScreen> {
     });
   }
 
+  Future<bool> isWithinRange(GeoPoint branchGeoPoint, double maxDistanceMeters) async {
+    
+    try {
+      // Solicita los permisos de ubicación
+      LocationPermission permission = await Geolocator.checkPermission();
+      if (permission == LocationPermission.denied) {
+        permission = await Geolocator.requestPermission();
+        if (permission == LocationPermission.denied) {
+          return false; // Permisos denegados
+        }
+      }
+
+      if (permission == LocationPermission.deniedForever) {
+        return false; // Permisos denegados permanentemente
+      }
+
+      // Obtiene la ubicación actual del usuario
+      Position position = await Geolocator.getCurrentPosition(
+        desiredAccuracy: LocationAccuracy.high,
+      );
+
+      // Calcula la distancia en metros entre la ubicación del usuario y el branch
+      double distanceInMeters = Geolocator.distanceBetween(
+        position.latitude,
+        position.longitude,
+        branchGeoPoint.latitude,
+        branchGeoPoint.longitude,
+      );
+
+      // Retorna true si la distancia es menor o igual a maxDistanceMeters
+
+      return distanceInMeters <= maxDistanceMeters;
+    } catch (e) {
+      return false; //error obteniendo la ubicacion
+    }
+  }
+
   @override
   Widget build(BuildContext context) {
     final branchProviderState = ref.watch(branchProvider);
@@ -65,7 +104,11 @@ class _BranchListScreenState extends ConsumerState<BranchListScreen> {
       appBar: AppBar(
         title: Text("Sucursales"),
       ),
-      body: Padding(
+      body: isLocationLoading
+          ? const Center(
+              child: CircularProgressIndicator(),
+            )
+          : Padding(
         padding: const EdgeInsets.all(8.0),
         child: Column(
           children: [
@@ -104,8 +147,34 @@ class _BranchListScreenState extends ConsumerState<BranchListScreen> {
                 padding: const EdgeInsets.symmetric(vertical: 200.0),
                 child: YellowButton(
                   onPressed: selectedBranch != null
-                      ? () {
-                          mostrarSaludoTemporal();
+                      ? () async {
+                        setState(() {
+                          isLocationLoading = true;
+                        });
+                          
+                          bool withinRange = await isWithinRange(
+                            selectedBranch!.geoPoint!,
+                            500.0, // distancia máxima en metros
+                          );
+
+                          if (withinRange) {
+                        setState(() {
+                          isLocationLoading = false;
+                        });
+                            mostrarSaludoTemporal();
+                          } else {
+                        setState(() {
+                          isLocationLoading = false;
+                        });
+                            ScaffoldMessenger.of(context).showSnackBar(
+                              SnackBar(
+                                content: Text(
+                                  "Te encuentras a más de 500 metros del gimnasio. Para acceder al saludo, debes estar más cerca.",
+                                ),
+                                behavior: SnackBarBehavior.floating,
+                              ),
+                            );
+                          }
                         }
                       : null,
                   text: "Mostrar saludo",
