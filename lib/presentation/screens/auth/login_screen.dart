@@ -31,7 +31,7 @@ class LoginScreenState extends ConsumerState<LoginScreen> {
   Future<void> _login() async {
     final email = _emailController.text.trim();
     final password = _passwordController.text.trim();
-    final userState = ref.watch(userProvider);
+    //final userState = ref.watch(userProvider);
     final paymentState = ref.read(paymentProvider.notifier);
     final workoutState = ref.read(workoutProvider.notifier);
 
