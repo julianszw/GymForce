@@ -11,6 +11,8 @@ class ExerciseCard extends StatefulWidget {
   final Function(int, int, String, String) updateSetValue;
   final Function(int, String) updateExerciseName;
   final List<dynamic> controllers;
+  final bool isTraining;
+  final List<List<bool>>? isCheckedList;
 
   const ExerciseCard(
       {super.key,
@@ -21,13 +23,16 @@ class ExerciseCard extends StatefulWidget {
       required this.deleteSet,
       required this.updateSetValue,
       required this.updateExerciseName,
-      required this.controllers});
+      required this.controllers,
+      this.isTraining = false,
+      this.isCheckedList});
 
   @override
   ExerciseCardState createState() => ExerciseCardState();
 }
 
 class ExerciseCardState extends State<ExerciseCard> {
+  bool isChecked = false;
   @override
   Widget build(BuildContext context) {
     return Card(
@@ -138,7 +143,16 @@ class ExerciseCardState extends State<ExerciseCard> {
                                   child: Text(
                                     '',
                                   ),
-                                )
+                                ),
+                                //! este agrego para probar el checkbox
+                                if (widget.isTraining)
+                                  const TableCell(
+                                    verticalAlignment:
+                                        TableCellVerticalAlignment.middle,
+                                    child: Text(
+                                      '',
+                                    ),
+                                  )
                               ],
                             ),
                             ...widget.exercise.sets
@@ -146,13 +160,18 @@ class ExerciseCardState extends State<ExerciseCard> {
                                 .entries
                                 .map((entry) {
                               int setIndex = entry.key;
+
                               return TableRow(
                                   decoration: BoxDecoration(
                                       borderRadius: const BorderRadius.all(
                                           Radius.circular(30)),
-                                      color: (setIndex % 2 == 0)
-                                          ? const Color(0xFF6E6E6E)
-                                          : const Color(0xFF333333)),
+                                      color: (widget.isCheckedList != null &&
+                                              widget.isCheckedList![
+                                                  widget.index][setIndex])
+                                          ? Colors.green
+                                          : (setIndex % 2 == 0)
+                                              ? const Color(0xFF6E6E6E)
+                                              : const Color(0xFF333333)),
                                   children: [
                                     TableCell(
                                         child: Text(
@@ -215,6 +234,23 @@ class ExerciseCardState extends State<ExerciseCard> {
                                         },
                                       ),
                                     ),
+                                    //! ACA el checkbox
+                                    if (widget.isTraining)
+                                      TableCell(
+                                        child: Checkbox(
+                                          value: widget
+                                                  .isCheckedList?[widget.index]
+                                              [setIndex],
+                                          onChanged: (bool? value) {
+                                            setState(() {
+                                              // isChecked = value ?? false;
+                                              widget.isCheckedList?[
+                                                      widget.index][setIndex] =
+                                                  value ?? false;
+                                            });
+                                          },
+                                        ),
+                                      ),
                                     TableCell(
                                       child: IconButton(
                                         icon: Icon(Icons.delete_outline,

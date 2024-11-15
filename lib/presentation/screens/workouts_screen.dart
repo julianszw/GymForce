@@ -32,7 +32,7 @@ class WorkoutsScreenState extends ConsumerState<WorkoutsScreen> {
               children: [
                 YellowButton(
                   onPressed: () {
-                    context.push('/workout-form/1');
+                    context.push('/create-manually-workout');
                     Navigator.of(context).pop();
                   },
                   text: 'Ingreso Manual',
@@ -215,7 +215,10 @@ class WorkoutsScreenState extends ConsumerState<WorkoutsScreen> {
                                         MainAxisAlignment.spaceAround,
                                     children: [
                                       YellowButton(
-                                        onPressed: () {},
+                                        onPressed: () {
+                                          context.push(
+                                              '/train-workout/${workout.id}');
+                                        },
                                         text: 'Entrenar',
                                         width: 80,
                                         fontSize: 14,
@@ -223,7 +226,7 @@ class WorkoutsScreenState extends ConsumerState<WorkoutsScreen> {
                                       YellowButton(
                                         onPressed: () {
                                           context.push(
-                                              '/workout-form/${workout.id}');
+                                              '/edit-workout/${workout.id}');
                                         },
                                         text: 'Editar',
                                         width: 80,
