@@ -1,5 +1,4 @@
 import 'dart:async';
-
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
@@ -7,10 +6,8 @@ import 'package:gym_force/config/providers/workout_provider.dart';
 import 'package:gym_force/domain/exercise_domain.dart';
 import 'package:gym_force/domain/set_domani.dart';
 import 'package:gym_force/domain/workout_domain.dart';
-import 'package:gym_force/presentation/widgets/workout/header.dart';
 import 'package:gym_force/presentation/widgets/workout/workout_widget.dart';
 import 'package:gym_force/services/workout_record_service.dart';
-import 'package:gym_force/services/workout_services.dart';
 import 'package:gym_force/utils/common_dialog.dart';
 
 class TrainWorkoutScreen extends ConsumerStatefulWidget {
@@ -163,7 +160,8 @@ class TrainWorkoutScreenState extends ConsumerState<TrainWorkoutScreen> {
           id: workout?.id,
           userId: workout?.userId);
 
-      // await WorkoutRecordService().addWorkoutRecord(newRoutine, durationInMinutes);
+      await WorkoutRecordService()
+          .addWorkoutRecord(newRoutine, _elapsedSeconds ~/ 60);
 
       if (mounted) {
         context.pop();
@@ -349,7 +347,19 @@ class TrainWorkoutScreenState extends ConsumerState<TrainWorkoutScreen> {
                             ),
                           ),
                           ElevatedButton.icon(
-                            onPressed: saveRoutine,
+                            onPressed: () {
+                              showCommonDialog(
+                                  title: '¿Terminar rutina?',
+                                  acceptText: 'Terminar',
+                                  context: context,
+                                  description:
+                                      '¿Estás seguro de que querés terminar la rutina?',
+                                  onAccept: () {
+                                    saveRoutine();
+                                  },
+                                  buttonTextSize: 14,
+                                  buttonWidth: 80);
+                            },
                             icon: const Icon(Icons.save, color: Colors.black),
                             label: const Text(
                               'Finalizar Rutina',
