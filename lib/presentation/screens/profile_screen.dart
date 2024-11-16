@@ -1,7 +1,10 @@
+import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:gym_force/config/providers/user_provider.dart';
+import 'package:gym_force/domain/user_state_domain.dart';
 import 'package:gym_force/presentation/widgets/navigation/drawer_nav_menu.dart';
+import 'package:cloud_firestore/cloud_firestore.dart';
 
 class ProfileScreen extends ConsumerStatefulWidget {
   const ProfileScreen({super.key});
@@ -11,7 +14,25 @@ class ProfileScreen extends ConsumerStatefulWidget {
 }
 
 class _ProfileScreenState extends ConsumerState<ProfileScreen> {
-  String selectedGender = 'Masculino'; // Valor predeterminado
+  String? selectedGender;
+
+  TextEditingController nameController = TextEditingController();
+  TextEditingController birthdateController = TextEditingController();
+  TextEditingController addressController = TextEditingController();
+  TextEditingController phoneController = TextEditingController();
+  TextEditingController emergencyPhoneController = TextEditingController();
+
+  @override
+  void initState() {
+    super.initState();
+    final user = ref.read(userProvider);
+    nameController.text = user.name ?? '';
+    birthdateController.text = user.birthdate ?? '';
+    addressController.text = user.address ?? '';
+    phoneController.text = user.phone ?? '';
+    emergencyPhoneController.text = user.emergencyPhone ?? '';
+    selectedGender = (user.gender?.isEmpty ?? true) ? null : user.gender;
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -19,7 +40,7 @@ class _ProfileScreenState extends ConsumerState<ProfileScreen> {
 
     return Scaffold(
       appBar: AppBar(
-        title: Text('¡Bienvenido, ${user?.name ?? 'Usuario'}!'),
+        title: Text('¡Bienvenido, ${user.name ?? 'Usuario'}!'),
       ),
       drawer: const DrawerNavMenu(),
       body: SingleChildScrollView(
@@ -27,96 +48,95 @@ class _ProfileScreenState extends ConsumerState<ProfileScreen> {
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.center,
           children: [
-            // Foto de perfil
-CircleAvatar(
-  radius: 50,
-  backgroundImage: (user?.profile != null && user!.profile!.isNotEmpty)
-      ? NetworkImage(user!.profile!)
-      : AssetImage('assets/profile_picture.jpg') as ImageProvider,
-),
-const SizedBox(height: 16),
-
-            // Botón "Aplicar cambios"
-            SizedBox(
-  width: double.infinity, // Hace que el botón ocupe todo el ancho disponible
-  child: ElevatedButton(
-    onPressed: () {},
-    style: ElevatedButton.styleFrom(
-      foregroundColor: Colors.black,
-      backgroundColor: Colors.yellow,
-      shape: RoundedRectangleBorder(
-        borderRadius: BorderRadius.circular(10),
-      ),
-    ),
-    child: const Text('Aplicar cambios'),
-  ),
-),
-const SizedBox(height: 16),
-
-
-            // Campo "Nombre y Apellido"
-            _ProfileTextField(label: 'Nombre y Apellido', hint: user?.name ?? ''),
-
-            // Selector de género usando DropDownButton
-            Column(
-  crossAxisAlignment: CrossAxisAlignment.start,
-  children: [
-    const Text(
-      'Género',
-      style: TextStyle(color: Colors.white),
-    ),
-    const SizedBox(height: 8),
-    Container(
-      width: double.infinity, // Para que ocupe todo el ancho disponible
-      padding: const EdgeInsets.symmetric(horizontal: 8.0),
-      decoration: BoxDecoration(
-        color: Colors.white,
-        borderRadius: BorderRadius.circular(10),
-        border: Border.all(color: Colors.grey),
-      ),
-      child: DropdownButton<String>(
-        value: selectedGender,
-        isExpanded: true, // Asegura que el DropdownButton ocupe todo el ancho del contenedor
-        underline: SizedBox(), // Remueve la línea por defecto del DropdownButton
-        items: <String>['Masculino', 'Femenino', 'Otro']
-            .map<DropdownMenuItem<String>>((String value) {
-          return DropdownMenuItem<String>(
-            value: value,
-            child: Text(value),
-          );
-        }).toList(),
-        onChanged: (String? newValue) {
-          setState(() {
-            selectedGender = newValue!;
-          });
-        },
-        dropdownColor: Colors.white, // Fondo del menú desplegable
-        style: const TextStyle(color: Colors.black), // Estilo del texto en el DropdownButton
-      ),
-    ),
-  ],
-),
-
-            // Campo "Fecha de nacimiento"
-            _ProfileTextField(label: 'Fecha de nacimiento', hint: user?.birthdate ?? '09/03/2005'),
-
-            // Campo "Domicilio"
-            _ProfileTextField(label: 'Domicilio', hint: user?.address ?? 'Av. Corrientes 2553'),
-
-            // Campo "Número de teléfono"
-            _ProfileTextField(label: 'Número de teléfono', hint: user?.phone ?? '54 9 11 2482-3758'),
-
-            // Campo "Número en caso de emergencia"
-            _ProfileTextField(label: 'Número en caso de emergencia', hint: user?.emergencyPhone ?? '54 9 11 2482-3758'),
-
-            // Botón "Deseo cambiar mi contraseña"
+            CircleAvatar(
+              radius: 50,
+              backgroundImage: (user.profile != null && user.profile!.isNotEmpty)
+                  ? NetworkImage(user.profile!)
+                  : AssetImage('assets/profile_picture.jpg') as ImageProvider,
+            ),
             const SizedBox(height: 16),
-            TextButton(
-              onPressed: () {},
-              style: TextButton.styleFrom(
-                foregroundColor: Colors.yellow,
+            SizedBox(
+              width: double.infinity,
+              child: ElevatedButton(
+                onPressed: () async {
+                  if (user.uid != null) {
+                    ref.read(userProvider.notifier).setUser(
+                      uid: user.uid!,
+                      email: user.email,
+                      name: nameController.text,
+                      role: user.role!,
+                      birthdate: birthdateController.text,
+                      address: addressController.text,
+                      gender: selectedGender,
+                      phone: phoneController.text,
+                      emergencyPhone: emergencyPhoneController.text,
+                      profile: user.profile,
+                    );
+
+                    await FirebaseFirestore.instance
+                        .collection('users')
+                        .doc(user.uid)
+                        .update({
+                          'name': nameController.text,
+                          'birthdate': birthdateController.text,
+                          'address': addressController.text,
+                          'gender': selectedGender,
+                          'phone': phoneController.text,
+                          'emergencyPhone': emergencyPhoneController.text,
+                          'profile': user.profile,
+                        });
+                  }
+                },
+                style: ElevatedButton.styleFrom(
+                  foregroundColor: Colors.black,
+                  backgroundColor: Colors.yellow,
+                  shape: RoundedRectangleBorder(
+                    borderRadius: BorderRadius.circular(10),
+                  ),
+                ),
+                child: const Text('Aplicar cambios'),
               ),
-              child: const Text('Deseo cambiar mi contraseña'),
+            ),
+            const SizedBox(height: 16),
+            _ProfileTextField(label: 'Nombre y Apellido', hint: user.name ?? '', controller: nameController),
+            _ProfileTextField(label: 'Fecha de nacimiento', hint: user.birthdate ?? '09/03/2005', controller: birthdateController),
+            _ProfileTextField(label: 'Domicilio', hint: user.address ?? 'Av. Corrientes 2553', controller: addressController),
+            _ProfileTextField(label: 'Número de teléfono', hint: user.phone ?? '54 9 11 2482-3758', controller: phoneController),
+            _ProfileTextField(label: 'Número en caso de emergencia', hint: user.emergencyPhone ?? '54 9 11 2482-3758', controller: emergencyPhoneController),
+            Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                const Text('Género', style: TextStyle(color: Colors.white)),
+                const SizedBox(height: 8),
+                Container(
+                  width: double.infinity,
+                  padding: const EdgeInsets.symmetric(horizontal: 8.0),
+                  decoration: BoxDecoration(
+                    color: Colors.white,
+                    borderRadius: BorderRadius.circular(10),
+                    border: Border.all(color: Colors.grey),
+                  ),
+                  child: DropdownButton<String>(
+                    value: selectedGender,
+                    isExpanded: true,
+                    underline: SizedBox(),
+                    items: <String>['Masculino', 'Femenino', 'Otro']
+                        .map<DropdownMenuItem<String>>((String value) {
+                      return DropdownMenuItem<String>(
+                        value: value,
+                        child: Text(value),
+                      );
+                    }).toList(),
+                    onChanged: (String? newValue) {
+                      setState(() {
+                        selectedGender = newValue!;
+                      });
+                    },
+                    dropdownColor: Colors.white,
+                    style: const TextStyle(color: Colors.black),
+                  ),
+                ),
+              ],
             ),
           ],
         ),
@@ -125,12 +145,12 @@ const SizedBox(height: 16),
   }
 }
 
-// Widget personalizado para campos de texto
 class _ProfileTextField extends StatelessWidget {
   final String label;
   final String hint;
+  final TextEditingController controller;
 
-  const _ProfileTextField({required this.label, required this.hint});
+  const _ProfileTextField({required this.label, required this.hint, required this.controller});
 
   @override
   Widget build(BuildContext context) {
@@ -145,8 +165,11 @@ class _ProfileTextField extends StatelessWidget {
           ),
           const SizedBox(height: 4),
           TextField(
+            controller: controller,
+            style: TextStyle(color: Colors.black),
             decoration: InputDecoration(
               hintText: hint,
+              hintStyle: const TextStyle(color: Colors.grey),
               filled: true,
               fillColor: Colors.white,
               border: OutlineInputBorder(
