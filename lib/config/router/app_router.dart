@@ -4,6 +4,7 @@ import 'package:gym_force/config/providers/user_provider.dart';
 import 'package:gym_force/presentation/screens/auth/auth_screen.dart';
 import 'package:gym_force/presentation/screens/auth/register_selfie_screen.dart';
 import 'package:gym_force/presentation/screens/auth/register_dni_screen.dart';
+import 'package:gym_force/presentation/screens/create_ai_workout_screen.dart';
 import 'package:gym_force/presentation/screens/create_manually_workout_screen.dart';
 import 'package:gym_force/presentation/screens/edit_workout_screen.dart';
 import 'package:gym_force/presentation/screens/employee/help_screen.dart';
@@ -113,6 +114,9 @@ final GoRouter appRouter = GoRouter(
     GoRoute(
         path: '/create-manually-workout',
         builder: (context, state) => const CreateManuallyWorkoutScreen()),
+    GoRoute(
+        path: '/create-ai-workout',
+        builder: (context, state) => const CreateAiWorkoutScreen()),
     GoRoute(
       path: '/edit-workout/:id',
       builder: (context, state) {

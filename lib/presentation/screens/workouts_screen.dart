@@ -40,7 +40,10 @@ class WorkoutsScreenState extends ConsumerState<WorkoutsScreen> {
                   fontSize: 12,
                 ),
                 YellowButton(
-                  onPressed: () {},
+                  onPressed: () {
+                    context.push('/create-ai-workout');
+                    Navigator.of(context).pop();
+                  },
                   text: 'Generación con IA',
                   width: 120,
                   fontSize: 12,
