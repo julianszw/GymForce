@@ -1,6 +1,7 @@
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 import 'package:gym_force/config/providers/user_provider.dart';
+import 'package:gym_force/presentation/screens/ai_workout_screen.dart';
 import 'package:gym_force/presentation/screens/auth/auth_screen.dart';
 import 'package:gym_force/presentation/screens/auth/register_selfie_screen.dart';
 import 'package:gym_force/presentation/screens/auth/register_dni_screen.dart';
@@ -131,5 +132,8 @@ final GoRouter appRouter = GoRouter(
         return TrainWorkoutScreen(workoutId: workoutId);
       },
     ),
+    GoRoute(
+        path: '/ai-workout',
+        builder: (context, state) => const AIWorkoutScreen())
   ],
 );

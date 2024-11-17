@@ -37,7 +37,6 @@ class _WorkoutStateWidget extends State<WorkoutWidget> {
       ]);
       widget.isCheckedList?[index].add(false);
     });
-    print('Lista luego de agregar set ${widget.isCheckedList}');
   }
 
   void deleteSet(int indexExercise, int indexSet) {

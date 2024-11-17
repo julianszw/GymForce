@@ -1,10 +1,41 @@
+import 'dart:convert';
+
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:gym_force/domain/workout_domain.dart';
+import 'package:http/http.dart' as http;
 
 class WorkoutService {
   final FirebaseAuth _auth = FirebaseAuth.instance;
   final FirebaseFirestore _firestore = FirebaseFirestore.instance;
+  final String _baseUrl = 'https://prfinal-backend.onrender.com/api';
+
+  Future<Workout?> createAIWorkout(
+      List<String> muscleGroups, String duration, String numExercises) async {
+    final url = Uri.parse('$_baseUrl/cohere/cohereWorkout');
+    try {
+      final response = await http.post(url,
+          headers: {
+            'Content-Type': 'application/json',
+          },
+          body: jsonEncode({
+            'muscleGroups': muscleGroups,
+            'duration': duration,
+            'numExercises': numExercises
+          }));
+
+      if (response.statusCode == 200) {
+        final data = jsonDecode(response.body);
+        final workoutData = jsonDecode(data['response']);
+
+        return Workout.backendFromJson(workoutData);
+      } else {
+        return null;
+      }
+    } catch (e) {
+      throw Exception('Error al generar la rutina: $e');
+    }
+  }
 
   Future<void> addWorkout(Workout workoutData) async {
     try {

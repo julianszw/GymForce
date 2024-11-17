@@ -21,10 +21,15 @@ class MyApp extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return ProviderScope(
-        child: MaterialApp.router(
-      routerConfig: appRouter,
-      theme: customTheme,
-      debugShowCheckedModeBanner: false,
+        child: GestureDetector(
+      onTap: () {
+        FocusScope.of(context).requestFocus(FocusNode());
+      },
+      child: MaterialApp.router(
+        routerConfig: appRouter,
+        theme: customTheme,
+        debugShowCheckedModeBanner: false,
+      ),
     ));
   }
 }
