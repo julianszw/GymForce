@@ -201,7 +201,7 @@ class RegisterDniScreenState extends ConsumerState<RegisterDniScreen> {
                     'Volver a sacar',
                     style: TextStyle(
                         color: Colors.black,
-                        fontSize: 18,
+                        fontSize: 14,
                         fontWeight: FontWeight.bold),
                   ),
                 ),
@@ -214,7 +214,7 @@ class RegisterDniScreenState extends ConsumerState<RegisterDniScreen> {
                     'Siguiente',
                     style: TextStyle(
                         color: Colors.black,
-                        fontSize: 18,
+                        fontSize: 14,
                         fontWeight: FontWeight.bold),
                   ),
                 ),

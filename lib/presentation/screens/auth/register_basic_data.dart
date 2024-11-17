@@ -56,10 +56,6 @@ class RegisterBasicDataState extends ConsumerState<RegisterBasicDataScreen> {
     userRegistrationNotifier.updateBasicData(email, name, password, birthdate);
 
     context.push('/register_extra_data');
-    // Navigator.push(
-    //   context,
-    //   MaterialPageRoute(builder: (context) => const RegisterExtraDataScreen()),
-    // );
   }
 
   Future<void> _selectDate() async {
