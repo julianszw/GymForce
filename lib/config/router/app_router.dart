@@ -97,7 +97,7 @@ final GoRouter appRouter = GoRouter(
     ),
     GoRoute(
       path: '/headquarter',
-      builder: (context, state) => const HeadquarterScreen(),
+      builder: (context, state) => HeadquarterScreen(),
     ),
     GoRoute(
       path: '/calendar',
