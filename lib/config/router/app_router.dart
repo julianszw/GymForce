@@ -6,8 +6,10 @@ import 'package:gym_force/presentation/screens/auth/register_selfie_screen.dart'
 import 'package:gym_force/presentation/screens/auth/register_dni_screen.dart';
 import 'package:gym_force/presentation/screens/create_manually_workout_screen.dart';
 import 'package:gym_force/presentation/screens/edit_workout_screen.dart';
+import 'package:gym_force/presentation/screens/employee/confirmation_screen.dart';
 import 'package:gym_force/presentation/screens/employee/help_screen.dart';
 import 'package:gym_force/presentation/screens/employee/qr_employee_screen.dart';
+import 'package:gym_force/presentation/screens/employee/employee_welcome.dart'; // Nueva importación
 import 'package:gym_force/presentation/screens/auth/login_screen.dart';
 import 'package:gym_force/presentation/screens/auth/register_basic_data.dart';
 import 'package:gym_force/presentation/screens/auth/register_extra_data_screen.dart';
@@ -92,10 +94,11 @@ final GoRouter appRouter = GoRouter(
           path: '/profile',
           builder: (context, state) => const ProfileScreen(),
         ),
-        GoRoute(path: '/help', builder: (context, state) => const HelpScreen()),
         GoRoute(
-            path: '/qr-employee',
-            builder: (context, state) => const QrEmployeeScreen())
+          path: '/help',
+          builder: (context, state) => const HelpScreen(),
+        ),
+
       ],
     ),
     GoRoute(
@@ -111,8 +114,9 @@ final GoRouter appRouter = GoRouter(
       builder: (context, state) => const MembershipScreen(),
     ),
     GoRoute(
-        path: '/create-manually-workout',
-        builder: (context, state) => const CreateManuallyWorkoutScreen()),
+      path: '/create-manually-workout',
+      builder: (context, state) => const CreateManuallyWorkoutScreen(),
+    ),
     GoRoute(
       path: '/edit-workout/:id',
       builder: (context, state) {
@@ -127,5 +131,21 @@ final GoRouter appRouter = GoRouter(
         return TrainWorkoutScreen(workoutId: workoutId);
       },
     ),
+
+            // Pantalla de bienvenida para empleados
+        GoRoute(
+          path: '/employee-welcome',
+          builder: (context, state) => const EmployeeWelcomeScreen(),
+        ),
+        // Pantalla de escaneo de QR
+        GoRoute(
+          path: '/qr-employee',
+          builder: (context, state) => const QrEmployeeScreen(),
+        ),
+        // Pantalla de confirmación
+        GoRoute(
+          path: '/confirmation',
+          builder: (context, state) => const ConfirmationScreen(userData: {}, uid: '', barrio: '',),
+        ),
   ],
 );

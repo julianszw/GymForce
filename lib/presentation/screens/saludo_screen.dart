@@ -1,8 +1,11 @@
 import 'dart:async';
+import 'dart:convert'; // Para manejar JSON
 import 'package:flutter/material.dart';
+import 'package:gym_force/config/providers/user_provider.dart';
 import 'package:pretty_qr_code/pretty_qr_code.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
 
-class SaludoScreen extends StatefulWidget {
+class SaludoScreen extends ConsumerStatefulWidget {
   final String barrio;
   final VoidCallback onCancel;
 
@@ -15,7 +18,7 @@ class SaludoScreen extends StatefulWidget {
   _SaludoScreenState createState() => _SaludoScreenState();
 }
 
-class _SaludoScreenState extends State<SaludoScreen> {
+class _SaludoScreenState extends ConsumerState<SaludoScreen> {
   late int _remainingTime; // Tiempo en segundos
   Timer? _timer;
   late String _qrData; // Datos del QR generados una sola vez
@@ -24,7 +27,27 @@ class _SaludoScreenState extends State<SaludoScreen> {
   void initState() {
     super.initState();
     _remainingTime = 30; // Iniciamos con 30 segundos
-    _qrData = "Hora: ${DateTime.now().toIso8601String()}, Barrio: ${widget.barrio}"; // Generamos el QR una vez
+
+    // Recuperar el estado del usuario desde el provider
+    final userState = ref.read(userProvider);
+
+    if (!userState.isLoggedIn) {
+      // Si el usuario no está logueado, volvemos automáticamente
+      WidgetsBinding.instance.addPostFrameCallback((_) {
+        widget.onCancel();
+      });
+      return;
+    }
+
+    // Generar datos en formato JSON, incluyendo el `uid`
+    final qrContent = {
+      "hora": DateTime.now().toIso8601String(),
+      "barrio": widget.barrio,
+      "uid": userState.uid, // Agregamos el UID al QR
+    };
+
+    // Convertir a String para el QR
+    _qrData = jsonEncode(qrContent);
     _startCountdown();
   }
 
@@ -53,32 +76,32 @@ class _SaludoScreenState extends State<SaludoScreen> {
       child: Column(
         mainAxisAlignment: MainAxisAlignment.center,
         children: [
-          Text(
+          const Text(
             "Mostra tu QR",
             style: TextStyle(fontSize: 24, fontWeight: FontWeight.bold, color: Colors.white),
           ),
-          SizedBox(height: 20),
+          const SizedBox(height: 20),
           Container(
             color: Colors.white, // Fondo blanco para el QR
-            padding: EdgeInsets.all(10), // Espacio alrededor del QR
+            padding: const EdgeInsets.all(10), // Espacio alrededor del QR
             child: PrettyQr(
-              data: _qrData, // Usamos los datos generados una vez
+              data: _qrData, // Usamos los datos generados en formato JSON
               size: 200, // Ajusta el tamaño del QR aquí
               roundEdges: true,
             ),
           ),
-          SizedBox(height: 20),
+          const SizedBox(height: 20),
           Text(
             "Te quedan $_remainingTime segundos...",
-            style: TextStyle(fontSize: 16, color: Colors.white),
+            style: const TextStyle(fontSize: 16, color: Colors.white),
           ),
-          SizedBox(height: 20),
+          const SizedBox(height: 20),
           ElevatedButton(
             onPressed: () {
               _timer?.cancel(); // Cancelamos el temporizador al presionar cancelar
               widget.onCancel();
             },
-            child: Text("Cancelar QR"),
+            child: const Text("Cancelar QR"),
             style: ElevatedButton.styleFrom(
               backgroundColor: Colors.red,
               foregroundColor: Colors.white,

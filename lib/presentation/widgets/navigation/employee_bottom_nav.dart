@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
-import 'package:gym_force/presentation/screens/employee/help_screen.dart';
+import 'package:gym_force/presentation/screens/employee/employee_welcome.dart';
+import 'package:gym_force/presentation/screens/employee/help_screen.dart'; //antes ayuda
 import 'package:gym_force/presentation/screens/employee/qr_employee_screen.dart';
 import 'package:gym_force/presentation/screens/profile_screen.dart';
 
@@ -21,7 +22,7 @@ class _EmployeeBottomNavState extends State<EmployeeBottomNav> {
 
     switch (index) {
       case 0:
-        context.push('/help');
+        context.push('/employee-welcome');
         break;
       case 1:
         context.push('/qr-employee');
@@ -87,7 +88,7 @@ class _EmployeeBottomNavState extends State<EmployeeBottomNav> {
   Widget _buildBody() {
     switch (_selectedIndex) {
       case 0:
-        return const HelpScreen();
+        return const EmployeeWelcomeScreen();
       case 1:
         return const QrEmployeeScreen();
       case 2:

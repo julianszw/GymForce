@@ -15,7 +15,8 @@ class UserNotifier extends StateNotifier<UserState> {
       String? gender,
       String? phone,
       String? emergencyPhone,
-      String? profile}) {
+      String? profile,
+      String? barrioAsignado}) {
     state = UserState(
         uid: uid,
         email: email,
@@ -26,7 +27,8 @@ class UserNotifier extends StateNotifier<UserState> {
         phone: phone,
         emergencyPhone: emergencyPhone,
         profile: profile,
-        role: role);
+        role: role,
+        barrioAsignado: barrioAsignado);
   }
 
   Future<void> logOut() async {

@@ -94,8 +94,9 @@ class LoginScreenState extends ConsumerState<LoginScreen> {
                   email: email,
                   name: userDoc['name'],
                   role: role,
+                  barrioAsignado: userDoc['barrioAsignado']
                 );
-            context.go('/help');
+            context.go('/employee-welcome');
           }
         } else {
           ScaffoldMessenger.of(context).showSnackBar(
