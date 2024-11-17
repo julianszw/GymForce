@@ -188,10 +188,10 @@ class BottomNavState extends State<BottomNav> {
           mainAxisAlignment: MainAxisAlignment.spaceBetween,
           children: <Widget>[
             _buildNavItem(Icons.home, 'Home', 0),
-            _buildNavItem(Icons.fitness_center, 'Workouts', 1),
+            _buildNavItem(Icons.fitness_center, 'Rutinas', 1),
             const SizedBox(width: 50),
-            _buildNavItem(Icons.local_fire_department, 'Calories', 3),
-            _buildNavItem(Icons.person, 'Profile', 4),
+            _buildNavItem(Icons.local_fire_department, 'Calorías', 3),
+            _buildNavItem(Icons.person, 'Perfil', 4),
           ],
         ),
       ),

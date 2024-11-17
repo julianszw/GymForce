@@ -5,6 +5,7 @@ import 'package:gym_force/config/providers/workout_provider.dart';
 import 'package:gym_force/presentation/widgets/navigation/drawer_nav_menu.dart';
 import 'package:gym_force/presentation/widgets/yellow_button.dart';
 import 'package:gym_force/services/workout_services.dart';
+import 'package:gym_force/utils/choose_dialog.dart';
 import 'package:gym_force/utils/common_dialog.dart';
 
 class WorkoutsScreen extends ConsumerStatefulWidget {
@@ -16,45 +17,6 @@ class WorkoutsScreen extends ConsumerStatefulWidget {
 
 class WorkoutsScreenState extends ConsumerState<WorkoutsScreen> {
   bool isLoading = false;
-
-  void _showAddWorkoutDialog(BuildContext context) {
-    showDialog(
-      context: context,
-      builder: (BuildContext context) {
-        return AlertDialog(
-          content: const Text(
-            '¿Queres generar rutinas manualmente o con ayuda de la IA?',
-            textAlign: TextAlign.center,
-          ),
-          actions: <Widget>[
-            Row(
-              mainAxisAlignment: MainAxisAlignment.spaceBetween,
-              children: [
-                YellowButton(
-                  onPressed: () {
-                    context.push('/create-manually-workout');
-                    Navigator.of(context).pop();
-                  },
-                  text: 'Ingreso Manual',
-                  width: 120,
-                  fontSize: 12,
-                ),
-                YellowButton(
-                  onPressed: () {
-                    context.push('/create-ai-workout');
-                    Navigator.of(context).pop();
-                  },
-                  text: 'Generación con IA',
-                  width: 120,
-                  fontSize: 12,
-                )
-              ],
-            )
-          ],
-        );
-      },
-    );
-  }
 
   void deleteWorkout(String workoutId) async {
     try {
@@ -126,7 +88,18 @@ class WorkoutsScreenState extends ConsumerState<WorkoutsScreen> {
                             ),
                           ),
                           onPressed: () {
-                            _showAddWorkoutDialog(context);
+                            showChooseDialog(
+                                context: context,
+                                onAcceptLeft: () {
+                                  context.push('/create-manually-workout');
+                                },
+                                onAcceptRight: () {
+                                  context.push('/create-ai-workout');
+                                },
+                                description:
+                                    '¿Queres generar rutinas manualmente o con ayuda de la IA?',
+                                leftText: 'Ingreso Manual',
+                                rightText: 'Generación con IA');
                           },
                           icon: Icon(
                             Icons.add,
