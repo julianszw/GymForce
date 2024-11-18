@@ -132,13 +132,10 @@ class AIWorkoutScreenState extends ConsumerState<AIWorkoutScreen> {
       });
 
       final workout = await WorkoutService().createAIWorkout(
-          iaWorkout.selectedGroups,
-          iaWorkout.duration,
-          iaWorkout.numberOfExercises);
+          iaWorkout.selectedGroups, iaWorkout.numberOfExercises);
       if (workout != null) {
         ref.read(aiWorkoutProvider.notifier).addAIWorkout(
             selectedGroups: iaWorkout.selectedGroups,
-            duration: iaWorkout.duration,
             numberOfExercises: iaWorkout.numberOfExercises,
             workout: workout);
       } else {

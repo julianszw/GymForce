@@ -11,18 +11,15 @@ class WorkoutService {
   final String _baseUrl = 'https://prfinal-backend.onrender.com/api';
 
   Future<Workout?> createAIWorkout(
-      List<String> muscleGroups, String duration, String numExercises) async {
+      List<String> muscleGroups, String numExercises) async {
     final url = Uri.parse('$_baseUrl/cohere/cohereWorkout');
     try {
       final response = await http.post(url,
           headers: {
             'Content-Type': 'application/json',
           },
-          body: jsonEncode({
-            'muscleGroups': muscleGroups,
-            'duration': duration,
-            'numExercises': numExercises
-          }));
+          body: jsonEncode(
+              {'muscleGroups': muscleGroups, 'numExercises': numExercises}));
 
       if (response.statusCode == 200) {
         final data = jsonDecode(response.body);

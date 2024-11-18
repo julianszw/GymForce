@@ -6,19 +6,16 @@ class IAWorkoutNotifier extends StateNotifier<AIWorkoutData> {
   IAWorkoutNotifier()
       : super(AIWorkoutData(
           selectedGroups: [],
-          duration: '',
           numberOfExercises: '',
           workout: null,
         ));
 
   void addAIWorkout(
       {required List<String> selectedGroups,
-      required String duration,
       required String numberOfExercises,
       required Workout workout}) {
     state = AIWorkoutData(
         selectedGroups: selectedGroups,
-        duration: duration,
         numberOfExercises: numberOfExercises,
         workout: workout);
   }
@@ -26,7 +23,6 @@ class IAWorkoutNotifier extends StateNotifier<AIWorkoutData> {
   void deleteAIWorkout() {
     state = AIWorkoutData(
       selectedGroups: [],
-      duration: '',
       numberOfExercises: '',
       workout: null,
     );
