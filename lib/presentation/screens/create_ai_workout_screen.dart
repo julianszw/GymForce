@@ -4,7 +4,6 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 import 'package:gym_force/config/providers/ai_workout_provider.dart';
 import 'package:gym_force/services/workout_services.dart';
-import 'package:gym_force/utils/formatter.dart';
 
 class CreateAiWorkoutScreen extends ConsumerStatefulWidget {
   const CreateAiWorkoutScreen({
