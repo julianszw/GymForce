@@ -5,7 +5,6 @@ import 'package:gym_force/presentation/widgets/navigation/drawer_nav_menu.dart';
 
 class HeadquarterScreen extends StatelessWidget {
   HeadquarterScreen({super.key});
-
   final List<Headquarter> headquarters = [
     Headquarter(
       title: "Villa Crespo",
@@ -26,10 +25,8 @@ class HeadquarterScreen extends StatelessWidget {
       maxCapacity: 80,
     ),
   ];
-
   final List<CurrentPeople> currentPeopleList = [
-    CurrentPeople(peopleCount: 30),
-    CurrentPeople(peopleCount: 20),
+    CurrentPeople(peopleCount: 79),
   ];
 
   @override
@@ -69,11 +66,14 @@ class HeadquarterScreen extends StatelessWidget {
               itemCount: headquarters.length,
               itemBuilder: (context, index) {
                 final headquarter = headquarters[index];
-                final currentPeople = currentPeopleList[index].peopleCount;
+
+                final currentPeople = index < currentPeopleList.length
+                    ? currentPeopleList[index].peopleCount
+                    : null; 
 
                 return HeadquarterItem(
                   headquarter: headquarter,
-                  currentPeople: currentPeople,
+                  currentPeople: currentPeople ?? -1, 
                 );
               },
             ),
@@ -177,21 +177,12 @@ class HeadquarterItem extends StatelessWidget {
                     SizedBox(height: 8),
                     Text(headquarter.hours),
                     SizedBox(height: 8),
-                    Text(
-                      headquarter.status,
-                      style: TextStyle(
-                        color: headquarter.status == 'Bastante ocupado'
-                            ? Colors.red
-                            : Colors.green,
-                      ),
-                    ),
-                    // Thiss and the code below is broken, beacuse reasons?
                     SizedBox(
-                      width:
-                          200, // Makes the progress bar expand to the full width of its parent
+                      width: 160,
                       child: CapacityProgressIndicator(
                         current: currentPeople,
                         max: headquarter.maxCapacity,
+                        isOpen: headquarter.isOpen,
                       ),
                     ),
                   ],
@@ -209,19 +200,80 @@ class HeadquarterItem extends StatelessWidget {
 class CapacityProgressIndicator extends StatelessWidget {
   final int? current;
   final int? max;
+  final bool isOpen;
 
-  const CapacityProgressIndicator({super.key, this.current, this.max});
+  const CapacityProgressIndicator({
+    super.key,
+    this.current,
+    this.max,
+    required this.isOpen,
+  });
 
   @override
   Widget build(BuildContext context) {
+    if (!isOpen) {
+      return Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          const Text(
+            'Cerrado',
+            style: TextStyle(
+              color: Colors.grey,
+              fontSize: 16,
+              fontWeight: FontWeight.bold,
+            ),
+          ),
+          SizedBox(height: 4),
+          LinearProgressIndicator(
+            value: 0, // No progress when closed
+            backgroundColor: Colors.grey[300],
+            color: Colors.grey,
+          ),
+        ],
+      );
+    }
+
     if (current == null || max == null) {
-      return const Text(
-        'Datos no Disponibles',
-        style: TextStyle(
-          color: Colors.red,
-          fontSize: 16,
-          fontWeight: FontWeight.bold,
-        ),
+      return Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          const Text(
+            'Datos no Disponibles',
+            style: TextStyle(
+              color: Colors.red,
+              fontSize: 16,
+              fontWeight: FontWeight.bold,
+            ),
+          ),
+          SizedBox(height: 4),
+          LinearProgressIndicator(
+            value: 0,
+            backgroundColor: Colors.grey[300],
+            color: Colors.grey,
+          ),
+        ],
+      );
+    }
+
+ if (current == -1) {
+      return Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          const Text(
+            'Datos no Disponibles',
+            style: TextStyle(
+              color: Colors.red,
+              fontSize: 16,
+              fontWeight: FontWeight.bold,
+            ),
+          ),
+          SizedBox(height: 4),
+          LinearProgressIndicator(
+            value: 0,
+            backgroundColor: Colors.grey[300],
+            color: Colors.grey,
+          ),
+        ],
       );
     }
 
@@ -232,18 +284,40 @@ class CapacityProgressIndicator extends StatelessWidget {
         (safeMax == 0) ? 0.0 : (safeCurrent / safeMax).clamp(0.0, 1.0);
 
     Color progressColor;
+    String statusText;
+
     if (percentage <= 0.3) {
+      statusText = "Poco ocupado";
       progressColor = Colors.green;
     } else if (percentage <= 0.6) {
+      statusText = "Moderadamente ocupado";
       progressColor = Colors.orange;
+    } else if (percentage < 1.0) {
+      statusText = "Muy ocupado";
+      progressColor = Colors.red;
     } else {
+      statusText = "Lleno";
       progressColor = Colors.red;
     }
 
-    return LinearProgressIndicator(
-      value: percentage,
-      backgroundColor: const Color.fromARGB(255, 255, 255, 255),
-      color: progressColor,
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        Text(
+          statusText,
+          style: TextStyle(
+            color: progressColor,
+            fontSize: 14,
+            fontWeight: FontWeight.bold,
+          ),
+        ),
+        SizedBox(height: 4),
+        LinearProgressIndicator(
+          value: percentage,
+          backgroundColor: Colors.grey[300],
+          color: progressColor,
+        ),
+      ],
     );
   }
 }
