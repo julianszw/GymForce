@@ -5,8 +5,11 @@ import 'package:firebase_auth/firebase_auth.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:gym_force/config/providers/payment_provider.dart';
 import 'package:gym_force/config/providers/user_provider.dart';
+import 'package:gym_force/config/providers/workout_provider.dart';
+import 'package:gym_force/domain/workout_domain.dart';
 import 'package:gym_force/services/auth_services.dart';
 import 'package:gym_force/services/payment_service.dart';
+import 'package:gym_force/services/workout_services.dart';
 import 'package:gym_force/utils/validators.dart';
 
 class LoginScreen extends ConsumerStatefulWidget {
@@ -30,6 +33,7 @@ class LoginScreenState extends ConsumerState<LoginScreen> {
     final password = _passwordController.text.trim();
     final userState = ref.watch(userProvider);
     final paymentState = ref.read(paymentProvider.notifier);
+    final workoutState = ref.read(workoutProvider.notifier);
 
     setState(() {
       _isEmailValid = validateEmail(email);
@@ -63,6 +67,14 @@ class LoginScreenState extends ConsumerState<LoginScreen> {
                   role: role,
                 );
 
+            List<Map<String, dynamic>> workoutsData =
+                await WorkoutService().getUserWorkouts();
+
+            List<Workout> workouts =
+                workoutsData.map((data) => Workout.fromJson(data)).toList();
+
+            workoutState.setWorkouts(workouts);
+
             final payment = await PaymentService().getLatestPaymentForUser(uid);
 
             if (payment != null) {
@@ -75,7 +87,10 @@ class LoginScreenState extends ConsumerState<LoginScreen> {
                   userId: payment['userId'],
                   expirationDate: payment['expirationDate']);
             }
-            context.go('/');
+            if (mounted) {
+              context.go('/');
+              await Future.delayed(const Duration(milliseconds: 200));
+            }
           } else if (role == 'employee') {
             ref.read(userProvider.notifier).setUser(
                   uid: uid,
@@ -83,26 +98,35 @@ class LoginScreenState extends ConsumerState<LoginScreen> {
                   name: userDoc['name'],
                   role: role,
                 );
-            context.go('/help');
+            if (mounted) {
+              context.go('/help');
+              await Future.delayed(const Duration(milliseconds: 200));
+            }
           }
         } else {
-          ScaffoldMessenger.of(context).showSnackBar(
-            const SnackBar(
-                content: Text('No se encontraron datos del usuario')),
-          );
+          if (mounted) {
+            ScaffoldMessenger.of(context).showSnackBar(
+              const SnackBar(
+                  content: Text('No se encontraron datos del usuario')),
+            );
+          }
         }
       } on FirebaseAuthException catch (e) {
-        ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(
-            content: Text(e.message ?? 'Error de autenticación: ${e.code}'),
-          ),
-        );
+        if (mounted) {
+          ScaffoldMessenger.of(context).showSnackBar(
+            SnackBar(
+              content: Text(e.message ?? 'Error de autenticación: ${e.code}'),
+            ),
+          );
+        }
       } catch (e) {
-        ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(
-            content: Text('Error inesperado: $e'),
-          ),
-        );
+        if (mounted) {
+          ScaffoldMessenger.of(context).showSnackBar(
+            SnackBar(
+              content: Text('Error inesperado: $e'),
+            ),
+          );
+        }
       } finally {
         setState(() {
           _isLoading = false;

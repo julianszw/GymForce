@@ -115,10 +115,10 @@ class BottomNav extends StatefulWidget {
   const BottomNav({super.key, required Widget child});
 
   @override
-  _BottomNavState createState() => _BottomNavState();
+  BottomNavState createState() => BottomNavState();
 }
 
-class _BottomNavState extends State<BottomNav> {
+class BottomNavState extends State<BottomNav> {
   int _selectedIndex = 0;
 
   void _onItemTapped(int index) {
@@ -155,10 +155,10 @@ class _BottomNavState extends State<BottomNav> {
           Container(
             width: 70,
             height: 70,
-            decoration: const BoxDecoration(
-              color: Colors.yellow,
+            decoration: BoxDecoration(
+              color: Theme.of(context).colorScheme.primary,
               shape: BoxShape.circle,
-              boxShadow: [
+              boxShadow: const [
                 BoxShadow(
                   color: Colors.black54,
                   offset: Offset(0, 5),
@@ -218,8 +218,10 @@ class _BottomNavState extends State<BottomNav> {
 
   Widget _buildNavItem(IconData icon, String label, int index) {
     bool isSelected = _selectedIndex == index;
-    Color iconColor = isSelected ? Colors.yellow : Colors.white;
-    Color textColor = isSelected ? Colors.yellow : Colors.white;
+    Color iconColor =
+        isSelected ? Theme.of(context).colorScheme.primary : Colors.white;
+    Color textColor =
+        isSelected ? Theme.of(context).colorScheme.primary : Colors.white;
 
     return Column(
       mainAxisSize: MainAxisSize.min,

@@ -6,15 +6,18 @@ class YellowButton extends StatelessWidget {
   final bool isEnabled;
   final double width;
   final bool isLoading;
+  final double fontSize;
+  final EdgeInsets padding;
 
-  const YellowButton({
-    super.key,
-    required this.onPressed,
-    required this.text,
-    this.isEnabled = true,
-    this.width = 150,
-    this.isLoading = false,
-  });
+  const YellowButton(
+      {super.key,
+      required this.onPressed,
+      required this.text,
+      this.isEnabled = true,
+      this.width = 150,
+      this.isLoading = false,
+      this.padding = const EdgeInsets.symmetric(vertical: 8),
+      this.fontSize = 18});
 
   @override
   Widget build(BuildContext context) {
@@ -24,11 +27,12 @@ class YellowButton extends StatelessWidget {
             width: width,
             child: ElevatedButton(
               onPressed: isEnabled ? onPressed : null,
+              style: ElevatedButton.styleFrom(padding: padding),
               child: Text(
                 text,
-                style: const TextStyle(
+                style: TextStyle(
                   color: Colors.black,
-                  fontSize: 18,
+                  fontSize: fontSize,
                   fontWeight: FontWeight.bold,
                 ),
               ),
