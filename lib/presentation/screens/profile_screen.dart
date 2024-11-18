@@ -103,40 +103,42 @@ class _ProfileScreenState extends ConsumerState<ProfileScreen> {
             _ProfileTextField(label: 'Domicilio', hint: user.address ?? 'Av. Corrientes 2553', controller: addressController),
             _ProfileTextField(label: 'Número de teléfono', hint: user.phone ?? '54 9 11 2482-3758', controller: phoneController),
             _ProfileTextField(label: 'Número en caso de emergencia', hint: user.emergencyPhone ?? '54 9 11 2482-3758', controller: emergencyPhoneController),
-            Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                const Text('Género', style: TextStyle(color: Colors.white)),
-                const SizedBox(height: 8),
-                Container(
-                  width: double.infinity,
-                  padding: const EdgeInsets.symmetric(horizontal: 8.0),
-                  decoration: BoxDecoration(
-                    color: Colors.white,
-                    borderRadius: BorderRadius.circular(10),
-                    border: Border.all(color: Colors.grey),
+            SingleChildScrollView(
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  const Text('Género', style: TextStyle(color: Colors.white)),
+                  const SizedBox(height: 8),
+                  Container(
+                    width: double.infinity,
+                    padding: const EdgeInsets.symmetric(horizontal: 8.0),
+                    decoration: BoxDecoration(
+                      color: Colors.white,
+                      borderRadius: BorderRadius.circular(10),
+                      border: Border.all(color: Colors.grey),
+                    ),
+                    child: DropdownButton<String>(
+                      value: selectedGender,
+                      isExpanded: true,
+                      underline: SizedBox(),
+                      items: <String>['Masculino', 'Femenino', 'Otro']
+                          .map<DropdownMenuItem<String>>((String value) {
+                        return DropdownMenuItem<String>(
+                          value: value,
+                          child: Text(value),
+                        );
+                      }).toList(),
+                      onChanged: (String? newValue) {
+                        setState(() {
+                          selectedGender = newValue!;
+                        });
+                      },
+                      dropdownColor: Colors.white,
+                      style: const TextStyle(color: Colors.black),
+                    ),
                   ),
-                  child: DropdownButton<String>(
-                    value: selectedGender,
-                    isExpanded: true,
-                    underline: SizedBox(),
-                    items: <String>['Masculino', 'Femenino', 'Otro']
-                        .map<DropdownMenuItem<String>>((String value) {
-                      return DropdownMenuItem<String>(
-                        value: value,
-                        child: Text(value),
-                      );
-                    }).toList(),
-                    onChanged: (String? newValue) {
-                      setState(() {
-                        selectedGender = newValue!;
-                      });
-                    },
-                    dropdownColor: Colors.white,
-                    style: const TextStyle(color: Colors.black),
-                  ),
-                ),
-              ],
+                ],
+              ),
             ),
           ],
         ),
