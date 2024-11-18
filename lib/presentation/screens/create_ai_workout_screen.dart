@@ -4,7 +4,6 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 import 'package:gym_force/config/providers/ai_workout_provider.dart';
 import 'package:gym_force/services/workout_services.dart';
-import 'package:gym_force/utils/formatter.dart';
 
 class CreateAiWorkoutScreen extends ConsumerStatefulWidget {
   const CreateAiWorkoutScreen({
@@ -18,7 +17,6 @@ class CreateAiWorkoutScreen extends ConsumerStatefulWidget {
 
 class CreateAiWorkoutScreenState extends ConsumerState<CreateAiWorkoutScreen> {
   bool isLoading = false;
-  Duration _selectedDuration = Duration.zero;
   final TextEditingController numberOfExercisesController =
       TextEditingController();
 
@@ -54,83 +52,6 @@ class CreateAiWorkoutScreenState extends ConsumerState<CreateAiWorkoutScreen> {
     }
   }
 
-  Future<void> _selectDuration(BuildContext context) async {
-    final Duration? picked = await showDialog<Duration>(
-      context: context,
-      builder: (BuildContext context) {
-        int hours = _selectedDuration.inHours;
-        int minutes = _selectedDuration.inMinutes % 60;
-
-        return StatefulBuilder(
-          builder: (BuildContext context, StateSetter setState) {
-            return AlertDialog(
-              title: const Text('Seleccione el tiempo '),
-              content: Row(
-                mainAxisAlignment: MainAxisAlignment.center,
-                children: [
-                  DropdownButton<int>(
-                    value: hours,
-                    items: List.generate(4, (index) => index).map((int value) {
-                      return DropdownMenuItem<int>(
-                        value: value,
-                        child: Text('$value h'),
-                      );
-                    }).toList(),
-                    onChanged: (int? newHours) {
-                      setState(() {
-                        hours = newHours ?? 0;
-                      });
-                    },
-                  ),
-                  const SizedBox(width: 8),
-                  DropdownButton<int>(
-                    value: minutes,
-                    items: [0, 5, 10, 15, 20, 25, 30, 35, 40, 45, 50, 55]
-                        .map((int value) {
-                      return DropdownMenuItem<int>(
-                        value: value,
-                        child: Text('$value m'),
-                      );
-                    }).toList(),
-                    onChanged: (int? newMinutes) {
-                      setState(() {
-                        minutes = newMinutes ?? 0;
-                      });
-                    },
-                  ),
-                ],
-              ),
-              actions: <Widget>[
-                TextButton(
-                  child: const Text('Cancelar'),
-                  onPressed: () {
-                    Navigator.of(context).pop();
-                  },
-                ),
-                ElevatedButton(
-                  child: const Text(
-                    'Aceptar',
-                    style: TextStyle(color: Colors.black),
-                  ),
-                  onPressed: () {
-                    Navigator.of(context)
-                        .pop(Duration(hours: hours, minutes: minutes));
-                  },
-                ),
-              ],
-            );
-          },
-        );
-      },
-    );
-
-    if (picked != null && picked.inMinutes > 0) {
-      setState(() {
-        _selectedDuration = picked;
-      });
-    }
-  }
-
   Future<void> showMuscleGroupsModal(BuildContext context) async {
     await showDialog(
       context: context,
@@ -138,7 +59,18 @@ class CreateAiWorkoutScreenState extends ConsumerState<CreateAiWorkoutScreen> {
         return StatefulBuilder(
           builder: (BuildContext context, StateSetter modalSetState) {
             return AlertDialog(
-              title: const Text('Grupos Musculares'),
+              title: Row(
+                mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                children: [
+                  const Text('Grupos Musculares'),
+                  IconButton(
+                    icon: const Icon(Icons.close),
+                    onPressed: () {
+                      Navigator.of(context).pop();
+                    },
+                  ),
+                ],
+              ),
               content: SizedBox(
                 width: double.maxFinite,
                 child: ListView(
@@ -200,14 +132,6 @@ class CreateAiWorkoutScreenState extends ConsumerState<CreateAiWorkoutScreen> {
   @override
   Widget build(BuildContext context) {
     generateWorkout() async {
-      if (_selectedDuration.inMinutes == 0) {
-        ScaffoldMessenger.of(context).showSnackBar(
-          const SnackBar(
-              content: Text('Por favor, seleccione un tiempo total')),
-        );
-        return;
-      }
-
       int? exerciseCount = int.tryParse(numberOfExercisesController.text);
 
       if (exerciseCount == null || exerciseCount <= 0 || exerciseCount > 10) {
@@ -237,14 +161,12 @@ class CreateAiWorkoutScreenState extends ConsumerState<CreateAiWorkoutScreen> {
           isLoading = true;
         });
 
-        final duration = formatDuration(_selectedDuration);
         final numExercises = numberOfExercisesController.text;
         final workout = await WorkoutService()
-            .createAIWorkout(selectedGroups, duration, numExercises);
+            .createAIWorkout(selectedGroups, numExercises);
         if (workout != null) {
           ref.read(aiWorkoutProvider.notifier).addAIWorkout(
               selectedGroups: selectedGroups,
-              duration: duration,
               numberOfExercises: numExercises,
               workout: workout);
           if (mounted) {
@@ -351,49 +273,36 @@ class CreateAiWorkoutScreenState extends ConsumerState<CreateAiWorkoutScreen> {
                     const SizedBox(
                       height: 40,
                     ),
-                    const Align(
+                    Align(
                       alignment: Alignment.centerLeft,
-                      child: Text(
-                        'Tiempo Total',
-                        style: TextStyle(
-                          fontSize: 16,
-                          fontWeight: FontWeight.bold,
-                          color: Colors.white,
-                        ),
-                      ),
-                    ),
-                    const SizedBox(
-                      height: 12,
-                    ),
-                    InkWell(
-                      onTap: () => _selectDuration(context),
-                      child: InputDecorator(
-                        decoration: const InputDecoration(),
-                        child: _selectedDuration == Duration.zero
-                            ? const Text(
-                                '1h 10m',
-                                style:
-                                    TextStyle(fontSize: 16, color: Colors.grey),
-                              )
-                            : Text(
-                                '${_selectedDuration.inHours}h ${_selectedDuration.inMinutes % 60}m',
-                                style: const TextStyle(
-                                    fontSize: 16, color: Colors.black),
-                              ),
-                      ),
-                    ),
-                    const SizedBox(
-                      height: 40,
-                    ),
-                    const Align(
-                      alignment: Alignment.centerLeft,
-                      child: Text(
-                        'Cantida de Ejercicios',
-                        style: TextStyle(
-                          fontSize: 16,
-                          fontWeight: FontWeight.bold,
-                          color: Colors.white,
-                        ),
+                      child: Row(
+                        children: [
+                          const Text(
+                            'Cantidad de Ejercicios ',
+                            style: TextStyle(
+                              fontSize: 16,
+                              fontWeight: FontWeight.bold,
+                              color: Colors.white,
+                            ),
+                          ),
+                          Tooltip(
+                            verticalOffset: 14,
+                            exitDuration: const Duration(seconds: 5),
+                            preferBelow: false,
+                            decoration: BoxDecoration(
+                                color: Colors.white,
+                                borderRadius: BorderRadius.circular(8)),
+                            textStyle: const TextStyle(color: Colors.black),
+                            triggerMode: TooltipTriggerMode.tap,
+                            message:
+                                'La IA ajustará la cantidad según crea conveniente',
+                            child: const Icon(
+                              Icons.info_outline,
+                              color: Colors.white,
+                              size: 20,
+                            ),
+                          ),
+                        ],
                       ),
                     ),
                     const SizedBox(
