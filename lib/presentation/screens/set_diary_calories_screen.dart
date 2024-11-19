@@ -1,18 +1,24 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
+import 'package:gym_force/config/providers/calories_plan_provider.dart';
+import 'package:gym_force/config/providers/user_provider.dart';
+import 'package:gym_force/domain/calories_plan_domain.dart';
 import 'package:gym_force/presentation/widgets/yellow_button.dart';
 import 'package:gym_force/services/calories_services.dart';
 import 'package:percent_indicator/percent_indicator.dart';
 
-class SetDiaryCaloriesScreen extends StatefulWidget {
+class SetDiaryCaloriesScreen extends ConsumerStatefulWidget {
   const SetDiaryCaloriesScreen({super.key});
 
   @override
-  State<SetDiaryCaloriesScreen> createState() => _SetDiaryCaloriesScreenState();
+  ConsumerState<SetDiaryCaloriesScreen> createState() =>
+      _SetDiaryCaloriesScreenState();
 }
 
-class _SetDiaryCaloriesScreenState extends State<SetDiaryCaloriesScreen> {
+class _SetDiaryCaloriesScreenState
+    extends ConsumerState<SetDiaryCaloriesScreen> {
   final TextEditingController _caloriesController = TextEditingController();
   final TextEditingController _proteinsController = TextEditingController();
   final TextEditingController _carbsController = TextEditingController();
@@ -46,7 +52,7 @@ class _SetDiaryCaloriesScreenState extends State<SetDiaryCaloriesScreen> {
   void _onCaloriesChanged() {
     if (isUpdating) return;
 
-    isUpdating = true; // Bloquea nuevas ejecuciones
+    isUpdating = true;
 
     final calories = int.tryParse(_caloriesController.text) ?? 0;
     final proteins = calories * 0.3 ~/ 4;
@@ -55,13 +61,13 @@ class _SetDiaryCaloriesScreenState extends State<SetDiaryCaloriesScreen> {
 
     _updateMacros(proteins, carbs, fats);
 
-    isUpdating = false; // Desbloquea al final de la actualización
+    isUpdating = false;
   }
 
   void _onMacrosChanged() {
     if (isUpdating) return;
 
-    isUpdating = true; // Bloquea nuevas ejecuciones
+    isUpdating = true;
 
     final proteins =
         int.tryParse(_proteinsController.text.replaceAll('g', '')) ?? 0;
@@ -73,7 +79,7 @@ class _SetDiaryCaloriesScreenState extends State<SetDiaryCaloriesScreen> {
       _caloriesController.text = calories.toString();
     }
 
-    isUpdating = false; // Desbloquea al final de la actualización
+    isUpdating = false;
   }
 
   void _updateMacros(int proteins, int carbs, int fats) {
@@ -87,21 +93,34 @@ class _SetDiaryCaloriesScreenState extends State<SetDiaryCaloriesScreen> {
   }
 
   Future<void> _saveCaloriesPlan() async {
+    if (_proteinsController.text.isEmpty ||
+        _carbsController.text.isEmpty ||
+        _fatsController.text.isEmpty ||
+        _caloriesController.text.isEmpty) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(
+          content: Text(
+              'Por favor, ingrese todos los valores de calorías y macronutrientes.'),
+        ),
+      );
+      return;
+    }
     try {
       setState(() {
         isLoading = true;
       });
-      final calories = _caloriesController.text;
-      final proteins = _proteinsController.text;
-      final carbs = _carbsController.text;
-      final fats = _fatsController.text;
+      final userId = ref.watch(userProvider).uid;
 
-      await CaloriesServices().createCaloriesPlan(
-        calories: calories,
-        proteins: proteins,
-        carbs: carbs,
-        fats: fats,
-      );
+      final caloriesPlan = CaloriesPlan(
+          userId: userId,
+          date: DateTime.now(),
+          calories: _caloriesController.text,
+          proteins: _proteinsController.text,
+          carbs: _carbsController.text,
+          fats: _fatsController.text);
+
+      await CaloriesServices().createCaloriesPlan(caloriesPlan);
+      ref.watch(caloriesPlanProvider.notifier).setCaloriesPlan(caloriesPlan);
       if (mounted) {
         context.pop();
         ScaffoldMessenger.of(context).showSnackBar(
@@ -326,10 +345,11 @@ class _SetDiaryCaloriesScreenState extends State<SetDiaryCaloriesScreen> {
                       height: 120,
                     ),
                     YellowButton(
+                        width: 320,
                         onPressed: () {
                           _saveCaloriesPlan();
                         },
-                        text: 'Finalizar')
+                        text: 'Crear Plan')
                   ],
                 ),
               ),

@@ -1,32 +1,39 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
+import 'package:gym_force/domain/calories_plan_domain.dart';
 
 class CaloriesServices {
-  final FirebaseAuth _auth = FirebaseAuth.instance;
   final FirebaseFirestore _firestore = FirebaseFirestore.instance;
 
-  Future<void> createCaloriesPlan({
-    required String calories,
-    required String proteins,
-    required String carbs,
-    required String fats,
-  }) async {
+  Future<CaloriesPlan?> getCaloriesPlan() async {
     try {
-      final User? user = _auth.currentUser;
+      final userId = FirebaseAuth.instance.currentUser?.uid;
 
-      await _firestore.collection('caloriesPlans').add({
-        'user_id': user?.uid,
-        'date': DateTime.now(),
-        'calories': calories,
-        'proteins': proteins,
-        'carbs': carbs,
-        'fats': fats,
-      });
+      final querySnapshot = await _firestore
+          .collection('caloriesPlans')
+          .where('user_id', isEqualTo: userId)
+          .limit(1)
+          .get();
+
+      if (querySnapshot.docs.isNotEmpty) {
+        final doc = querySnapshot.docs.first;
+        return CaloriesPlan.fromMap(doc.data());
+      } else {
+        print("No se encontró un plan de calorías para este usuario.");
+        return null;
+      }
+    } catch (e) {
+      throw Exception("Error al obtener el plan de calorías: $e");
+    }
+  }
+
+  Future<void> createCaloriesPlan(CaloriesPlan caloriesPlan) async {
+    try {
+      await _firestore.collection('caloriesPlans').add(caloriesPlan.toMap());
 
       print("Plan de calorías guardado exitosamente.");
     } catch (e) {
-      print("Error al guardar el plan de calorías: $e");
-      throw e;
+      throw Exception("Error al guardar el plan de calorías: $e");
     }
   }
 }
