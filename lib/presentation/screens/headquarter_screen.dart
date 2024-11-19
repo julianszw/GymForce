@@ -3,7 +3,7 @@ import 'package:gym_force/domain/headquarter_domain.dart';
 import 'package:gym_force/services/headquarter_services.dart';
 import 'package:gym_force/domain/currentpeople_domain.dart';
 import 'package:gym_force/presentation/widgets/navigation/drawer_nav_menu.dart';
-
+//Cambio 1
 class HeadquarterScreen extends StatelessWidget {
   final BranchService _branchService = BranchService();
 
