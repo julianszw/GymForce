@@ -5,6 +5,7 @@ import 'package:go_router/go_router.dart';
 import 'package:gym_force/config/providers/calories_plan_provider.dart';
 import 'package:gym_force/config/providers/user_provider.dart';
 import 'package:gym_force/domain/calories_plan_domain.dart';
+import 'package:gym_force/presentation/widgets/calories/macros_input.dart';
 import 'package:gym_force/presentation/widgets/yellow_button.dart';
 import 'package:gym_force/services/calories_services.dart';
 import 'package:percent_indicator/percent_indicator.dart';
@@ -227,127 +228,12 @@ class _SetDiaryCaloriesScreenState
                       ),
                     ),
                     const SizedBox(height: 50),
-                    Padding(
-                      padding: const EdgeInsets.only(left: 40),
-                      child: Column(
-                        children: [
-                          Row(
-                            children: [
-                              const SizedBox(
-                                width: 160,
-                                child: Text(
-                                  'Proteínas',
-                                  style: TextStyle(fontSize: 18),
-                                ),
-                              ),
-                              const SizedBox(width: 10),
-                              Flexible(
-                                child: SizedBox(
-                                  width: 100,
-                                  child: TextField(
-                                    controller: _proteinsController,
-                                    keyboardType: TextInputType.number,
-                                    inputFormatters: [
-                                      FilteringTextInputFormatter.digitsOnly,
-                                      LengthLimitingTextInputFormatter(3),
-                                    ],
-                                    style: TextStyle(
-                                        color: Theme.of(context)
-                                            .colorScheme
-                                            .primary,
-                                        fontSize: 18),
-                                    decoration: const InputDecoration(
-                                      filled: false,
-                                      border: InputBorder.none,
-                                      hintText: '0g',
-                                      hintStyle: TextStyle(
-                                        color: Colors.grey,
-                                      ),
-                                    ),
-                                  ),
-                                ),
-                              ),
-                            ],
-                          ),
-                          Row(
-                            children: [
-                              const SizedBox(
-                                width: 160,
-                                child: Text(
-                                  'Carbohidratos',
-                                  style: TextStyle(fontSize: 18),
-                                ),
-                              ),
-                              const SizedBox(width: 10),
-                              Flexible(
-                                child: SizedBox(
-                                  width: 100,
-                                  child: TextField(
-                                    controller: _carbsController,
-                                    keyboardType: TextInputType.number,
-                                    inputFormatters: [
-                                      FilteringTextInputFormatter.digitsOnly,
-                                      LengthLimitingTextInputFormatter(3),
-                                    ],
-                                    style: TextStyle(
-                                        fontSize: 18,
-                                        color: Theme.of(context)
-                                            .colorScheme
-                                            .primary),
-                                    decoration: const InputDecoration(
-                                      filled: false,
-                                      border: InputBorder.none,
-                                      hintText: '0g',
-                                      hintStyle: TextStyle(
-                                        color: Colors.grey,
-                                      ),
-                                    ),
-                                  ),
-                                ),
-                              ),
-                            ],
-                          ),
-                          Row(
-                            children: [
-                              const SizedBox(
-                                width: 160,
-                                child: Text(
-                                  'Grasas',
-                                  style: TextStyle(fontSize: 18),
-                                ),
-                              ),
-                              const SizedBox(width: 10),
-                              Flexible(
-                                child: SizedBox(
-                                  width: 100,
-                                  child: TextField(
-                                    controller: _fatsController,
-                                    keyboardType: TextInputType.number,
-                                    inputFormatters: [
-                                      FilteringTextInputFormatter.digitsOnly,
-                                      LengthLimitingTextInputFormatter(3),
-                                    ],
-                                    style: TextStyle(
-                                        fontSize: 18,
-                                        color: Theme.of(context)
-                                            .colorScheme
-                                            .primary),
-                                    decoration: const InputDecoration(
-                                      filled: false,
-                                      border: InputBorder.none,
-                                      hintText: '0g',
-                                      hintStyle: TextStyle(
-                                        color: Colors.grey,
-                                      ),
-                                    ),
-                                  ),
-                                ),
-                              ),
-                            ],
-                          ),
-                        ],
-                      ),
-                    ),
+                    MacronutrientInput(
+                        label: 'Proteínas', controller: _proteinsController),
+                    MacronutrientInput(
+                        label: "Carbohidratos", controller: _carbsController),
+                    MacronutrientInput(
+                        label: 'Grasas', controller: _fatsController),
                     const SizedBox(
                       height: 120,
                     ),

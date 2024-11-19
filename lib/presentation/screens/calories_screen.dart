@@ -2,16 +2,41 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 import 'package:gym_force/config/providers/calories_plan_provider.dart';
+import 'package:gym_force/presentation/widgets/calories/macro_indicator.dart';
 import 'package:gym_force/presentation/widgets/navigation/drawer_nav_menu.dart';
 import 'package:gym_force/presentation/widgets/yellow_button.dart';
 import 'package:gym_force/utils/choose_dialog.dart';
+import 'package:percent_indicator/percent_indicator.dart';
 
-class CaloriesScreen extends ConsumerWidget {
+class CaloriesScreen extends ConsumerStatefulWidget {
   const CaloriesScreen({super.key});
 
   @override
-  Widget build(BuildContext context, WidgetRef ref) {
+  ConsumerState<CaloriesScreen> createState() => _CaloriesScreenState();
+}
+
+class _CaloriesScreenState extends ConsumerState<CaloriesScreen> {
+  final TextEditingController _proteinController = TextEditingController();
+  final TextEditingController _carbsController = TextEditingController();
+  final TextEditingController _fatsController = TextEditingController();
+
+  @override
+  void dispose() {
+    _proteinController.dispose();
+    _carbsController.dispose();
+    _fatsController.dispose();
+    super.dispose();
+  }
+
+  @override
+  Widget build(BuildContext context) {
     final caloriesPlan = ref.watch(caloriesPlanProvider);
+
+    if (caloriesPlan.calories.isNotEmpty) {
+      _proteinController.text = caloriesPlan.proteins;
+      _carbsController.text = caloriesPlan.carbs;
+      _fatsController.text = caloriesPlan.fats;
+    }
 
     return Scaffold(
       appBar: AppBar(),
@@ -20,39 +45,123 @@ class CaloriesScreen extends ConsumerWidget {
         child: Column(
           children: [
             caloriesPlan.calories.isEmpty
-                ? Container(
-                    margin: const EdgeInsets.only(bottom: 20, top: 200),
-                    width: 300,
-                    decoration: BoxDecoration(
-                        color: Colors.black,
-                        borderRadius: BorderRadius.circular(12)),
-                    child: const Padding(
-                      padding:
-                          EdgeInsets.symmetric(horizontal: 12, vertical: 15),
-                      child: Text(
-                        'Para empezar a registrar tus calorías, crea un plan',
-                        style: TextStyle(fontSize: 20),
-                        textAlign: TextAlign.center,
+                ? Column(
+                    children: [
+                      Container(
+                        margin: const EdgeInsets.only(bottom: 20, top: 200),
+                        width: 300,
+                        decoration: BoxDecoration(
+                          color: Colors.black,
+                          borderRadius: BorderRadius.circular(12),
+                        ),
+                        child: const Padding(
+                          padding: EdgeInsets.symmetric(
+                              horizontal: 12, vertical: 15),
+                          child: Text(
+                            'Para empezar a registrar tus calorías, crea un plan',
+                            style: TextStyle(fontSize: 20),
+                            textAlign: TextAlign.center,
+                          ),
+                        ),
                       ),
-                    ),
+                      YellowButton(
+                        onPressed: () {
+                          showChooseDialog(
+                            context: context,
+                            onAcceptLeft: () {
+                              context.push('/set-diary-calories');
+                            },
+                            onAcceptRight: () {
+                              context.push('/ai-calories');
+                            },
+                            description:
+                                '¿Sabes cuántas calorías querés consumir o preferis la asistencia de la IA?',
+                            leftText: 'Ingreso Manual',
+                            rightText: 'Ingreso con IA',
+                          );
+                        },
+                        text: 'Crear Plan',
+                      ),
+                    ],
                   )
-                : Container(),
-            YellowButton(
-                onPressed: () {
-                  showChooseDialog(
-                      context: context,
-                      onAcceptLeft: () {
-                        context.push('/set-diary-calories');
-                      },
-                      onAcceptRight: () {
-                        context.push('/ai-calories');
-                      },
-                      description:
-                          '¿Sabes cuántas calorías querés consumir o preferis la asistencia de la IA?',
-                      leftText: 'Ingreso Manual',
-                      rightText: 'Ingreso con IA');
-                },
-                text: 'Crear Plan')
+                : Container(
+                    margin: const EdgeInsets.only(top: 20),
+                    child: Column(
+                      children: [
+                        CircularPercentIndicator(
+                          radius: 110,
+                          backgroundColor: Colors.grey,
+                          percent: 0.7,
+                          progressColor: Theme.of(context).colorScheme.primary,
+                          backgroundWidth: 1,
+                          center: Column(
+                            mainAxisAlignment: MainAxisAlignment.center,
+                            crossAxisAlignment: CrossAxisAlignment.end,
+                            children: [
+                              const Text(
+                                '1900',
+                                style: TextStyle(fontSize: 40),
+                                textAlign: TextAlign.center,
+                              ),
+                              Text(
+                                'de ${caloriesPlan.calories} kcal',
+                                style: const TextStyle(
+                                  fontSize: 14,
+                                  fontWeight: FontWeight.w300,
+                                  color: Colors.grey,
+                                ),
+                              ),
+                            ],
+                          ),
+                        ),
+                        const SizedBox(
+                          height: 35,
+                        ),
+                        MacroIndicator(
+                            title: 'Proteínas',
+                            percent: 0.5,
+                            amount: '100g',
+                            totalAmount: _proteinController.text),
+                        const SizedBox(
+                          height: 10,
+                        ),
+                        MacroIndicator(
+                            title: 'Carbohidratos',
+                            percent: 1,
+                            amount: '600g',
+                            totalAmount: _carbsController.text),
+                        const SizedBox(
+                          height: 10,
+                        ),
+                        MacroIndicator(
+                            title: 'Grasas',
+                            percent: 0.3,
+                            amount: '40g',
+                            totalAmount: _fatsController.text),
+                        const SizedBox(
+                          height: 120,
+                        ),
+                        Padding(
+                          padding: const EdgeInsets.symmetric(horizontal: 25),
+                          child: Row(
+                            mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                            children: [
+                              YellowButton(
+                                onPressed: () {},
+                                text: 'Editar Plan',
+                                fontSize: 16,
+                              ),
+                              YellowButton(
+                                onPressed: () {},
+                                text: 'Ingresar Calorías',
+                                fontSize: 16,
+                              )
+                            ],
+                          ),
+                        ),
+                      ],
+                    ),
+                  ),
           ],
         ),
       ),
