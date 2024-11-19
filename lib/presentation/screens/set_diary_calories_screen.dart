@@ -10,7 +10,9 @@ import 'package:gym_force/services/calories_services.dart';
 import 'package:percent_indicator/percent_indicator.dart';
 
 class SetDiaryCaloriesScreen extends ConsumerStatefulWidget {
-  const SetDiaryCaloriesScreen({super.key});
+  final String? initialCalories;
+
+  const SetDiaryCaloriesScreen({super.key, this.initialCalories});
 
   @override
   ConsumerState<SetDiaryCaloriesScreen> createState() =>
@@ -34,6 +36,11 @@ class _SetDiaryCaloriesScreenState
     _proteinsController.addListener(_onMacrosChanged);
     _carbsController.addListener(_onMacrosChanged);
     _fatsController.addListener(_onMacrosChanged);
+
+    if (widget.initialCalories != null) {
+      _caloriesController.text = widget.initialCalories!;
+      _onCaloriesChanged();
+    }
   }
 
   @override
@@ -122,7 +129,7 @@ class _SetDiaryCaloriesScreenState
       await CaloriesServices().createCaloriesPlan(caloriesPlan);
       ref.watch(caloriesPlanProvider.notifier).setCaloriesPlan(caloriesPlan);
       if (mounted) {
-        context.pop();
+        context.go('/calories');
         ScaffoldMessenger.of(context).showSnackBar(
           const SnackBar(
             content: Text('Plan de calorías guardado exitosamente'),

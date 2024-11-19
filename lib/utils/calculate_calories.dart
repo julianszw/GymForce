@@ -1,7 +1,7 @@
 import 'package:intl/date_symbol_data_local.dart';
 import 'package:intl/intl.dart';
 
-double calculateCalories({
+int calculateCalories({
   required double weight,
   required double height,
   required String activityLevel,
@@ -60,5 +60,5 @@ double calculateCalories({
     tdee *= 0.85;
   }
 
-  return double.parse(tdee.toStringAsFixed(2));
+  return tdee.toInt();
 }

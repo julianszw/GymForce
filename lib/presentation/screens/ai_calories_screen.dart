@@ -68,20 +68,33 @@ class _AiCaloriesScreenState extends ConsumerState<AiCaloriesScreen> {
     );
   }
 
-  void _calculateCalories() {
+  void _calculateCalories() async {
+    setState(() {
+      _isLoading = true;
+    });
     double weight = double.parse(_weightController.text);
     double height = double.parse(_heightController.text);
     String activity = activityLevel ?? '';
     String userGoal = goal ?? '';
     final user = ref.watch(userProvider);
 
-    double tdee = calculateCalories(
+    int tdee = calculateCalories(
         weight: weight,
         height: height,
         activityLevel: activity,
         birthdate: user.birthdate!,
         gender: user.gender!,
         goal: userGoal);
+
+    await Future.delayed(const Duration(seconds: 2));
+    if (mounted) {
+      context.push('/set-diary-calories',
+          extra: {'initialCalories': tdee.toString()});
+      await Future.delayed(const Duration(seconds: 2));
+    }
+    setState(() {
+      _isLoading = false;
+    });
   }
 
   @override
@@ -99,230 +112,236 @@ class _AiCaloriesScreenState extends ConsumerState<AiCaloriesScreen> {
                 },
               ),
       ),
-      body: Padding(
-        padding: const EdgeInsets.only(top: 20, right: 40, left: 40),
-        child: Center(
-          child: Column(
-            children: [
-              Text(
-                'Te pediremos algunos datos para calcular las calorías que necesitas',
-                style: TextStyle(
-                    fontWeight: FontWeight.bold,
-                    fontSize: 18,
-                    color: Theme.of(context).colorScheme.primary),
-                textAlign: TextAlign.center,
-              ),
-              const SizedBox(height: 80),
-              Row(
-                children: [
-                  Expanded(
-                    child: Column(
+      body: _isLoading
+          ? const Center(
+              child: CircularProgressIndicator(),
+            )
+          : Padding(
+              padding: const EdgeInsets.only(top: 20, right: 40, left: 40),
+              child: Center(
+                child: Column(
+                  children: [
+                    Text(
+                      'Te pediremos algunos datos para calcular las calorías que necesitas',
+                      style: TextStyle(
+                          fontWeight: FontWeight.bold,
+                          fontSize: 18,
+                          color: Theme.of(context).colorScheme.primary),
+                      textAlign: TextAlign.center,
+                    ),
+                    const SizedBox(height: 80),
+                    Row(
+                      children: [
+                        Expanded(
+                          child: Column(
+                            crossAxisAlignment: CrossAxisAlignment.start,
+                            children: [
+                              const Text('Peso (kg)'),
+                              const SizedBox(
+                                height: 10,
+                              ),
+                              TextField(
+                                inputFormatters: [
+                                  LengthLimitingTextInputFormatter(6),
+                                  FilteringTextInputFormatter.allow(
+                                      RegExp(r'^\d{0,3}(\.\d{0,2})?$')),
+                                ],
+                                style: const TextStyle(color: Colors.black),
+                                controller: _weightController,
+                                decoration: const InputDecoration(
+                                    contentPadding: EdgeInsets.symmetric(
+                                        vertical: 8, horizontal: 8),
+                                    border: OutlineInputBorder(),
+                                    hintText: 'Peso (kg)'),
+                                keyboardType: TextInputType.number,
+                              ),
+                            ],
+                          ),
+                        ),
+                        const SizedBox(width: 40),
+                        Expanded(
+                          child: Column(
+                            crossAxisAlignment: CrossAxisAlignment.start,
+                            children: [
+                              const Text('Altura (cm)'),
+                              const SizedBox(
+                                height: 10,
+                              ),
+                              TextField(
+                                inputFormatters: [
+                                  LengthLimitingTextInputFormatter(6),
+                                  FilteringTextInputFormatter.allow(
+                                      RegExp(r'^\d{0,3}(\.\d{0,2})?$')),
+                                ],
+                                style: const TextStyle(color: Colors.black),
+                                controller: _heightController,
+                                decoration: const InputDecoration(
+                                    contentPadding: EdgeInsets.symmetric(
+                                        vertical: 8, horizontal: 8),
+                                    border: OutlineInputBorder(),
+                                    hintText: 'Altura (cm)'),
+                                keyboardType: TextInputType.number,
+                              ),
+                            ],
+                          ),
+                        ),
+                      ],
+                    ),
+                    const SizedBox(
+                      height: 20,
+                    ),
+                    Column(
                       crossAxisAlignment: CrossAxisAlignment.start,
                       children: [
-                        const Text('Peso (kg)'),
+                        const Text('Porcentaje de grasa corporal (%)'),
                         const SizedBox(
                           height: 10,
                         ),
                         TextField(
                           inputFormatters: [
-                            LengthLimitingTextInputFormatter(6),
+                            LengthLimitingTextInputFormatter(5),
                             FilteringTextInputFormatter.allow(
-                                RegExp(r'^\d{0,3}(\.\d{0,2})?$')),
+                                RegExp(r'^\d{0,2}(\.\d{0,2})?$')),
                           ],
                           style: const TextStyle(color: Colors.black),
-                          controller: _weightController,
+                          controller: _fatPercentageController,
                           decoration: const InputDecoration(
                               contentPadding: EdgeInsets.symmetric(
                                   vertical: 8, horizontal: 8),
                               border: OutlineInputBorder(),
-                              hintText: 'Peso (kg)'),
+                              hintText: 'Porcentaje (%)'),
                           keyboardType: TextInputType.number,
                         ),
                       ],
                     ),
-                  ),
-                  const SizedBox(width: 40),
-                  Expanded(
-                    child: Column(
+                    const SizedBox(
+                      height: 20,
+                    ),
+                    Column(
                       crossAxisAlignment: CrossAxisAlignment.start,
                       children: [
-                        const Text('Altura (cm)'),
+                        const Text(
+                          'Nivel de Actividad Semanal',
+                        ),
                         const SizedBox(
                           height: 10,
                         ),
-                        TextField(
-                          inputFormatters: [
-                            LengthLimitingTextInputFormatter(6),
-                            FilteringTextInputFormatter.allow(
-                                RegExp(r'^\d{0,3}(\.\d{0,2})?$')),
+                        DropdownButtonFormField<String>(
+                          style: const TextStyle(
+                              fontSize: 16, color: Colors.black),
+                          decoration: InputDecoration(
+                              contentPadding: const EdgeInsets.symmetric(
+                                  vertical: 10, horizontal: 10.0),
+                              filled: true,
+                              fillColor: Colors.white,
+                              errorStyle: const TextStyle(color: Colors.red),
+                              border: OutlineInputBorder(
+                                  borderSide: const BorderSide(width: 0),
+                                  borderRadius: BorderRadius.circular(5))),
+                          dropdownColor: Colors.white,
+                          borderRadius: BorderRadius.circular(5),
+                          value: activityLevel,
+                          hint: const Align(
+                            alignment: Alignment.centerLeft,
+                            child: Text('Nivel de actividad física',
+                                style: TextStyle(color: Colors.grey)),
+                          ),
+                          items: const [
+                            DropdownMenuItem(
+                              value: 'Sedentario',
+                              child: Text('Sedentario'),
+                            ),
+                            DropdownMenuItem(
+                              value: 'Ligero',
+                              child: Text('Ligero (1-2 días por semana)'),
+                            ),
+                            DropdownMenuItem(
+                              value: 'Moderado',
+                              child: Text('Moderado (3-5 días por semana)'),
+                            ),
+                            DropdownMenuItem(
+                              value: 'Intenso',
+                              child: Text('Intenso (6-7 días por semana)'),
+                            ),
+                            DropdownMenuItem(
+                              value: 'Muy intenso',
+                              child: Text('Muy intenso (ejercicio diario)'),
+                            ),
                           ],
-                          style: const TextStyle(color: Colors.black),
-                          controller: _heightController,
-                          decoration: const InputDecoration(
-                              contentPadding: EdgeInsets.symmetric(
-                                  vertical: 8, horizontal: 8),
-                              border: OutlineInputBorder(),
-                              hintText: 'Altura (cm)'),
-                          keyboardType: TextInputType.number,
+                          onChanged: (String? newValue) {
+                            setState(() {
+                              activityLevel = newValue;
+                            });
+                          },
                         ),
                       ],
                     ),
-                  ),
-                ],
-              ),
-              const SizedBox(
-                height: 20,
-              ),
-              Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  const Text('Porcentaje de grasa corporal (%)'),
-                  const SizedBox(
-                    height: 10,
-                  ),
-                  TextField(
-                    inputFormatters: [
-                      LengthLimitingTextInputFormatter(5),
-                      FilteringTextInputFormatter.allow(
-                          RegExp(r'^\d{0,2}(\.\d{0,2})?$')),
-                    ],
-                    style: const TextStyle(color: Colors.black),
-                    controller: _fatPercentageController,
-                    decoration: const InputDecoration(
-                        contentPadding:
-                            EdgeInsets.symmetric(vertical: 8, horizontal: 8),
-                        border: OutlineInputBorder(),
-                        hintText: 'Porcentaje (%)'),
-                    keyboardType: TextInputType.number,
-                  ),
-                ],
-              ),
-              const SizedBox(
-                height: 20,
-              ),
-              Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  const Text(
-                    'Nivel de Actividad Semanal',
-                  ),
-                  const SizedBox(
-                    height: 10,
-                  ),
-                  DropdownButtonFormField<String>(
-                    style: const TextStyle(fontSize: 16, color: Colors.black),
-                    decoration: InputDecoration(
-                        contentPadding: const EdgeInsets.symmetric(
-                            vertical: 10, horizontal: 10.0),
-                        filled: true,
-                        fillColor: Colors.white,
-                        errorStyle: const TextStyle(color: Colors.red),
-                        border: OutlineInputBorder(
-                            borderSide: const BorderSide(width: 0),
-                            borderRadius: BorderRadius.circular(5))),
-                    dropdownColor: Colors.white,
-                    borderRadius: BorderRadius.circular(5),
-                    value: activityLevel,
-                    hint: const Align(
-                      alignment: Alignment.centerLeft,
-                      child: Text('Nivel de actividad física',
-                          style: TextStyle(color: Colors.grey)),
+                    const SizedBox(
+                      height: 20,
                     ),
-                    items: const [
-                      DropdownMenuItem(
-                        value: 'Sedentario',
-                        child: Text('Sedentario'),
-                      ),
-                      DropdownMenuItem(
-                        value: 'Ligero',
-                        child: Text('Ligero (1-2 días por semana)'),
-                      ),
-                      DropdownMenuItem(
-                        value: 'Moderado',
-                        child: Text('Moderado (3-5 días por semana)'),
-                      ),
-                      DropdownMenuItem(
-                        value: 'Intenso',
-                        child: Text('Intenso (6-7 días por semana)'),
-                      ),
-                      DropdownMenuItem(
-                        value: 'Muy intenso',
-                        child: Text('Muy intenso (ejercicio diario)'),
-                      ),
-                    ],
-                    onChanged: (String? newValue) {
-                      setState(() {
-                        activityLevel = newValue;
-                      });
-                    },
-                  ),
-                ],
-              ),
-              const SizedBox(
-                height: 20,
-              ),
-              Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  const Text(
-                    'Objetivo físico',
-                  ),
-                  const SizedBox(
-                    height: 10,
-                  ),
-                  DropdownButtonFormField<String>(
-                    style: const TextStyle(fontSize: 16, color: Colors.black),
-                    decoration: InputDecoration(
-                        contentPadding: const EdgeInsets.symmetric(
-                            vertical: 10, horizontal: 10.0),
-                        filled: true,
-                        fillColor: Colors.white,
-                        errorStyle: const TextStyle(color: Colors.red),
-                        border: OutlineInputBorder(
-                            borderSide: const BorderSide(width: 0),
-                            borderRadius: BorderRadius.circular(5))),
-                    dropdownColor: Colors.white,
-                    borderRadius: BorderRadius.circular(5),
-                    value: goal,
-                    hint: const Align(
-                      alignment: Alignment.centerLeft,
-                      child: Text('Objetivo físico',
-                          style: TextStyle(color: Colors.grey)),
+                    Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        const Text(
+                          'Objetivo físico',
+                        ),
+                        const SizedBox(
+                          height: 10,
+                        ),
+                        DropdownButtonFormField<String>(
+                          style: const TextStyle(
+                              fontSize: 16, color: Colors.black),
+                          decoration: InputDecoration(
+                              contentPadding: const EdgeInsets.symmetric(
+                                  vertical: 10, horizontal: 10.0),
+                              filled: true,
+                              fillColor: Colors.white,
+                              errorStyle: const TextStyle(color: Colors.red),
+                              border: OutlineInputBorder(
+                                  borderSide: const BorderSide(width: 0),
+                                  borderRadius: BorderRadius.circular(5))),
+                          dropdownColor: Colors.white,
+                          borderRadius: BorderRadius.circular(5),
+                          value: goal,
+                          hint: const Align(
+                            alignment: Alignment.centerLeft,
+                            child: Text('Objetivo físico',
+                                style: TextStyle(color: Colors.grey)),
+                          ),
+                          items: const [
+                            DropdownMenuItem(
+                              value: 'Pérdida de peso',
+                              child: Text('Pérdida de peso'),
+                            ),
+                            DropdownMenuItem(
+                              value: 'Mantenimiento',
+                              child: Text('Mantenimiento'),
+                            ),
+                            DropdownMenuItem(
+                              value: 'Ganancia muscular',
+                              child: Text('Ganancia muscular'),
+                            ),
+                          ],
+                          onChanged: (String? newValue) {
+                            setState(() {
+                              goal = newValue;
+                            });
+                          },
+                        ),
+                      ],
                     ),
-                    items: const [
-                      DropdownMenuItem(
-                        value: 'Pérdida de peso',
-                        child: Text('Pérdida de peso'),
-                      ),
-                      DropdownMenuItem(
-                        value: 'Mantenimiento',
-                        child: Text('Mantenimiento'),
-                      ),
-                      DropdownMenuItem(
-                        value: 'Ganancia muscular',
-                        child: Text('Ganancia muscular'),
-                      ),
-                    ],
-                    onChanged: (String? newValue) {
-                      setState(() {
-                        goal = newValue;
-                      });
-                    },
-                  ),
-                ],
+                    const SizedBox(
+                      height: 150,
+                    ),
+                    YellowButton(
+                      onPressed: _validateInputs,
+                      text: 'Calcular',
+                      width: 320,
+                    )
+                  ],
+                ),
               ),
-              const SizedBox(
-                height: 150,
-              ),
-              YellowButton(
-                onPressed: _validateInputs,
-                text: 'Calcular',
-                width: 320,
-              )
-            ],
-          ),
-        ),
-      ),
+            ),
     );
   }
 }
