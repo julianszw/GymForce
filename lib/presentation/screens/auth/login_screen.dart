@@ -111,15 +111,12 @@ class LoginScreenState extends ConsumerState<LoginScreen> {
             }
           } else if (role == 'employee') {
             ref.read(userProvider.notifier).setUser(
-                  uid: uid,
-                  email: email,
-                  name: userDoc['name'],
-                  role: role,
-                );
-            if (mounted) {
-              context.go('/help');
-              await Future.delayed(const Duration(milliseconds: 200));
-            }
+                uid: uid,
+                email: email,
+                name: userDoc['name'],
+                role: role,
+                barrioAsignado: userDoc['barrioAsignado']);
+            context.go('/employee-welcome');
           }
         } else {
           if (mounted) {

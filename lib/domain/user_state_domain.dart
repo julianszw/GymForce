@@ -9,6 +9,7 @@ class UserState {
   final String? emergencyPhone;
   final String role;
   final String? profile;
+  final String? barrioAsignado;
 
   UserState(
       {required this.uid,
@@ -20,7 +21,8 @@ class UserState {
       this.gender,
       this.phone,
       this.emergencyPhone,
-      this.profile});
+      this.profile,
+      this.barrioAsignado});
 
   // Estado vacío por defecto
   UserState.empty()
@@ -33,7 +35,8 @@ class UserState {
         gender = null,
         phone = null,
         emergencyPhone = null,
-        profile = null;
+        profile = null,
+        barrioAsignado = '';
 
   bool get isLoggedIn => uid.isNotEmpty;
 }
