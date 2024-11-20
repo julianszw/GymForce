@@ -3,10 +3,12 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 import 'package:gym_force/config/providers/calories_plan_provider.dart';
+import 'package:gym_force/config/providers/daily_calories_provider.dart';
 import 'package:gym_force/presentation/widgets/calories/macro_indicator.dart';
 import 'package:gym_force/presentation/widgets/navigation/drawer_nav_menu.dart';
 import 'package:gym_force/presentation/widgets/yellow_button.dart';
 import 'package:gym_force/utils/choose_dialog.dart';
+import 'package:gym_force/utils/formatter.dart';
 import 'package:percent_indicator/percent_indicator.dart';
 
 class CaloriesScreen extends ConsumerStatefulWidget {
@@ -20,6 +22,10 @@ class _CaloriesScreenState extends ConsumerState<CaloriesScreen> {
   final TextEditingController _proteinController = TextEditingController();
   final TextEditingController _carbsController = TextEditingController();
   final TextEditingController _fatsController = TextEditingController();
+  String dailyCalories = '0';
+  String dailyProteins = '0';
+  String dailyCarbs = '0';
+  String dailyFats = '0';
 
   DateTime _selectedDate = DateTime.now();
 
@@ -33,7 +39,8 @@ class _CaloriesScreenState extends ConsumerState<CaloriesScreen> {
 
   @override
   Widget build(BuildContext context) {
-    final caloriesPlan = ref.watch(caloriesPlanProvider);
+    final caloriesPlan = ref.watch(caloriePlanProvider);
+    final dailyState = ref.watch(dailyCaloriesProvider);
 
     if (caloriesPlan.calories.isNotEmpty) {
       _proteinController.text = caloriesPlan.proteins;
@@ -138,7 +145,9 @@ class _CaloriesScreenState extends ConsumerState<CaloriesScreen> {
                           CircularPercentIndicator(
                             radius: 100,
                             backgroundColor: Colors.grey,
-                            percent: 0.7,
+                            percent: calculatePercentage(
+                                dailyState['totalCalories'],
+                                caloriesPlan.calories),
                             progressColor:
                                 Theme.of(context).colorScheme.primary,
                             backgroundWidth: 1,
@@ -146,9 +155,9 @@ class _CaloriesScreenState extends ConsumerState<CaloriesScreen> {
                               mainAxisAlignment: MainAxisAlignment.center,
                               crossAxisAlignment: CrossAxisAlignment.end,
                               children: [
-                                const Text(
-                                  '1900',
-                                  style: TextStyle(fontSize: 40),
+                                Text(
+                                  dailyState['totalCalories'],
+                                  style: const TextStyle(fontSize: 40),
                                   textAlign: TextAlign.center,
                                 ),
                                 Text(
@@ -167,24 +176,30 @@ class _CaloriesScreenState extends ConsumerState<CaloriesScreen> {
                           ),
                           MacroIndicator(
                               title: 'Proteínas',
-                              percent: 0.5,
-                              amount: '100g',
+                              percent: calculatePercentage(
+                                  dailyState['totalProteins'],
+                                  _proteinController.text),
+                              amount: '${dailyState['totalProteins']}g',
                               totalAmount: _proteinController.text),
                           const SizedBox(
                             height: 10,
                           ),
                           MacroIndicator(
                               title: 'Carbohidratos',
-                              percent: 1,
-                              amount: '600g',
+                              percent: calculatePercentage(
+                                  dailyState['totalCarbs'],
+                                  _carbsController.text),
+                              amount: '${dailyState['totalCarbs']}g',
                               totalAmount: _carbsController.text),
                           const SizedBox(
                             height: 10,
                           ),
                           MacroIndicator(
                               title: 'Grasas',
-                              percent: 0.3,
-                              amount: '40g',
+                              percent: calculatePercentage(
+                                  dailyState['totalFats'],
+                                  _fatsController.text),
+                              amount: '${dailyState['totalFats']}g',
                               totalAmount: _fatsController.text),
                           const SizedBox(
                             height: 50,

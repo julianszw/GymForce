@@ -4,6 +4,7 @@ import 'package:go_router/go_router.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:gym_force/config/providers/calories_plan_provider.dart';
+import 'package:gym_force/config/providers/daily_calories_provider.dart';
 import 'package:gym_force/config/providers/payment_provider.dart';
 import 'package:gym_force/config/providers/user_provider.dart';
 import 'package:gym_force/config/providers/workout_provider.dart';
@@ -33,10 +34,10 @@ class LoginScreenState extends ConsumerState<LoginScreen> {
   Future<void> _login() async {
     final email = _emailController.text.trim();
     final password = _passwordController.text.trim();
-    final userState = ref.watch(userProvider);
     final paymentState = ref.read(paymentProvider.notifier);
     final workoutState = ref.read(workoutProvider.notifier);
-    final caloriesState = ref.read(caloriesPlanProvider.notifier);
+    final caloriesState = ref.read(caloriePlanProvider.notifier);
+    final dailyCalorieState = ref.read(dailyCaloriesProvider.notifier);
 
     setState(() {
       _isEmailValid = validateEmail(email);
@@ -94,7 +95,14 @@ class LoginScreenState extends ConsumerState<LoginScreen> {
             final caloriesPlan = await CaloriesServices().getCaloriesPlan();
 
             if (caloriesPlan != null) {
-              caloriesState.setCaloriesPlan(caloriesPlan);
+              caloriesState.setCaloriePlan(caloriesPlan);
+            }
+
+            final dailyCaloriesList =
+                await CaloriesServices().getDailyCaloriesList(DateTime.now());
+
+            if (dailyCaloriesList.isNotEmpty) {
+              dailyCalorieState.setDailyCaloriesList(dailyCaloriesList);
             }
 
             if (mounted) {

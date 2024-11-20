@@ -5,7 +5,8 @@ import 'package:go_router/go_router.dart';
 import 'package:gym_force/config/providers/calories_plan_provider.dart';
 import 'package:gym_force/config/providers/daily_calories_provider.dart';
 import 'package:gym_force/config/providers/user_provider.dart';
-import 'package:gym_force/domain/calories_domain.dart';
+import 'package:gym_force/domain/calorie_plan_domain.dart';
+import 'package:gym_force/domain/daily_calories_domain.dart';
 import 'package:gym_force/presentation/widgets/calories/macros_input.dart';
 import 'package:gym_force/presentation/widgets/yellow_button.dart';
 import 'package:gym_force/services/calories_services.dart';
@@ -134,21 +135,38 @@ class _SetDiaryCaloriesScreenState
       });
       final userId = ref.watch(userProvider).uid;
 
-      final caloriesPlan = Calories(
-          userId: userId,
-          date: DateTime.now(),
-          calories: _caloriesController.text,
-          proteins: _proteinsController.text,
-          carbs: _carbsController.text,
-          fats: _fatsController.text);
+      final calories = _caloriesController.text;
+      final proteins = _proteinsController.text;
+      final carbs = _carbsController.text;
+      final fats = _fatsController.text;
 
       if (isAddedCalories) {
-        ref
-            .watch(dailyCaloriesProvider.notifier)
-            .addDailyCalories(caloriesPlan);
+        final caloriePlanId = ref.watch(caloriePlanProvider).id;
+        if (caloriePlanId != null) {
+          final dailyCalories = DailyCalories(
+              date: DateTime.now(),
+              planId: caloriePlanId,
+              userId: userId,
+              calories: calories,
+              proteins: proteins,
+              carbs: carbs,
+              fats: fats);
+          await CaloriesServices().addDailyCalories(dailyCalories);
+          ref
+              .watch(dailyCaloriesProvider.notifier)
+              .addDailyCalories(dailyCalories);
+        }
       } else {
+        final caloriesPlan = CaloriePlan(
+            userId: userId,
+            date: DateTime.now(),
+            calories: calories,
+            proteins: proteins,
+            carbs: carbs,
+            fats: fats);
+
         await CaloriesServices().createCaloriesPlan(caloriesPlan);
-        ref.watch(caloriesPlanProvider.notifier).setCaloriesPlan(caloriesPlan);
+        ref.watch(caloriePlanProvider.notifier).setCaloriePlan(caloriesPlan);
       }
 
       if (mounted) {

@@ -1,52 +1,66 @@
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-import 'package:gym_force/domain/calories_domain.dart';
+import 'package:gym_force/domain/daily_calories_domain.dart';
 
-class DailyCaloriesNotifier extends StateNotifier<Calories> {
+class DailyCaloriesNotifier extends StateNotifier<Map<String, dynamic>> {
   DailyCaloriesNotifier()
-      : super(Calories(
-          userId: '',
-          calories: '0',
-          proteins: '0',
-          carbs: '0',
-          fats: '0',
-          date: DateTime.now(),
-        ));
+      : super({
+          'dailyCalories': <DailyCalories>[],
+          'totalProteins': '0',
+          'totalCalories': '0',
+          'totalCarbs': '0',
+          'totalFats': '0',
+        });
 
-  void addDailyCalories(Calories dailyCalories) {
-    final DateTime today = DateTime.now();
+  void addDailyCalories(DailyCalories dailyCalories) {
+    final newDailyCalories =
+        List<DailyCalories>.from(state['dailyCalories'] as List<DailyCalories>)
+          ..add(dailyCalories);
 
-    if (state.date == null || !_isSameDate(state.date!, today)) {
-      state = Calories(
-        userId: state.userId,
-        calories: '0',
-        proteins: '0',
-        carbs: '0',
-        fats: '0',
-        date: today,
-      );
-    }
-
-    state = Calories(
-      userId: state.userId,
-      calories: (int.parse(state.calories) + int.parse(dailyCalories.calories))
-          .toString(),
-      proteins: (int.parse(state.proteins) + int.parse(dailyCalories.proteins))
-          .toString(),
-      carbs:
-          (int.parse(state.carbs) + int.parse(dailyCalories.carbs)).toString(),
-      fats: (int.parse(state.fats) + int.parse(dailyCalories.fats)).toString(),
-      date: today,
-    );
+    state = {
+      'dailyCalories': newDailyCalories,
+      'totalProteins': _calculateTotalProteins(newDailyCalories),
+      'totalCalories': _calculateTotalCalories(newDailyCalories),
+      'totalCarbs': _calculateTotalCarbs(newDailyCalories),
+      'totalFats': _calculateTotalFats(newDailyCalories),
+    };
   }
 
-  bool _isSameDate(DateTime date1, DateTime date2) {
-    return date1.year == date2.year &&
-        date1.month == date2.month &&
-        date1.day == date2.day;
+  void setDailyCaloriesList(List<DailyCalories> dailyCaloriesList) {
+    state = {
+      'dailyCalories': dailyCaloriesList,
+      'totalProteins': _calculateTotalProteins(dailyCaloriesList),
+      'totalCalories': _calculateTotalCalories(dailyCaloriesList),
+      'totalCarbs': _calculateTotalCarbs(dailyCaloriesList),
+      'totalFats': _calculateTotalFats(dailyCaloriesList),
+    };
+  }
+
+  String _calculateTotalProteins(List<DailyCalories> dailyCaloriesList) {
+    return dailyCaloriesList.fold(0, (sum, item) {
+      return sum + (int.tryParse(item.proteins) ?? 0);
+    }).toString();
+  }
+
+  String _calculateTotalCalories(List<DailyCalories> dailyCaloriesList) {
+    return dailyCaloriesList.fold(0, (sum, item) {
+      return sum + (int.tryParse(item.calories) ?? 0);
+    }).toString();
+  }
+
+  String _calculateTotalCarbs(List<DailyCalories> dailyCaloriesList) {
+    return dailyCaloriesList.fold(0, (sum, item) {
+      return sum + (int.tryParse(item.carbs) ?? 0);
+    }).toString();
+  }
+
+  String _calculateTotalFats(List<DailyCalories> dailyCaloriesList) {
+    return dailyCaloriesList.fold(0, (sum, item) {
+      return sum + (int.tryParse(item.fats) ?? 0);
+    }).toString();
   }
 }
 
 final dailyCaloriesProvider =
-    StateNotifierProvider<DailyCaloriesNotifier, Calories>(
+    StateNotifierProvider<DailyCaloriesNotifier, Map<String, dynamic>>(
   (ref) => DailyCaloriesNotifier(),
 );
