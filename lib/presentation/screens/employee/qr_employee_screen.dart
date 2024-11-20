@@ -68,6 +68,7 @@ class _QrEmployeeScreenState extends ConsumerState<QrEmployeeScreen> {
             userData: userData,
             uid: uid,
             barrio: qrData['barrio'],
+            expirationDate: paymentData['expirationDate']
           ),
         ),
       );

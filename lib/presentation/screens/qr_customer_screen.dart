@@ -2,6 +2,7 @@ import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:gym_force/config/providers/branch_provider.dart';
+import 'package:gym_force/config/providers/user_provider.dart';
 import 'package:gym_force/domain/branch_domain.dart';
 import 'package:gym_force/presentation/widgets/qr/branch_card.dart';
 import 'package:gym_force/presentation/widgets/yellow_button.dart';
@@ -90,7 +91,7 @@ class _BranchListScreenState extends ConsumerState<BranchListScreen> {
 
   @override
   Widget build(BuildContext context) {
-    final branchProviderState = ref.watch(branchProvider);
+    final userNotifier = ref.read(userProvider.notifier);
 
     return Scaffold(
       appBar: AppBar(

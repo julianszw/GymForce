@@ -1,3 +1,4 @@
+import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 import 'package:gym_force/config/providers/user_provider.dart';
@@ -145,7 +146,7 @@ final GoRouter appRouter = GoRouter(
         // Pantalla de confirmación
         GoRoute(
           path: '/confirmation',
-          builder: (context, state) => const ConfirmationScreen(userData: {}, uid: '', barrio: '',),
+          builder: (context, state) => ConfirmationScreen(userData: {}, uid: '', barrio: '', expirationDate: DateTime.now(),),
         ),
   ],
 );
