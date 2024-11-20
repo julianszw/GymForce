@@ -9,10 +9,10 @@ class EmployeeBottomNav extends StatefulWidget {
   const EmployeeBottomNav({super.key, required Widget child});
 
   @override
-  _EmployeeBottomNavState createState() => _EmployeeBottomNavState();
+  EmployeeBottomNavState createState() => EmployeeBottomNavState();
 }
 
-class _EmployeeBottomNavState extends State<EmployeeBottomNav> {
+class EmployeeBottomNavState extends State<EmployeeBottomNav> {
   int _selectedIndex = 0;
 
   void _onItemTapped(int index) {
