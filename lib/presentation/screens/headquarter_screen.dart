@@ -104,7 +104,6 @@ class HeadquarterItem extends StatelessWidget {
     final now = DateTime.now();
     final openTime = headquarterData.openTime ?? now;
     final closingTime = headquarterData.closingTime ?? now;
-    // Compare current time with open and closing times
     return now.isAfter(openTime) && now.isBefore(closingTime);
   }
 
