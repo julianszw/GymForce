@@ -76,7 +76,6 @@ class TrainWorkoutScreenState extends ConsumerState<TrainWorkoutScreen> {
 
         isCheckedList.add(List.generate(exercise.sets.length, (_) => false));
       }
-      print('Lista de checked $isCheckedList');
     } catch (e) {
       print('No se encontró la rutina con id: ${widget.workoutId}');
     }
@@ -165,12 +164,14 @@ class TrainWorkoutScreenState extends ConsumerState<TrainWorkoutScreen> {
 
       if (mounted) {
         context.pop();
+
         ScaffoldMessenger.of(context).showSnackBar(
           const SnackBar(
             content: Text('¡Entrenamiento guardado!'),
             behavior: SnackBarBehavior.floating,
           ),
         );
+        await Future.delayed(const Duration(milliseconds: 200));
       }
     } catch (e) {
       if (mounted) {

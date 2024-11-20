@@ -40,7 +40,10 @@ class WorkoutsScreenState extends ConsumerState<WorkoutsScreen> {
                   fontSize: 12,
                 ),
                 YellowButton(
-                  onPressed: () {},
+                  onPressed: () {
+                    context.push('/create-ai-workout');
+                    Navigator.of(context).pop();
+                  },
                   text: 'Generación con IA',
                   width: 120,
                   fontSize: 12,
@@ -184,7 +187,9 @@ class WorkoutsScreenState extends ConsumerState<WorkoutsScreen> {
                                     MainAxisAlignment.spaceBetween,
                                 children: [
                                   Text(
-                                    workout.name,
+                                    workout.name.length > 20
+                                        ? '${workout.name.substring(0, 20)}...'
+                                        : workout.name,
                                     style: const TextStyle(
                                         color: Colors.white,
                                         fontSize: 18,
@@ -205,7 +210,9 @@ class WorkoutsScreenState extends ConsumerState<WorkoutsScreen> {
                                         top: 5, bottom: 14),
                                   ),
                                   Text(
-                                    exerciseNames,
+                                    exerciseNames.length > 80
+                                        ? '${exerciseNames.substring(0, 80)}...'
+                                        : exerciseNames,
                                     style: const TextStyle(
                                         color: Colors.white, fontSize: 14),
                                   ),

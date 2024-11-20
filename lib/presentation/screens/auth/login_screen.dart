@@ -87,7 +87,10 @@ class LoginScreenState extends ConsumerState<LoginScreen> {
                   userId: payment['userId'],
                   expirationDate: payment['expirationDate']);
             }
-            context.go('/');
+            if (mounted) {
+              context.go('/');
+              await Future.delayed(const Duration(milliseconds: 200));
+            }
           } else if (role == 'employee') {
             ref.read(userProvider.notifier).setUser(
                   uid: uid,
@@ -95,26 +98,35 @@ class LoginScreenState extends ConsumerState<LoginScreen> {
                   name: userDoc['name'],
                   role: role,
                 );
-            context.go('/help');
+            if (mounted) {
+              context.go('/help');
+              await Future.delayed(const Duration(milliseconds: 200));
+            }
           }
         } else {
-          ScaffoldMessenger.of(context).showSnackBar(
-            const SnackBar(
-                content: Text('No se encontraron datos del usuario')),
-          );
+          if (mounted) {
+            ScaffoldMessenger.of(context).showSnackBar(
+              const SnackBar(
+                  content: Text('No se encontraron datos del usuario')),
+            );
+          }
         }
       } on FirebaseAuthException catch (e) {
-        ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(
-            content: Text(e.message ?? 'Error de autenticación: ${e.code}'),
-          ),
-        );
+        if (mounted) {
+          ScaffoldMessenger.of(context).showSnackBar(
+            SnackBar(
+              content: Text(e.message ?? 'Error de autenticación: ${e.code}'),
+            ),
+          );
+        }
       } catch (e) {
-        ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(
-            content: Text('Error inesperado: $e'),
-          ),
-        );
+        if (mounted) {
+          ScaffoldMessenger.of(context).showSnackBar(
+            SnackBar(
+              content: Text('Error inesperado: $e'),
+            ),
+          );
+        }
       } finally {
         setState(() {
           _isLoading = false;

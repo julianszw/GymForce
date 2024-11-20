@@ -321,7 +321,7 @@ class RegisterSelfieScreenState extends ConsumerState<RegisterSelfieScreen> {
                           'Volver a sacar',
                           style: TextStyle(
                               color: Colors.black,
-                              fontSize: 18,
+                              fontSize: 14,
                               fontWeight: FontWeight.bold),
                         ),
                       ),
@@ -334,7 +334,7 @@ class RegisterSelfieScreenState extends ConsumerState<RegisterSelfieScreen> {
                           'Registrarse',
                           style: TextStyle(
                               color: Colors.black,
-                              fontSize: 18,
+                              fontSize: 14,
                               fontWeight: FontWeight.bold),
                         ),
                       ),

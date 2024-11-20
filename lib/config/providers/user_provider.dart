@@ -32,7 +32,6 @@ class UserNotifier extends StateNotifier<UserState> {
   Future<void> logOut() async {
     try {
       await FirebaseAuth.instance.signOut();
-
       state = UserState.empty();
     } catch (e) {
       print("Error al cerrar sesión: $e");

@@ -24,6 +24,17 @@ class Workout {
       ..userId = json['userId'];
   }
 
+  factory Workout.backendFromJson(Map<String, dynamic> json) {
+    return Workout(
+      id: json['id'] ?? uuid.v4(),
+      userId: json['userId'] ?? '',
+      name: json['name'],
+      exercises: (json['exercises'] as List)
+          .map((exerciseJson) => Exercise.fromJson(exerciseJson))
+          .toList(),
+    );
+  }
+
   Map<String, dynamic> toJson() {
     return {
       'id': id,
