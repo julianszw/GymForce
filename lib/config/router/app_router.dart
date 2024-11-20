@@ -1,6 +1,7 @@
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 import 'package:gym_force/config/providers/user_provider.dart';
+import 'package:gym_force/presentation/screens/ai_calories_screen.dart';
 import 'package:gym_force/presentation/screens/ai_workout_screen.dart';
 import 'package:gym_force/presentation/screens/auth/auth_screen.dart';
 import 'package:gym_force/presentation/screens/auth/register_selfie_screen.dart';
@@ -13,6 +14,7 @@ import 'package:gym_force/presentation/screens/employee/qr_employee_screen.dart'
 import 'package:gym_force/presentation/screens/auth/login_screen.dart';
 import 'package:gym_force/presentation/screens/auth/register_basic_data.dart';
 import 'package:gym_force/presentation/screens/auth/register_extra_data_screen.dart';
+import 'package:gym_force/presentation/screens/set_diary_calories_screen.dart';
 import 'package:gym_force/presentation/screens/splash_screen.dart';
 import 'package:gym_force/presentation/screens/train_workout_screen.dart';
 import 'package:gym_force/presentation/widgets/navigation/employee_bottom_nav.dart';
@@ -134,6 +136,19 @@ final GoRouter appRouter = GoRouter(
     ),
     GoRoute(
         path: '/ai-workout',
-        builder: (context, state) => const AIWorkoutScreen())
+        builder: (context, state) => const AIWorkoutScreen()),
+    GoRoute(
+        path: '/set-diary-calories',
+        builder: (context, state) {
+          final extra = state.extra as Map<String, dynamic>?;
+          final initialCalories = extra?['initialCalories'];
+          final addCalories = extra?['addCalories'];
+
+          return SetDiaryCaloriesScreen(
+              initialCalories: initialCalories, addCalories: addCalories);
+        }),
+    GoRoute(
+        path: '/ai-calories',
+        builder: (context, state) => const AiCaloriesScreen())
   ],
 );

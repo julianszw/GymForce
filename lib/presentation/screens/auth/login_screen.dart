@@ -3,11 +3,14 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:gym_force/config/providers/calories_plan_provider.dart';
+import 'package:gym_force/config/providers/daily_calories_provider.dart';
 import 'package:gym_force/config/providers/payment_provider.dart';
 import 'package:gym_force/config/providers/user_provider.dart';
 import 'package:gym_force/config/providers/workout_provider.dart';
 import 'package:gym_force/domain/workout_domain.dart';
 import 'package:gym_force/services/auth_services.dart';
+import 'package:gym_force/services/calories_services.dart';
 import 'package:gym_force/services/payment_service.dart';
 import 'package:gym_force/services/workout_services.dart';
 import 'package:gym_force/utils/validators.dart';
@@ -31,9 +34,10 @@ class LoginScreenState extends ConsumerState<LoginScreen> {
   Future<void> _login() async {
     final email = _emailController.text.trim();
     final password = _passwordController.text.trim();
-    //final userState = ref.watch(userProvider);
     final paymentState = ref.read(paymentProvider.notifier);
     final workoutState = ref.read(workoutProvider.notifier);
+    final caloriesState = ref.read(caloriePlanProvider.notifier);
+    final dailyCalorieState = ref.read(dailyCaloriesProvider.notifier);
 
     setState(() {
       _isEmailValid = validateEmail(email);
@@ -87,6 +91,20 @@ class LoginScreenState extends ConsumerState<LoginScreen> {
                   userId: payment['userId'],
                   expirationDate: payment['expirationDate']);
             }
+
+            final caloriesPlan = await CaloriesServices().getCaloriesPlan();
+
+            if (caloriesPlan != null) {
+              caloriesState.setCaloriePlan(caloriesPlan);
+            }
+
+            final dailyCaloriesList =
+                await CaloriesServices().getDailyCaloriesList(DateTime.now());
+
+            if (dailyCaloriesList.isNotEmpty) {
+              dailyCalorieState.setDailyCaloriesList(dailyCaloriesList);
+            }
+
             if (mounted) {
               context.go('/');
               await Future.delayed(const Duration(milliseconds: 200));
