@@ -6,7 +6,8 @@ class BranchService {
 
   Future<List<BranchData>> getBranches() async {
     try {
-      QuerySnapshot querySnapshot = await _firestore.collection('branches').get();
+      QuerySnapshot querySnapshot =
+          await _firestore.collection('branches').get();
       return querySnapshot.docs.map((doc) {
         Map<String, dynamic> data = doc.data() as Map<String, dynamic>;
         return BranchData(
@@ -23,7 +24,8 @@ class BranchService {
         );
       }).toList();
     } catch (e) {
-      throw Exception('Error no se puede recibir datos de las sucursales en services: $e');
+      throw Exception(
+          'Error no se puede recibir datos de las sucursales en services: $e');
     }
   }
 
@@ -36,7 +38,8 @@ class BranchService {
           .get();
 
       if (querySnapshot.docs.isNotEmpty) {
-        Map<String, dynamic> data = querySnapshot.docs.first.data() as Map<String, dynamic>;
+        Map<String, dynamic> data =
+            querySnapshot.docs.first.data() as Map<String, dynamic>;
         return BranchData(
           apertura: (data['apertura'] as Timestamp?)?.toDate(),
           barrio: data['barrio'] ?? '',
