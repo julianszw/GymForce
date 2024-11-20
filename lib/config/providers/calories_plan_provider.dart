@@ -1,9 +1,9 @@
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-import 'package:gym_force/domain/calories_plan_domain.dart';
+import 'package:gym_force/domain/calories_domain.dart';
 
-class CaloriesPlanNotifier extends StateNotifier<CaloriesPlan> {
+class CaloriesPlanNotifier extends StateNotifier<Calories> {
   CaloriesPlanNotifier()
-      : super(CaloriesPlan(
+      : super(Calories(
           userId: '',
           date: DateTime.now(),
           calories: '',
@@ -12,12 +12,12 @@ class CaloriesPlanNotifier extends StateNotifier<CaloriesPlan> {
           fats: '',
         ));
 
-  void setCaloriesPlan(CaloriesPlan caloriesPlan) {
+  void setCaloriesPlan(Calories caloriesPlan) {
     state = caloriesPlan;
   }
 }
 
 final caloriesPlanProvider =
-    StateNotifierProvider<CaloriesPlanNotifier, CaloriesPlan>(
+    StateNotifierProvider<CaloriesPlanNotifier, Calories>(
   (ref) => CaloriesPlanNotifier(),
 );

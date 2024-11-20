@@ -1,3 +1,4 @@
+import 'package:easy_date_timeline/easy_date_timeline.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
@@ -19,6 +20,8 @@ class _CaloriesScreenState extends ConsumerState<CaloriesScreen> {
   final TextEditingController _proteinController = TextEditingController();
   final TextEditingController _carbsController = TextEditingController();
   final TextEditingController _fatsController = TextEditingController();
+
+  DateTime _selectedDate = DateTime.now();
 
   @override
   void dispose() {
@@ -84,82 +87,149 @@ class _CaloriesScreenState extends ConsumerState<CaloriesScreen> {
                       ),
                     ],
                   )
-                : Container(
-                    margin: const EdgeInsets.only(top: 20),
-                    child: Column(
-                      children: [
-                        CircularPercentIndicator(
-                          radius: 110,
-                          backgroundColor: Colors.grey,
-                          percent: 0.7,
-                          progressColor: Theme.of(context).colorScheme.primary,
-                          backgroundWidth: 1,
-                          center: Column(
-                            mainAxisAlignment: MainAxisAlignment.center,
-                            crossAxisAlignment: CrossAxisAlignment.end,
+                : SingleChildScrollView(
+                    child: Padding(
+                      padding: const EdgeInsets.only(bottom: 100),
+                      child: Column(
+                        children: [
+                          Column(
                             children: [
-                              const Text(
-                                '1900',
-                                style: TextStyle(fontSize: 40),
-                                textAlign: TextAlign.center,
+                              EasyDateTimeLinePicker(
+                                headerOptions: const HeaderOptions(
+                                    headerType: HeaderType.none),
+                                firstDate: DateTime(2024, 11, 1),
+                                lastDate: DateTime(2030, 3, 18),
+                                focusedDate: _selectedDate,
+                                itemExtent: 64.0,
+                                locale: const Locale('es'),
+                                timelineOptions:
+                                    const TimelineOptions(height: 90),
+                                disableStrategy:
+                                    const DisableStrategy.afterToday(),
+                                onDateChange: (date) {
+                                  setState(() {
+                                    _selectedDate = date;
+                                  });
+                                },
                               ),
-                              Text(
-                                'de ${caloriesPlan.calories} kcal',
-                                style: const TextStyle(
-                                  fontSize: 14,
-                                  fontWeight: FontWeight.w300,
-                                  color: Colors.grey,
+                              Row(
+                                mainAxisAlignment: MainAxisAlignment.end,
+                                children: [
+                                  TextButton(
+                                    onPressed: () {
+                                      context.push('/calendar');
+                                    },
+                                    child: const Row(
+                                      mainAxisSize: MainAxisSize.min,
+                                      children: [
+                                        Text('Calendario'),
+                                        SizedBox(width: 5),
+                                        Icon(Icons.double_arrow, size: 16),
+                                      ],
+                                    ),
+                                  ),
+                                ],
+                              ),
+                            ],
+                          ),
+                          const SizedBox(
+                            height: 5,
+                          ),
+                          CircularPercentIndicator(
+                            radius: 100,
+                            backgroundColor: Colors.grey,
+                            percent: 0.7,
+                            progressColor:
+                                Theme.of(context).colorScheme.primary,
+                            backgroundWidth: 1,
+                            center: Column(
+                              mainAxisAlignment: MainAxisAlignment.center,
+                              crossAxisAlignment: CrossAxisAlignment.end,
+                              children: [
+                                const Text(
+                                  '1900',
+                                  style: TextStyle(fontSize: 40),
+                                  textAlign: TextAlign.center,
                                 ),
-                              ),
-                            ],
+                                Text(
+                                  'de ${caloriesPlan.calories} kcal',
+                                  style: const TextStyle(
+                                    fontSize: 14,
+                                    fontWeight: FontWeight.w300,
+                                    color: Colors.grey,
+                                  ),
+                                ),
+                              ],
+                            ),
                           ),
-                        ),
-                        const SizedBox(
-                          height: 35,
-                        ),
-                        MacroIndicator(
-                            title: 'Proteínas',
-                            percent: 0.5,
-                            amount: '100g',
-                            totalAmount: _proteinController.text),
-                        const SizedBox(
-                          height: 10,
-                        ),
-                        MacroIndicator(
-                            title: 'Carbohidratos',
-                            percent: 1,
-                            amount: '600g',
-                            totalAmount: _carbsController.text),
-                        const SizedBox(
-                          height: 10,
-                        ),
-                        MacroIndicator(
-                            title: 'Grasas',
-                            percent: 0.3,
-                            amount: '40g',
-                            totalAmount: _fatsController.text),
-                        const SizedBox(
-                          height: 120,
-                        ),
-                        Padding(
-                          padding: const EdgeInsets.symmetric(horizontal: 25),
-                          child: Row(
-                            mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                            children: [
-                              YellowButton(
-                                onPressed: () {},
-                                text: 'Editar Plan',
-                                fontSize: 16,
-                              ),
-                              YellowButton(
-                                onPressed: () {},
-                                text: 'Ingresar Calorías',
-                                fontSize: 16,
-                              )
-                            ],
+                          const SizedBox(
+                            height: 18,
                           ),
-                        ),
-                      ],
+                          MacroIndicator(
+                              title: 'Proteínas',
+                              percent: 0.5,
+                              amount: '100g',
+                              totalAmount: _proteinController.text),
+                          const SizedBox(
+                            height: 10,
+                          ),
+                          MacroIndicator(
+                              title: 'Carbohidratos',
+                              percent: 1,
+                              amount: '600g',
+                              totalAmount: _carbsController.text),
+                          const SizedBox(
+                            height: 10,
+                          ),
+                          MacroIndicator(
+                              title: 'Grasas',
+                              percent: 0.3,
+                              amount: '40g',
+                              totalAmount: _fatsController.text),
+                          const SizedBox(
+                            height: 50,
+                          ),
+                          Padding(
+                            padding: const EdgeInsets.symmetric(horizontal: 25),
+                            child: Row(
+                              mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                              children: [
+                                YellowButton(
+                                  onPressed: () {
+                                    showChooseDialog(
+                                      context: context,
+                                      onAcceptLeft: () {
+                                        context.push('/set-diary-calories',
+                                            extra: {
+                                              'initialCalories':
+                                                  caloriesPlan.calories
+                                            });
+                                      },
+                                      onAcceptRight: () {
+                                        context.push('/ai-calories');
+                                      },
+                                      description:
+                                          '¿Quieres editar el plan manualmente o generar uno nuevo con ayuda de la IA?',
+                                      leftText: 'Edicón Manual',
+                                      rightText: 'Generar con IA',
+                                    );
+                                  },
+                                  text: 'Editar Plan',
+                                  fontSize: 16,
+                                ),
+                                YellowButton(
+                                  onPressed: () {
+                                    context.push('/set-diary-calories',
+                                        extra: {'addCalories': 'true'});
+                                  },
+                                  text: 'Ingresar Calorías',
+                                  fontSize: 16,
+                                )
+                              ],
+                            ),
+                          ),
+                        ],
+                      ),
                     ),
                   ),
           ],

@@ -1,14 +1,14 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 
-class CaloriesPlan {
+class Calories {
   final String userId;
-  final DateTime date;
+  final DateTime? date;
   final String calories;
   final String proteins;
   final String carbs;
   final String fats;
 
-  CaloriesPlan({
+  Calories({
     required this.userId,
     required this.date,
     required this.calories,
@@ -28,10 +28,10 @@ class CaloriesPlan {
     };
   }
 
-  factory CaloriesPlan.fromMap(Map<String, dynamic> map) {
+  factory Calories.fromMap(Map<String, dynamic> map) {
     final date = (map['date'] as Timestamp).toDate();
 
-    return CaloriesPlan(
+    return Calories(
       userId: map['user_id'] ?? '',
       date: date,
       calories: map['calories'] ?? 0,

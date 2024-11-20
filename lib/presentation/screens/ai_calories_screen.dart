@@ -64,6 +64,7 @@ class _AiCaloriesScreenState extends ConsumerState<AiCaloriesScreen> {
     ScaffoldMessenger.of(context).showSnackBar(
       SnackBar(
         content: Text(message),
+        behavior: SnackBarBehavior.floating,
       ),
     );
   }

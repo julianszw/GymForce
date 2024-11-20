@@ -50,7 +50,7 @@ class MacroIndicator extends StatelessWidget {
                     ),
                   ),
                   Text(
-                    '($totalAmount)',
+                    '/${totalAmount}g',
                     style: const TextStyle(color: Colors.grey),
                   ),
                 ],

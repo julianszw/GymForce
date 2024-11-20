@@ -142,10 +142,10 @@ final GoRouter appRouter = GoRouter(
         builder: (context, state) {
           final extra = state.extra as Map<String, dynamic>?;
           final initialCalories = extra?['initialCalories'];
+          final addCalories = extra?['addCalories'];
 
           return SetDiaryCaloriesScreen(
-            initialCalories: initialCalories,
-          );
+              initialCalories: initialCalories, addCalories: addCalories);
         }),
     GoRoute(
         path: '/ai-calories',

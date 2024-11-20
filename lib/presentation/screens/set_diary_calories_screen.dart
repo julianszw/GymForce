@@ -3,8 +3,9 @@ import 'package:flutter/services.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 import 'package:gym_force/config/providers/calories_plan_provider.dart';
+import 'package:gym_force/config/providers/daily_calories_provider.dart';
 import 'package:gym_force/config/providers/user_provider.dart';
-import 'package:gym_force/domain/calories_plan_domain.dart';
+import 'package:gym_force/domain/calories_domain.dart';
 import 'package:gym_force/presentation/widgets/calories/macros_input.dart';
 import 'package:gym_force/presentation/widgets/yellow_button.dart';
 import 'package:gym_force/services/calories_services.dart';
@@ -12,8 +13,10 @@ import 'package:percent_indicator/percent_indicator.dart';
 
 class SetDiaryCaloriesScreen extends ConsumerStatefulWidget {
   final String? initialCalories;
+  final String? addCalories;
 
-  const SetDiaryCaloriesScreen({super.key, this.initialCalories});
+  const SetDiaryCaloriesScreen(
+      {super.key, this.initialCalories, this.addCalories});
 
   @override
   ConsumerState<SetDiaryCaloriesScreen> createState() =>
@@ -28,6 +31,7 @@ class _SetDiaryCaloriesScreenState
   final TextEditingController _fatsController = TextEditingController();
   bool isUpdating = false;
   bool isLoading = false;
+  bool isAddedCalories = false;
 
   @override
   void initState() {
@@ -41,6 +45,9 @@ class _SetDiaryCaloriesScreenState
     if (widget.initialCalories != null) {
       _caloriesController.text = widget.initialCalories!;
       _onCaloriesChanged();
+    }
+    if (widget.addCalories == 'true') {
+      isAddedCalories = widget.addCalories == 'true';
     }
   }
 
@@ -100,7 +107,7 @@ class _SetDiaryCaloriesScreenState
     setState(() {});
   }
 
-  Future<void> _saveCaloriesPlan() async {
+  bool _validateInputs() {
     if (_proteinsController.text.isEmpty ||
         _carbsController.text.isEmpty ||
         _fatsController.text.isEmpty ||
@@ -111,6 +118,14 @@ class _SetDiaryCaloriesScreenState
               'Por favor, ingrese todos los valores de calorías y macronutrientes.'),
         ),
       );
+      return false;
+    } else {
+      return true;
+    }
+  }
+
+  Future<void> _saveCaloriesPlan() async {
+    if (!_validateInputs()) {
       return;
     }
     try {
@@ -119,7 +134,7 @@ class _SetDiaryCaloriesScreenState
       });
       final userId = ref.watch(userProvider).uid;
 
-      final caloriesPlan = CaloriesPlan(
+      final caloriesPlan = Calories(
           userId: userId,
           date: DateTime.now(),
           calories: _caloriesController.text,
@@ -127,13 +142,22 @@ class _SetDiaryCaloriesScreenState
           carbs: _carbsController.text,
           fats: _fatsController.text);
 
-      await CaloriesServices().createCaloriesPlan(caloriesPlan);
-      ref.watch(caloriesPlanProvider.notifier).setCaloriesPlan(caloriesPlan);
+      if (isAddedCalories) {
+        ref
+            .watch(dailyCaloriesProvider.notifier)
+            .addDailyCalories(caloriesPlan);
+      } else {
+        await CaloriesServices().createCaloriesPlan(caloriesPlan);
+        ref.watch(caloriesPlanProvider.notifier).setCaloriesPlan(caloriesPlan);
+      }
+
       if (mounted) {
         context.go('/calories');
         ScaffoldMessenger.of(context).showSnackBar(
-          const SnackBar(
-            content: Text('Plan de calorías guardado exitosamente'),
+          SnackBar(
+            content: Text(isAddedCalories
+                ? 'Calorías guardads existosamente'
+                : 'Plan de calorías guardado'),
             behavior: SnackBarBehavior.floating,
           ),
         );
@@ -177,7 +201,9 @@ class _SetDiaryCaloriesScreenState
                 child: Column(
                   children: [
                     Text(
-                      'Ajusta las calorías y los macronutrients',
+                      isAddedCalories
+                          ? 'Agrega las calorías y los macronutrientes'
+                          : 'Ajusta las calorías y los macronutrientes',
                       style: TextStyle(
                           fontWeight: FontWeight.bold,
                           fontSize: 22,
@@ -242,7 +268,8 @@ class _SetDiaryCaloriesScreenState
                         onPressed: () {
                           _saveCaloriesPlan();
                         },
-                        text: 'Crear Plan')
+                        text:
+                            isAddedCalories ? 'Guardar Calorías' : 'Crear Plan')
                   ],
                 ),
               ),
