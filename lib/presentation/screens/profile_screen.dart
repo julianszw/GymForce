@@ -28,7 +28,8 @@ class _ProfileScreenState extends ConsumerState<ProfileScreen> {
   @override
   void initState() {
     super.initState();
-    initializeDateFormatting('es', null); // Inicializa los datos de fecha para español
+    initializeDateFormatting(
+        'es', null); // Inicializa los datos de fecha para español
     final user = ref.read(userProvider);
     nameController.text = user.name ?? '';
     birthdateController.text = user.birthdate ?? '';
@@ -48,7 +49,8 @@ class _ProfileScreenState extends ConsumerState<ProfileScreen> {
 
     if (picked != null) {
       setState(() {
-        birthdateController.text = DateFormat("d 'de' MMMM 'del' y", 'es').format(picked);
+        birthdateController.text =
+            DateFormat("d 'de' MMMM 'del' y", 'es').format(picked);
       });
     }
   }
@@ -62,20 +64,22 @@ class _ProfileScreenState extends ConsumerState<ProfileScreen> {
         title: Text('¡Bienvenido, ${user.name ?? 'Usuario'}!'),
       ),
       drawer: const DrawerNavMenu(),
+      resizeToAvoidBottomInset: false,
       body: _isLoading
           ? const Center(child: CircularProgressIndicator())
           : SingleChildScrollView(
-              padding: const EdgeInsets.only(left: 16, right: 16, top: 16, bottom: 118),
+              padding: const EdgeInsets.only(
+                  left: 16, right: 16, top: 16, bottom: 118),
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.center,
                 children: [
                   CircleAvatar(
                     radius: 50,
-                    backgroundImage: (user.profile != null &&
-                            user.profile!.isNotEmpty)
-                        ? NetworkImage(user.profile!)
-                        : AssetImage('assets/profile_picture.jpg')
-                            as ImageProvider,
+                    backgroundImage:
+                        (user.profile != null && user.profile!.isNotEmpty)
+                            ? NetworkImage(user.profile!)
+                            : AssetImage('assets/profile_picture.jpg')
+                                as ImageProvider,
                   ),
                   const SizedBox(height: 16),
                   SizedBox(
@@ -83,11 +87,11 @@ class _ProfileScreenState extends ConsumerState<ProfileScreen> {
                     child: ElevatedButton(
                       onPressed: () async {
                         if (user.uid == null) return;
-                        
+
                         setState(() {
                           _isLoading = true;
                         });
-                        
+
                         try {
                           await FirebaseFirestore.instance
                               .collection('users')
@@ -98,8 +102,7 @@ class _ProfileScreenState extends ConsumerState<ProfileScreen> {
                             'address': addressController.text,
                             'gender': selectedGender,
                             'phone': phoneController.text,
-                            'emergencyPhone':
-                                emergencyPhoneController.text,
+                            'emergencyPhone': emergencyPhoneController.text,
                             'profile': user.profile,
                           });
 
@@ -112,15 +115,13 @@ class _ProfileScreenState extends ConsumerState<ProfileScreen> {
                                 address: addressController.text,
                                 gender: selectedGender,
                                 phone: phoneController.text,
-                                emergencyPhone:
-                                    emergencyPhoneController.text,
+                                emergencyPhone: emergencyPhoneController.text,
                                 profile: user.profile,
                               );
 
                           ScaffoldMessenger.of(context).showSnackBar(
                             const SnackBar(
-                              content: Text(
-                                  'Perfil actualizado correctamente'),
+                              content: Text('Perfil actualizado correctamente'),
                               behavior: SnackBarBehavior.floating,
                             ),
                           );
@@ -212,8 +213,7 @@ class _ProfileScreenState extends ConsumerState<ProfileScreen> {
                         const SizedBox(height: 8),
                         Container(
                           width: double.infinity,
-                          padding: const EdgeInsets.symmetric(
-                              horizontal: 8.0),
+                          padding: const EdgeInsets.symmetric(horizontal: 8.0),
                           decoration: BoxDecoration(
                             color: Colors.white,
                             borderRadius: BorderRadius.circular(10),
@@ -223,11 +223,8 @@ class _ProfileScreenState extends ConsumerState<ProfileScreen> {
                             value: selectedGender,
                             isExpanded: true,
                             underline: const SizedBox(),
-                            items: <String>[
-                              'Masculino',
-                              'Femenino',
-                              'Otro'
-                            ].map<DropdownMenuItem<String>>((String value) {
+                            items: <String>['Masculino', 'Femenino', 'Otro']
+                                .map<DropdownMenuItem<String>>((String value) {
                               return DropdownMenuItem<String>(
                                 value: value,
                                 child: Text(value),

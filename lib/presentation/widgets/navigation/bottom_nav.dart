@@ -43,6 +43,7 @@ class BottomNavState extends State<BottomNav> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
+      resizeToAvoidBottomInset: false,
       extendBody: true,
       floatingActionButton: Stack(
         alignment: Alignment.center,
