@@ -35,6 +35,19 @@ class PaymentNotifier extends StateNotifier<PaymentData> {
       expirationDate: expirationDate,
     );
   }
+
+  void resetPayment() {
+    state = PaymentData(
+      amount: null,
+      date: null,
+      duration: '',
+      title: '',
+      transactionId: '',
+      userId: '',
+      isActive: false,
+      expirationDate: null,
+    );
+  }
 }
 
 final paymentProvider = StateNotifierProvider<PaymentNotifier, PaymentData>(

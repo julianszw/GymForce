@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
+import 'package:gym_force/config/providers/payment_provider.dart';
 import 'package:gym_force/config/providers/user_provider.dart';
 
 class DrawerNavMenu extends ConsumerWidget {
@@ -9,6 +10,7 @@ class DrawerNavMenu extends ConsumerWidget {
   @override
   Widget build(BuildContext context, WidgetRef ref) {
     final userNotifier = ref.read(userProvider.notifier);
+    final paymentNotifier = ref.read(paymentProvider.notifier);
 
     return Drawer(
       backgroundColor: const Color(0xFF121212),
@@ -43,6 +45,7 @@ class DrawerNavMenu extends ConsumerWidget {
             title: const Text('Salir', style: TextStyle(color: Colors.white)),
             onTap: () {
               userNotifier.logOut();
+              paymentNotifier.resetPayment();
               context.go('/auth');
             },
           ),
