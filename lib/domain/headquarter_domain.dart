@@ -13,7 +13,8 @@ class HeadquarterData {
   List<String>? sectors;
   String cellphone;
 
-  HeadquarterData({
+
+HeadquarterData({
     required this.neighborhood,
     required this.address,
     required this.hoursDisplayed,
