@@ -65,9 +65,11 @@ class RegisterDniScreenState extends ConsumerState<RegisterDniScreen> {
           _image = File(image.path);
         });
       } catch (e) {
-        ScaffoldMessenger.of(context).showSnackBar(const SnackBar(
-          content: Text('Error al intentar tomar la foto'),
-        ));
+        if (mounted) {
+          ScaffoldMessenger.of(context).showSnackBar(const SnackBar(
+            content: Text('Error al intentar tomar la foto'),
+          ));
+        }
       }
     }
   }

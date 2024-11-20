@@ -13,10 +13,10 @@ class HomeScreen extends StatelessWidget {
       drawer: const DrawerNavMenu(),
       body: const Center(
         child: Placeholder(
-          fallbackHeight: 200, // Altura predeterminada del placeholder
-          fallbackWidth: 200, // Ancho predeterminado del placeholder
-          color: Colors.grey, // Color del placeholder
-          strokeWidth: 2, // Grosor de la línea del placeholder
+          fallbackHeight: 200,
+          fallbackWidth: 200,
+          color: Colors.grey,
+          strokeWidth: 2,
         ),
       ),
     );

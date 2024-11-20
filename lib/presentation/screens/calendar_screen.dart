@@ -10,7 +10,7 @@ class CalendarScreen extends StatelessWidget {
       appBar: AppBar(
         title: const Text('Calendario'),
         leading: IconButton(
-          icon: const Icon(Icons.arrow_back), // Ícono de retroceso
+          icon: const Icon(Icons.arrow_back),
           onPressed: () {
             context.pop();
           },
@@ -18,10 +18,10 @@ class CalendarScreen extends StatelessWidget {
       ),
       body: const Center(
         child: Placeholder(
-          fallbackHeight: 200, // Altura predeterminada del placeholder
-          fallbackWidth: 200, // Ancho predeterminado del placeholder
-          color: Colors.grey, // Color del placeholder
-          strokeWidth: 2, // Grosor de la línea del placeholder
+          fallbackHeight: 200,
+          fallbackWidth: 200,
+          color: Colors.grey,
+          strokeWidth: 2,
         ),
       ),
     );

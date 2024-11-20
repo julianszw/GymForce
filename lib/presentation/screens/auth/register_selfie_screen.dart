@@ -75,9 +75,11 @@ class RegisterSelfieScreenState extends ConsumerState<RegisterSelfieScreen> {
           _image = File(image.path);
         });
       } catch (e) {
-        ScaffoldMessenger.of(context).showSnackBar(const SnackBar(
-          content: Text('Error al intentar tomar la foto'),
-        ));
+        if (mounted) {
+          ScaffoldMessenger.of(context).showSnackBar(const SnackBar(
+            content: Text('Error al intentar tomar la foto'),
+          ));
+        }
       }
     }
   }
@@ -128,21 +130,28 @@ class RegisterSelfieScreenState extends ConsumerState<RegisterSelfieScreen> {
                 'role': 'user',
               });
 
-              ScaffoldMessenger.of(context).showSnackBar(
-                const SnackBar(content: Text('Registro creado con éxito')),
-              );
-              context.go('/auth');
+              if (mounted) {
+                ScaffoldMessenger.of(context).showSnackBar(
+                  const SnackBar(content: Text('Registro creado con éxito')),
+                );
+                context.go('/auth');
+              }
             }
           } catch (e) {
-            ScaffoldMessenger.of(context).showSnackBar(
-              SnackBar(content: Text(e.toString())),
-            );
+            if (mounted) {
+              ScaffoldMessenger.of(context).showSnackBar(
+                SnackBar(content: Text(e.toString())),
+              );
+            }
           }
         } else {
-          ScaffoldMessenger.of(context).showSnackBar(
-            const SnackBar(
-                content: Text('Los rostros del dni y la selfie no coinciden.')),
-          );
+          if (mounted) {
+            ScaffoldMessenger.of(context).showSnackBar(
+              const SnackBar(
+                  content:
+                      Text('Los rostros del dni y la selfie no coinciden.')),
+            );
+          }
         }
       } else {
         ScaffoldMessenger.of(context).showSnackBar(
@@ -198,10 +207,12 @@ class RegisterSelfieScreenState extends ConsumerState<RegisterSelfieScreen> {
           }
         }
       } else {
-        ScaffoldMessenger.of(context).showSnackBar(
-          const SnackBar(
-              content: Text('Los rostros del dni y la selfie no coinciden.')),
-        );
+        if (mounted) {
+          ScaffoldMessenger.of(context).showSnackBar(
+            const SnackBar(
+                content: Text('Los rostros del dni y la selfie no coinciden.')),
+          );
+        }
       }
       return false;
     } catch (e) {

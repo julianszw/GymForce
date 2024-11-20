@@ -1,5 +1,4 @@
 import 'package:flutter/material.dart';
-import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 import 'package:gym_force/config/providers/user_registration_provider.dart';
@@ -53,22 +52,9 @@ class RegisterExtraDataScreenState
       return;
     }
 
-    try {
-      userRegistrationNotifier.updateExtraData(
-          address, gender!, dni, phone, emergencyPhone);
-      context.push('/register_dni');
-    } on FirebaseAuthException catch (e) {
-      String message = 'Error al registrar el usuario';
-      if (e.code == 'weak-password') {
-        message = 'La contraseña es demasiado débil.';
-      } else if (e.code == 'email-already-in-use') {
-        message = 'Ya hay una cuenta registrada con este email.';
-      } else {
-        message = e.message ?? message;
-      }
-      ScaffoldMessenger.of(context)
-          .showSnackBar(SnackBar(content: Text(message)));
-    }
+    userRegistrationNotifier.updateExtraData(
+        address, gender!, dni, phone, emergencyPhone);
+    context.push('/register_dni');
   }
 
   @override

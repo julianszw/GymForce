@@ -23,17 +23,18 @@ class LoginScreen extends ConsumerStatefulWidget {
 }
 
 class LoginScreenState extends ConsumerState<LoginScreen> {
+  final AuthService _authService = AuthService();
   final TextEditingController _emailController = TextEditingController();
   final TextEditingController _passwordController = TextEditingController();
 
   bool _isEmailValid = true;
   bool _isPasswordValid = true;
   bool _isLoading = false;
-  final AuthService _authService = AuthService();
 
   Future<void> _login() async {
     final email = _emailController.text.trim();
     final password = _passwordController.text.trim();
+    final userState = ref.read(userProvider.notifier);
     final paymentState = ref.read(paymentProvider.notifier);
     final workoutState = ref.read(workoutProvider.notifier);
     final caloriesState = ref.read(caloriePlanProvider.notifier);
@@ -58,18 +59,18 @@ class LoginScreenState extends ConsumerState<LoginScreen> {
         if (userDoc != null) {
           final role = userDoc['role'];
           if (role == 'user') {
-            ref.read(userProvider.notifier).setUser(
-                  uid: uid,
-                  email: email,
-                  name: userDoc['name'],
-                  birthdate: userDoc['birthdate'],
-                  address: userDoc['address'],
-                  gender: userDoc['gender'],
-                  phone: userDoc['phone'],
-                  emergencyPhone: userDoc['emergencyPhone'],
-                  profile: userDoc['profile'],
-                  role: role,
-                );
+            userState.setUser(
+              uid: uid,
+              email: email,
+              name: userDoc['name'],
+              birthdate: userDoc['birthdate'],
+              address: userDoc['address'],
+              gender: userDoc['gender'],
+              phone: userDoc['phone'],
+              emergencyPhone: userDoc['emergencyPhone'],
+              profile: userDoc['profile'],
+              role: role,
+            );
 
             List<Map<String, dynamic>> workoutsData =
                 await WorkoutService().getUserWorkouts();
@@ -116,7 +117,9 @@ class LoginScreenState extends ConsumerState<LoginScreen> {
                 name: userDoc['name'],
                 role: role,
                 barrioAsignado: userDoc['barrioAsignado']);
-            context.go('/employee-welcome');
+            if (mounted) {
+              context.go('/employee-welcome');
+            }
           }
         } else {
           if (mounted) {
