@@ -1,5 +1,5 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
-
+//Cambio 1
 class HeadquarterData {
   String neighborhood;
   String address;

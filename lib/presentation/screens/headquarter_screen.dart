@@ -18,7 +18,7 @@ class HeadquarterScreen extends StatelessWidget {
     return Scaffold(
       backgroundColor: const Color.fromARGB(255, 0, 0, 0),
       appBar: AppBar(
-        title: const Text('Calendario'),
+        title: const Text('Sedes'),
         leading: IconButton(
           icon: const Icon(Icons.arrow_back), // Ícono de retroceso
           onPressed: () {
