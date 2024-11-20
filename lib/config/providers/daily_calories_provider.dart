@@ -35,6 +35,16 @@ class DailyCaloriesNotifier extends StateNotifier<Map<String, dynamic>> {
     };
   }
 
+  void resetDailyCalories() {
+    state = {
+      'dailyCalories': <DailyCalories>[],
+      'totalProteins': '0',
+      'totalCalories': '0',
+      'totalCarbs': '0',
+      'totalFats': '0',
+    };
+  }
+
   String _calculateTotalProteins(List<DailyCalories> dailyCaloriesList) {
     return dailyCaloriesList.fold(0, (sum, item) {
       return sum + (int.tryParse(item.proteins) ?? 0);

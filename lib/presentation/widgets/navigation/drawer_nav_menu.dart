@@ -1,6 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
+import 'package:gym_force/config/providers/calories_plan_provider.dart';
+import 'package:gym_force/config/providers/daily_calories_provider.dart';
 import 'package:gym_force/config/providers/payment_provider.dart';
 import 'package:gym_force/config/providers/user_provider.dart';
 
@@ -11,6 +13,8 @@ class DrawerNavMenu extends ConsumerWidget {
   Widget build(BuildContext context, WidgetRef ref) {
     final userNotifier = ref.read(userProvider.notifier);
     final paymentNotifier = ref.read(paymentProvider.notifier);
+    final dailyCaloriesNotifier = ref.read(dailyCaloriesProvider.notifier);
+    final caloriesPlanNotifier = ref.read(caloriePlanProvider.notifier);
 
     return Drawer(
       backgroundColor: const Color(0xFF121212),
@@ -46,6 +50,8 @@ class DrawerNavMenu extends ConsumerWidget {
             onTap: () {
               userNotifier.logOut();
               paymentNotifier.resetPayment();
+              dailyCaloriesNotifier.resetDailyCalories();
+              caloriesPlanNotifier.resetCaloriePlan();
               context.go('/auth');
             },
           ),

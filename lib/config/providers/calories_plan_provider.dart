@@ -16,6 +16,18 @@ class CaloriePlanNotifier extends StateNotifier<CaloriePlan> {
   void setCaloriePlan(CaloriePlan caloriePlan) {
     state = caloriePlan;
   }
+
+  void resetCaloriePlan() {
+    state = CaloriePlan(
+      id: null,
+      userId: '',
+      date: DateTime.now(),
+      calories: '',
+      proteins: '',
+      carbs: '',
+      fats: '',
+    );
+  }
 }
 
 final caloriePlanProvider =
