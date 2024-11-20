@@ -1,98 +1,116 @@
 import 'package:flutter/material.dart';
+import 'package:go_router/go_router.dart';
 import 'package:gym_force/domain/headquarter_domain.dart';
+import 'package:gym_force/services/headquarter_services.dart';
 import 'package:gym_force/domain/currentpeople_domain.dart';
 import 'package:gym_force/presentation/widgets/navigation/drawer_nav_menu.dart';
 
 class HeadquarterScreen extends StatelessWidget {
+  final BranchService _branchService = BranchService();
   HeadquarterScreen({super.key});
-  final List<Headquarter> headquarters = [
-    Headquarter(
-      title: "Villa Crespo",
-      address: "Av. Corrientes 2553",
-      isOpen: true,
-      hours: "06:00 | 23:30",
-      imageUrl: "https://picsum.photos/200/300",
-      status: "Bastante ocupado",
-      maxCapacity: 100,
-    ),
-    Headquarter(
-      title: "Caballito",
-      address: "Av. Rivadavia 5071",
-      isOpen: true,
-      hours: "07:00 | 22:00",
-      imageUrl: "https://picsum.photos/200/300",
-      status: "Poca gente",
-      maxCapacity: 80,
-    ),
-  ];
   final List<CurrentPeople> currentPeopleList = [
-    CurrentPeople(peopleCount: 79),
+    CurrentPeople(peopleCount: 5),
+    CurrentPeople(peopleCount: 80),
+    CurrentPeople(peopleCount: 100),
   ];
-
   @override
   Widget build(BuildContext context) {
     return Scaffold(
       backgroundColor: const Color.fromARGB(255, 0, 0, 0),
       appBar: AppBar(
-        title: const Text('Sedes'),
+        title: const Text('Calendario'),
+        leading: IconButton(
+          icon: const Icon(Icons.arrow_back), // Ícono de retroceso
+          onPressed: () {
+            context.pop();
+          },
+        ),
       ),
       drawer: const DrawerNavMenu(),
-      body: Column(
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: [
-          Padding(
-            padding: const EdgeInsets.all(16.0),
-            child: Container(
-              decoration: const BoxDecoration(
-                border: Border(
-                  bottom: BorderSide(
-                    color: Color.fromARGB(255, 255, 242, 62),
-                    width: 2.0,
+      body: FutureBuilder<List<HeadquarterData>>(
+        future: _branchService.getHeadquarters(),
+        builder: (context, snapshot) {
+          if (snapshot.connectionState == ConnectionState.waiting) {
+            return const Center(child: CircularProgressIndicator());
+          } else if (snapshot.hasError) {
+            return Center(
+              child: Text(
+                'Error: ${snapshot.error}',
+                style: const TextStyle(color: Colors.white),
+              ),
+            );
+          } else if (!snapshot.hasData || snapshot.data!.isEmpty) {
+            return const Center(
+              child: Text(
+                'No hay gimnasios disponibles.',
+                style: TextStyle(color: Colors.white),
+              ),
+            );
+          }
+          final headquarters = snapshot.data!;
+          return Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              Padding(
+                padding: const EdgeInsets.all(16.0),
+                child: Container(
+                  decoration: const BoxDecoration(
+                    border: Border(
+                      bottom: BorderSide(
+                        color: Color.fromARGB(255, 255, 242, 62),
+                        width: 2.0,
+                      ),
+                    ),
+                  ),
+                  child: const Text(
+                    "Gimnasios Disponibles",
+                    style: TextStyle(
+                      fontSize: 24,
+                      fontWeight: FontWeight.bold,
+                      color: Color.fromARGB(255, 255, 255, 255),
+                    ),
                   ),
                 ),
               ),
-              child: const Text(
-                "Gimnasios Disponibles",
-                style: TextStyle(
-                  fontSize: 24,
-                  fontWeight: FontWeight.bold,
-                  color: Color.fromARGB(255, 255, 255, 255),
+              Expanded(
+                child: ListView.builder(
+                  itemCount: headquarters.length,
+                  itemBuilder: (context, index) {
+                    final headquarter = headquarters[index];
+                    final currentPeople = index < currentPeopleList.length
+                        ? currentPeopleList[index].peopleCount
+                        : null;
+                    return HeadquarterItem(
+                      headquarterData: headquarter,
+                      currentPeople: currentPeople ?? -1,
+                    );
+                  },
                 ),
               ),
-            ),
-          ),
-          Expanded(
-            child: ListView.builder(
-              itemCount: headquarters.length,
-              itemBuilder: (context, index) {
-                final headquarter = headquarters[index];
-
-                final currentPeople = index < currentPeopleList.length
-                    ? currentPeopleList[index].peopleCount
-                    : null; 
-
-                return HeadquarterItem(
-                  headquarter: headquarter,
-                  currentPeople: currentPeople ?? -1, 
-                );
-              },
-            ),
-          ),
-        ],
+            ],
+          );
+        },
       ),
     );
   }
 }
 
 class HeadquarterItem extends StatelessWidget {
-  final Headquarter headquarter;
+  final HeadquarterData headquarterData;
   final int currentPeople;
-
   const HeadquarterItem(
-      {super.key, required this.headquarter, required this.currentPeople});
+      {super.key, required this.headquarterData, required this.currentPeople});
+  bool getIsOpen() {
+    final now = DateTime.now();
+    final openTime = headquarterData.openTime ?? now;
+    final closingTime = headquarterData.closingTime ?? now;
+    // Compare current time with open and closing times
+    return now.isAfter(openTime) && now.isBefore(closingTime);
+  }
 
   @override
   Widget build(BuildContext context) {
+    final isOpen = getIsOpen();
     return Card(
       margin: EdgeInsets.symmetric(vertical: 8, horizontal: 16),
       shape: RoundedRectangleBorder(
@@ -118,7 +136,7 @@ class HeadquarterItem extends StatelessWidget {
                 ),
               ),
               child: Text(
-                headquarter.title,
+                headquarterData.neighborhood,
                 style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
               ),
             ),
@@ -126,7 +144,7 @@ class HeadquarterItem extends StatelessWidget {
             Row(
               children: [
                 Image.network(
-                  headquarter.imageUrl,
+                  headquarterData.outsidePic,
                   width: 120,
                   height: 120,
                   fit: BoxFit.cover,
@@ -155,34 +173,33 @@ class HeadquarterItem extends StatelessWidget {
                 Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
-                    Text(headquarter.address),
+                    Text(headquarterData.address),
                     SizedBox(height: 8),
                     Row(
                       children: [
                         Icon(
-                          headquarter.isOpen ? Icons.check_sharp : Icons.cancel,
-                          color: headquarter.isOpen ? Colors.green : Colors.red,
+                          isOpen ? Icons.check_sharp : Icons.cancel,
+                          color: isOpen ? Colors.green : Colors.red,
                           size: 20,
                         ),
-                        SizedBox(width: 4),
+                        const SizedBox(width: 4),
                         Text(
-                          headquarter.isOpen ? 'Open' : 'Closed',
+                          isOpen ? 'Open' : 'Closed',
                           style: TextStyle(
-                            color:
-                                headquarter.isOpen ? Colors.green : Colors.red,
+                            color: isOpen ? Colors.green : Colors.red,
                           ),
                         ),
                       ],
                     ),
                     SizedBox(height: 8),
-                    Text(headquarter.hours),
+                    Text(headquarterData.hoursDisplayed),
                     SizedBox(height: 8),
                     SizedBox(
                       width: 160,
                       child: CapacityProgressIndicator(
                         current: currentPeople,
-                        max: headquarter.maxCapacity,
-                        isOpen: headquarter.isOpen,
+                        max: headquarterData.maxCapacity,
+                        isOpen: isOpen,
                       ),
                     ),
                   ],
@@ -225,28 +242,6 @@ class CapacityProgressIndicator extends StatelessWidget {
           ),
           SizedBox(height: 4),
           LinearProgressIndicator(
-            value: 0, // No progress when closed
-            backgroundColor: Colors.grey[300],
-            color: Colors.grey,
-          ),
-        ],
-      );
-    }
-
-    if (current == null || max == null) {
-      return Column(
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: [
-          const Text(
-            'Datos no Disponibles',
-            style: TextStyle(
-              color: Colors.red,
-              fontSize: 16,
-              fontWeight: FontWeight.bold,
-            ),
-          ),
-          SizedBox(height: 4),
-          LinearProgressIndicator(
             value: 0,
             backgroundColor: Colors.grey[300],
             color: Colors.grey,
@@ -255,7 +250,7 @@ class CapacityProgressIndicator extends StatelessWidget {
       );
     }
 
- if (current == -1) {
+    if (current == null || max == null || current == -1) {
       return Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
