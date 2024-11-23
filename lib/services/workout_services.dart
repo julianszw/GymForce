@@ -8,7 +8,9 @@ import 'package:http/http.dart' as http;
 class WorkoutService {
   final FirebaseAuth _auth = FirebaseAuth.instance;
   final FirebaseFirestore _firestore = FirebaseFirestore.instance;
-  final String _baseUrl = 'https://prfinal-backend.onrender.com/api';
+  // Cualquier cosa se vuelve al backend anterior por si falla el nuevo
+  // final String _baseUrl = 'https://prfinal-backend.onrender.com/api';
+  final String _baseUrl = 'https://backend-8zgw.onrender.com';
 
   Future<Workout?> createAIWorkout(
       List<String> muscleGroups, String numExercises) async {
