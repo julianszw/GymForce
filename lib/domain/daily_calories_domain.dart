@@ -23,18 +23,18 @@ class DailyCalories extends Calories {
     return baseMap;
   }
 
-  factory DailyCalories.fromMap(Map<String, dynamic> map) {
-    final date =
-        map['date'] != null ? (map['date'] as Timestamp).toDate() : null;
+factory DailyCalories.fromMap(Map<String, dynamic> map) {
+  final date =
+      map['date'] != null ? (map['date'] as Timestamp).toDate() : null;
 
-    return DailyCalories(
-      planId: map['plan_id'] ?? '',
-      userId: map['user_id'] ?? '',
-      date: date,
-      calories: map['calories'] ?? '0',
-      proteins: map['proteins'] ?? '0',
-      carbs: map['carbs'] ?? '0',
-      fats: map['fats'] ?? '0',
-    );
-  }
+  return DailyCalories(
+    planId: map['plan_id'] ?? '',
+    userId: map['user_id'] ?? '',
+    date: date, // Asegurarse de usar la fecha convertida
+    calories: map['calories'] ?? '0',
+    proteins: map['proteins'] ?? '0',
+    carbs: map['carbs'] ?? '0',
+    fats: map['fats'] ?? '0',
+  );
+}
 }
