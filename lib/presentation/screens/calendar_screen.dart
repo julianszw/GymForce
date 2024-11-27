@@ -16,12 +16,79 @@ class _CalendarScreenState extends ConsumerState<CalendarScreen> {
   DateTime? _selectedDay;
   bool _isLoading = false;
   List<Map<String, dynamic>> _dailyEvents = [];
+  Map<DateTime, Map<String, bool>> _monthlyPoints = {}; // Puntos para el mes completo
 
   @override
   void initState() {
     super.initState();
     _fetchDailyData(_focusedDay); // Cargar datos del día actual al iniciar
+    _fetchMonthlyData(_focusedDay); // Cargar datos del mes actual al inicio
   }
+
+  Future<void> _fetchMonthlyData(DateTime focusedDay) async {
+    setState(() {
+      _isLoading = true;
+      _monthlyPoints = {}; // Limpiar los puntos antes de cargar nuevos
+    });
+
+    final userState = ref.read(userProvider);
+    final userId = userState.uid;
+
+    // Determinar el inicio y el final del mes actual
+    final startOfMonth = DateTime(focusedDay.year, focusedDay.month, 1);
+    final endOfMonth = DateTime(focusedDay.year, focusedDay.month + 1, 0);
+
+    try {
+      // Consultar calorías del mes
+      final caloriesSnapshot = await FirebaseFirestore.instance
+          .collection('daily_calories')
+          .where('user_id', isEqualTo: userId)
+          .where('date', isGreaterThanOrEqualTo: startOfMonth)
+          .where('date', isLessThanOrEqualTo: endOfMonth)
+          .get();
+
+      // Consultar entrenamientos del mes
+      final workoutsSnapshot = await FirebaseFirestore.instance
+          .collection('workout_record')
+          .where('userId', isEqualTo: userId)
+          .where('date', isGreaterThanOrEqualTo: startOfMonth)
+          .where('date', isLessThanOrEqualTo: endOfMonth)
+          .get();
+
+      Map<DateTime, Map<String, bool>> points = {};
+
+      // Procesar calorías
+      for (var doc in caloriesSnapshot.docs) {
+        final data = doc.data();
+        final date = (data['date'] as Timestamp).toDate();
+        final eventDate = DateTime(date.year, date.month, date.day);
+
+        points[eventDate] = points[eventDate] ?? {};
+        points[eventDate]!['calories'] = true; // Marcar calorías
+      }
+
+      // Procesar entrenamientos
+      for (var doc in workoutsSnapshot.docs) {
+        final data = doc.data();
+        final date = (data['date'] as Timestamp).toDate();
+        final eventDate = DateTime(date.year, date.month, date.day);
+
+        points[eventDate] = points[eventDate] ?? {};
+        points[eventDate]!['workout'] = true; // Marcar entrenamientos
+      }
+
+      setState(() {
+        _monthlyPoints = points; // Actualizar puntos para todo el mes
+        _isLoading = false;
+      });
+    } catch (e) {
+      print('Error fetching monthly data: $e');
+      setState(() {
+        _isLoading = false;
+      });
+    }
+  }
+
 
 Future<void> _fetchDailyData(DateTime selectedDay) async {
   setState(() {
@@ -139,6 +206,10 @@ Map<String, dynamic> _calculateTotals() {
             lastDay: DateTime(2030),
             focusedDay: _focusedDay,
             selectedDayPredicate: (day) => isSameDay(_selectedDay, day),
+            headerStyle: const HeaderStyle(
+              formatButtonVisible: false,
+              titleCentered: true, // Centrar el mes en el encabezado
+            ),
             onDaySelected: (selectedDay, focusedDay) {
               setState(() {
                 _selectedDay = selectedDay;
@@ -150,20 +221,49 @@ Map<String, dynamic> _calculateTotals() {
               setState(() {
                 _focusedDay = focusedDay;
               });
+              _fetchMonthlyData(focusedDay); // Cargar datos del nuevo mes
             },
-            calendarStyle: CalendarStyle(
-              selectedDecoration: BoxDecoration(
-                color: Theme.of(context).colorScheme.primary,
-                shape: BoxShape.circle,
-              ),
-              todayDecoration: BoxDecoration(
-                color: Theme.of(context).colorScheme.secondary,
-                shape: BoxShape.circle,
-              ),
-            ),
-            headerStyle: const HeaderStyle(
-              formatButtonVisible: false,
-              titleCentered: true, // Centrar el mes en el encabezado
+            calendarBuilders: CalendarBuilders(
+              markerBuilder: (context, date, events) {
+                final normalizedDate = DateTime(date.year, date.month, date.day);
+                final dayPoints = _monthlyPoints[normalizedDate];
+
+                if (dayPoints != null) {
+                  List<Widget> markers = [];
+
+                  if (dayPoints['calories'] == true) {
+                    markers.add(Container(
+                      width: 8,
+                      height: 8,
+                      decoration: const BoxDecoration(
+                        color: Colors.blue,
+                        shape: BoxShape.circle,
+                      ),
+                    ));
+                  }
+
+                  if (dayPoints['workout'] == true) {
+                    markers.add(Container(
+                      width: 8,
+                      height: 8,
+                      decoration: const BoxDecoration(
+                        color: Colors.green,
+                        shape: BoxShape.circle,
+                      ),
+                    ));
+                  }
+
+                  return Positioned(
+                    bottom: 1,
+                    child: Row(
+                      mainAxisAlignment: MainAxisAlignment.center,
+                      children: markers,
+                    ),
+                  );
+                }
+
+                return null;
+              },
             ),
           ),
           const SizedBox(height: 16),
