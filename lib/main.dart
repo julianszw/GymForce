@@ -6,6 +6,9 @@ import 'package:gym_force/config/router/app_router.dart';
 import 'package:gym_force/config/theme/custom_theme.dart';
 import 'package:gym_force/firebase_options.dart';
 
+final GlobalKey<ScaffoldMessengerState> scaffoldMessengerKey =
+    GlobalKey<ScaffoldMessengerState>();
+
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
   SystemChrome.setPreferredOrientations([DeviceOrientation.portraitUp]);
@@ -26,6 +29,7 @@ class MyApp extends StatelessWidget {
         FocusScope.of(context).requestFocus(FocusNode());
       },
       child: MaterialApp.router(
+        scaffoldMessengerKey: scaffoldMessengerKey,
         routerConfig: appRouter,
         theme: customTheme,
         debugShowCheckedModeBanner: false,

@@ -35,6 +35,21 @@ class DailyCaloriesNotifier extends StateNotifier<Map<String, dynamic>> {
     };
   }
 
+  void removeDailyCaloriesByCalories(String id) {
+    final List<DailyCalories> currentDailyCalories =
+        List<DailyCalories>.from(state['dailyCalories'] as List<DailyCalories>);
+
+    currentDailyCalories.removeWhere((dailyCalories) => dailyCalories.id == id);
+
+    state = {
+      'dailyCalories': currentDailyCalories,
+      'totalProteins': _calculateTotalProteins(currentDailyCalories),
+      'totalCalories': _calculateTotalCalories(currentDailyCalories),
+      'totalCarbs': _calculateTotalCarbs(currentDailyCalories),
+      'totalFats': _calculateTotalFats(currentDailyCalories),
+    };
+  }
+
   void resetDailyCalories() {
     state = {
       'dailyCalories': <DailyCalories>[],
