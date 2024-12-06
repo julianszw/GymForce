@@ -26,6 +26,7 @@ class RegisterExtraDataScreenState
   bool _isDniValid = true;
   bool _isPhoneValid = true;
   bool _isEmergencyPhoneValid = true;
+  bool _isEmergencyPhoneDifferent = true;
 
   void registerUser() async {
     final userRegistrationNotifier =
@@ -39,16 +40,18 @@ class RegisterExtraDataScreenState
     setState(() {
       _isAddressValid = validateAddress(address);
       _isGenderValid = gender != null;
-      _isDniValid = validateDNI(dni);
+      _isDniValid = validateDni(dni);
       _isPhoneValid = validatePhoneNumber(phone);
       _isEmergencyPhoneValid = validatePhoneNumber(emergencyPhone);
+      _isEmergencyPhoneDifferent = phone != emergencyPhone;
     });
 
     if (!_isAddressValid ||
         !_isDniValid ||
         !_isGenderValid ||
         !_isPhoneValid ||
-        !_isEmergencyPhoneValid) {
+        !_isEmergencyPhoneValid ||
+        !_isEmergencyPhoneDifferent) {
       return;
     }
 
@@ -163,7 +166,7 @@ class RegisterExtraDataScreenState
                       hintText: 'Número de celular',
                       errorText: _isPhoneValid
                           ? null
-                          : 'Por favor, ingrese un número de celular válido',
+                          : 'Ingrese un número válido (ej: 1123889412)',
                     ),
                   ),
                   const SizedBox(height: 20),
@@ -175,9 +178,11 @@ class RegisterExtraDataScreenState
                     decoration: InputDecoration(
                       filled: true,
                       hintText: 'Número en caso de emergencia',
-                      errorText: _isEmergencyPhoneValid
-                          ? null
-                          : 'Por favor, ingrese un número de celular válido',
+                      errorText: !_isEmergencyPhoneDifferent
+                          ? 'Ingrese un número distinto al tuyo'
+                          : _isEmergencyPhoneValid
+                              ? null
+                              : 'Ingrese un número válido (ej: 1123889412)',
                     ),
                   ),
                   const SizedBox(height: 20),

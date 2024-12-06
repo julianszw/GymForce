@@ -1,10 +1,10 @@
-import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:gym_force/config/providers/user_provider.dart';
-import 'package:gym_force/domain/user_state_domain.dart';
+import 'package:gym_force/main.dart';
 import 'package:gym_force/presentation/widgets/navigation/drawer_nav_menu.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:gym_force/utils/validators.dart';
 import 'package:intl/intl.dart';
 import 'package:intl/date_symbol_data_local.dart'; // Importación necesaria
 
@@ -12,10 +12,10 @@ class ProfileScreen extends ConsumerStatefulWidget {
   const ProfileScreen({super.key});
 
   @override
-  _ProfileScreenState createState() => _ProfileScreenState();
+  ProfileScreenState createState() => ProfileScreenState();
 }
 
-class _ProfileScreenState extends ConsumerState<ProfileScreen> {
+class ProfileScreenState extends ConsumerState<ProfileScreen> {
   String? selectedGender;
   bool _isLoading = false;
 
@@ -25,13 +25,20 @@ class _ProfileScreenState extends ConsumerState<ProfileScreen> {
   TextEditingController phoneController = TextEditingController();
   TextEditingController emergencyPhoneController = TextEditingController();
 
+  bool _isNameValid = true;
+  bool _isBirthDateValid = true;
+  bool _isAddressValid = true;
+  bool _isPhoneValid = true;
+  bool _isEmergencyPhoneValid = true;
+  bool _isEmerencyPhoneNotEqual = true;
+
   @override
   void initState() {
     super.initState();
     initializeDateFormatting(
         'es', null); // Inicializa los datos de fecha para español
     final user = ref.read(userProvider);
-    nameController.text = user.name ?? '';
+    nameController.text = user.name;
     birthdateController.text = user.birthdate ?? '';
     addressController.text = user.address ?? '';
     phoneController.text = user.phone ?? '';
@@ -61,10 +68,9 @@ class _ProfileScreenState extends ConsumerState<ProfileScreen> {
 
     return Scaffold(
       appBar: AppBar(
-        title: Text('¡Bienvenido, ${user.name ?? 'Usuario'}!'),
+        title: Text('¡Bienvenido, ${user.name}!'),
       ),
       drawer: const DrawerNavMenu(),
-      resizeToAvoidBottomInset: false,
       body: _isLoading
           ? const Center(child: CircularProgressIndicator())
           : SingleChildScrollView(
@@ -78,7 +84,7 @@ class _ProfileScreenState extends ConsumerState<ProfileScreen> {
                     backgroundImage:
                         (user.profile != null && user.profile!.isNotEmpty)
                             ? NetworkImage(user.profile!)
-                            : AssetImage('assets/profile_picture.jpg')
+                            : const AssetImage('assets/profile_picture.jpg')
                                 as ImageProvider,
                   ),
                   const SizedBox(height: 16),
@@ -86,13 +92,32 @@ class _ProfileScreenState extends ConsumerState<ProfileScreen> {
                     width: double.infinity,
                     child: ElevatedButton(
                       onPressed: () async {
-                        if (user.uid == null) return;
-
                         setState(() {
-                          _isLoading = true;
+                          _isNameValid = validateName(nameController.text);
+                          _isBirthDateValid =
+                              validateAge(birthdateController.text);
+                          _isAddressValid =
+                              validateAddress(addressController.text);
+                          _isPhoneValid =
+                              validatePhoneNumber(phoneController.text);
+                          _isEmergencyPhoneValid = validatePhoneNumber(
+                              emergencyPhoneController.text);
+                          _isEmerencyPhoneNotEqual = phoneController.text !=
+                              emergencyPhoneController.text;
                         });
 
+                        if (!_isNameValid ||
+                            !_isBirthDateValid ||
+                            !_isAddressValid ||
+                            !_isPhoneValid ||
+                            !_isEmergencyPhoneValid ||
+                            !_isEmerencyPhoneNotEqual) {
+                          return;
+                        }
                         try {
+                          setState(() {
+                            _isLoading = true;
+                          });
                           await FirebaseFirestore.instance
                               .collection('users')
                               .doc(user.uid)
@@ -107,10 +132,10 @@ class _ProfileScreenState extends ConsumerState<ProfileScreen> {
                           });
 
                           ref.read(userProvider.notifier).setUser(
-                                uid: user.uid!,
+                                uid: user.uid,
                                 email: user.email,
                                 name: nameController.text,
-                                role: user.role!,
+                                role: user.role,
                                 birthdate: birthdateController.text,
                                 address: addressController.text,
                                 gender: selectedGender,
@@ -119,21 +144,21 @@ class _ProfileScreenState extends ConsumerState<ProfileScreen> {
                                 profile: user.profile,
                               );
 
-                          ScaffoldMessenger.of(context).showSnackBar(
+                          scaffoldMessengerKey.currentState?.showSnackBar(
                             const SnackBar(
                               content: Text('Perfil actualizado correctamente'),
                               behavior: SnackBarBehavior.floating,
                             ),
                           );
                         } on FirebaseException catch (e) {
-                          ScaffoldMessenger.of(context).showSnackBar(
+                          scaffoldMessengerKey.currentState?.showSnackBar(
                             SnackBar(
                               content: Text(
                                   'Error al actualizar el perfil: ${e.message}'),
                             ),
                           );
                         } catch (e) {
-                          ScaffoldMessenger.of(context).showSnackBar(
+                          scaffoldMessengerKey.currentState?.showSnackBar(
                             SnackBar(
                               content: Text(
                                   'Error inesperado al actualizar el perfil: $e'),
@@ -148,6 +173,7 @@ class _ProfileScreenState extends ConsumerState<ProfileScreen> {
                       style: ElevatedButton.styleFrom(
                         foregroundColor: Colors.black,
                         backgroundColor: Colors.yellow,
+                        textStyle: const TextStyle(fontWeight: FontWeight.bold),
                         shape: RoundedRectangleBorder(
                           borderRadius: BorderRadius.circular(10),
                         ),
@@ -158,8 +184,10 @@ class _ProfileScreenState extends ConsumerState<ProfileScreen> {
                   const SizedBox(height: 16),
                   _ProfileTextField(
                     label: 'Nombre y Apellido',
-                    hint: user.name ?? '',
+                    hint: user.name,
                     controller: nameController,
+                    errorText: 'Ingrese nombre y apellido váldios',
+                    isFieldValid: _isNameValid,
                   ),
                   Padding(
                     padding: const EdgeInsets.symmetric(vertical: 8.0),
@@ -184,6 +212,9 @@ class _ProfileScreenState extends ConsumerState<ProfileScreen> {
                             border: OutlineInputBorder(
                               borderRadius: BorderRadius.circular(10),
                             ),
+                            errorText: _isBirthDateValid
+                                ? null
+                                : 'Por favor, ingrese una fecha de nacmiento válida',
                           ),
                         ),
                       ],
@@ -193,16 +224,25 @@ class _ProfileScreenState extends ConsumerState<ProfileScreen> {
                     label: 'Domicilio',
                     hint: user.address ?? '',
                     controller: addressController,
+                    isFieldValid: _isAddressValid,
+                    errorText: 'Ingrese una dirección válida',
                   ),
                   _ProfileTextField(
                     label: 'Número de teléfono',
                     hint: user.phone ?? '',
                     controller: phoneController,
+                    errorText: 'Ingrese un número válido (ej: 1123889412)',
+                    isFieldValid: _isPhoneValid,
                   ),
                   _ProfileTextField(
                     label: 'Número en caso de emergencia',
                     hint: user.emergencyPhone ?? '',
                     controller: emergencyPhoneController,
+                    errorText: !_isEmergencyPhoneValid
+                        ? 'Ingrese un número válido (ej: 1123889412)'
+                        : 'Ingrese un número distinto al tuyo',
+                    isFieldValid:
+                        _isEmergencyPhoneValid && _isEmerencyPhoneNotEqual,
                   ),
                   SingleChildScrollView(
                     child: Column(
@@ -253,12 +293,15 @@ class _ProfileTextField extends StatelessWidget {
   final String label;
   final String hint;
   final TextEditingController controller;
+  final bool isFieldValid;
+  final String errorText;
 
-  const _ProfileTextField({
-    required this.label,
-    required this.hint,
-    required this.controller,
-  });
+  const _ProfileTextField(
+      {required this.label,
+      required this.hint,
+      required this.controller,
+      required this.isFieldValid,
+      required this.errorText});
 
   @override
   Widget build(BuildContext context) {
@@ -283,6 +326,7 @@ class _ProfileTextField extends StatelessWidget {
               border: OutlineInputBorder(
                 borderRadius: BorderRadius.circular(10),
               ),
+              errorText: isFieldValid ? null : errorText,
             ),
           ),
         ],
