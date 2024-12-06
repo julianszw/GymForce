@@ -43,7 +43,7 @@ class RegisterBasicDataState extends ConsumerState<RegisterBasicDataScreen> {
       _isEmailValid = validateEmail(email);
       _isNameValid = validateName(name);
       _isPasswordValid = validatePassword(password);
-      _isBirthDateValid = birthdate.isNotEmpty;
+      _isBirthDateValid = validateAge(birthdate);
     });
 
     if (!_isEmailValid ||
@@ -132,7 +132,7 @@ class RegisterBasicDataState extends ConsumerState<RegisterBasicDataScreen> {
                       hintText: 'Contraseña',
                       errorText: _isPasswordValid
                           ? null
-                          : 'Por favor, ingrese su contraseña',
+                          : '8 a 25 caracteres, al menos un número y mayúscula',
                     ),
                   ),
                   const SizedBox(height: 20),
@@ -145,7 +145,7 @@ class RegisterBasicDataState extends ConsumerState<RegisterBasicDataScreen> {
                       hintText: 'Fecha de nacimiento',
                       errorText: _isBirthDateValid
                           ? null
-                          : 'Por favor, ingrese su fecha de nacimiento',
+                          : 'Por favor, ingrese una fecha de nacimiento válida',
                     ),
                     readOnly: true,
                     onTap: () {
