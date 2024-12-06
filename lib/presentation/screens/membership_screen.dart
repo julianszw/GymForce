@@ -188,143 +188,150 @@ class MembershipScreenState extends ConsumerState<MembershipScreen>
                     ],
                   ),
                 )
-              : Column(
-                  children: [
-                    Container(
-                      padding: const EdgeInsets.all(16),
-                      margin: const EdgeInsets.only(
-                        top: 20,
-                      ),
-                      color: Colors.black,
-                      child: SizedBox(
-                        width: double.infinity,
-                        child: Column(
-                          children: [
-                            Text(
-                              userState.name,
-                              style: const TextStyle(
-                                color: Colors.white,
-                                fontSize: 18,
-                                fontWeight: FontWeight.bold,
-                              ),
-                            ),
-                            Text(
-                              paymentState.isActive ? 'Activo' : 'Inactivo',
-                              style: TextStyle(
-                                color: paymentState.isActive
-                                    ? Colors.green
-                                    : Colors.red,
-                                fontSize: 16,
-                              ),
-                            ),
-                            if (paymentState.title != '') ...[
+              : SingleChildScrollView(
+                  child: Column(
+                    children: [
+                      Container(
+                        padding: const EdgeInsets.all(16),
+                        margin: const EdgeInsets.only(
+                          top: 20,
+                        ),
+                        color: Colors.black,
+                        child: SizedBox(
+                          width: double.infinity,
+                          child: Column(
+                            children: [
                               Text(
-                                'Plan: ${paymentState.title.split(' ')[1]}',
+                                userState.name,
                                 style: const TextStyle(
-                                    color: Colors.white, fontSize: 16),
+                                  color: Colors.white,
+                                  fontSize: 18,
+                                  fontWeight: FontWeight.bold,
+                                ),
                               ),
-                            ],
-                            if (expirationDateString != 'null/null/null') ...[
                               Text(
-                                'Vencimiento: $expirationDateString',
-                                style: const TextStyle(
-                                    color: Colors.white, fontSize: 14),
+                                paymentState.isActive ? 'Activo' : 'Inactivo',
+                                style: TextStyle(
+                                  color: paymentState.isActive
+                                      ? Colors.green
+                                      : Colors.red,
+                                  fontSize: 16,
+                                ),
                               ),
+                              if (paymentState.title != '') ...[
+                                Text(
+                                  'Plan: ${paymentState.title.split(' ')[1]}',
+                                  style: const TextStyle(
+                                      color: Colors.white, fontSize: 16),
+                                ),
+                              ],
+                              if (expirationDateString != 'null/null/null') ...[
+                                Text(
+                                  'Vencimiento: $expirationDateString',
+                                  style: const TextStyle(
+                                      color: Colors.white, fontSize: 14),
+                                ),
+                              ],
                             ],
-                          ],
+                          ),
                         ),
                       ),
-                    ),
-                    Image.asset(
-                      'assets/images/memberships_wallpaper.png',
-                      height: 200,
-                      width: double.infinity,
-                      fit: BoxFit.cover,
-                    ),
-                    Expanded(
-                      child: Row(
-                        mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-                        children: memberships.asMap().entries.map((entry) {
-                          int index = entry.key;
-                          Map<String, dynamic> membership = entry.value;
+                      Image.asset(
+                        'assets/images/memberships_wallpaper.png',
+                        height: 200,
+                        width: double.infinity,
+                        fit: BoxFit.cover,
+                      ),
+                      Container(
+                        margin: const EdgeInsets.only(top: 20),
+                        child: Column(
+                          mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+                          children: memberships.asMap().entries.map((entry) {
+                            int index = entry.key;
+                            Map<String, dynamic> membership = entry.value;
 
-                          return GestureDetector(
-                            onTap: () {
-                              setState(() {
-                                selectedMembershipIndex = index;
-                              });
-                            },
-                            child: Card(
-                              elevation: 4,
-                              margin: const EdgeInsets.all(8),
-                              color: Colors.white,
-                              shape: RoundedRectangleBorder(
-                                borderRadius: BorderRadius.circular(8),
-                                side: BorderSide(
-                                  color: selectedMembershipIndex == index
-                                      ? Colors.yellow
-                                      : Colors.transparent,
-                                  width: 4,
+                            return GestureDetector(
+                              onTap: () {
+                                setState(() {
+                                  selectedMembershipIndex = index;
+                                });
+                              },
+                              child: Card(
+                                elevation: 4,
+                                margin: const EdgeInsets.all(8),
+                                color: Colors.white,
+                                shape: RoundedRectangleBorder(
+                                  borderRadius: BorderRadius.circular(8),
+                                  side: BorderSide(
+                                    color: selectedMembershipIndex == index
+                                        ? Colors.yellow
+                                        : Colors.transparent,
+                                    width: 4,
+                                  ),
                                 ),
-                              ),
-                              child: Container(
-                                width: 110,
-                                height: 150,
-                                padding: const EdgeInsets.only(top: 25),
-                                child: Column(
-                                  children: [
-                                    Text(
-                                      '\$${membership['price'] ?? 'Sin precio'}',
-                                      style: const TextStyle(
-                                          fontSize: 20,
-                                          fontWeight: FontWeight.bold,
-                                          color: Colors.black),
-                                    ),
-                                    const Text(
-                                      'por mes',
-                                      style: TextStyle(
-                                          fontSize: 14, color: Colors.black),
-                                    ),
-                                    const Spacer(),
-                                    Container(
-                                      decoration: const BoxDecoration(
-                                        color: Color(0xFFAF9D44),
-                                        borderRadius: BorderRadius.only(
-                                          bottomLeft: Radius.circular(8),
-                                          bottomRight: Radius.circular(8),
+                                child: SizedBox(
+                                  width:
+                                      MediaQuery.of(context).size.width * 0.80,
+                                  child: Row(
+                                    children: [
+                                      Padding(
+                                        padding:
+                                            const EdgeInsets.only(left: 10),
+                                        child: Text(
+                                          '\$${membership['price'] ?? 'Sin precio'}',
+                                          style: const TextStyle(
+                                              fontSize: 18,
+                                              fontWeight: FontWeight.bold,
+                                              color: Colors.black),
                                         ),
                                       ),
-                                      width: 110,
-                                      padding: const EdgeInsets.symmetric(
-                                          vertical: 8),
-                                      alignment: Alignment.center,
-                                      child: Text(
-                                        membership['duration']
-                                                ?.toString()
-                                                .toUpperCase() ??
-                                            'Sin duración',
-                                        style: const TextStyle(
-                                            color: Colors.white, fontSize: 20),
-                                        textAlign: TextAlign.center,
+                                      const Text(
+                                        ' por mes',
+                                        style: TextStyle(
+                                            fontSize: 14, color: Colors.black),
                                       ),
-                                    ),
-                                  ],
+                                      const Spacer(),
+                                      Container(
+                                        decoration: const BoxDecoration(
+                                          color: Color(0xFFAF9D44),
+                                          borderRadius: BorderRadius.only(
+                                            topRight: Radius.circular(8),
+                                            bottomRight: Radius.circular(8),
+                                          ),
+                                        ),
+                                        width: 110,
+                                        padding: const EdgeInsets.symmetric(
+                                            vertical: 8),
+                                        alignment: Alignment.center,
+                                        child: Text(
+                                          membership['duration']
+                                                  ?.toString()
+                                                  .toUpperCase() ??
+                                              'Sin duración',
+                                          style: const TextStyle(
+                                              color: Colors.white,
+                                              fontSize: 18),
+                                          textAlign: TextAlign.center,
+                                        ),
+                                      ),
+                                    ],
+                                  ),
                                 ),
                               ),
-                            ),
-                          );
-                        }).toList(),
+                            );
+                          }).toList(),
+                        ),
                       ),
-                    ),
-                    Padding(
-                        padding: const EdgeInsets.symmetric(vertical: 50.0),
-                        child: YellowButton(
-                          isLoading: isLoadingPurchase,
-                          onPressed: _handlePurchase,
-                          text: 'Comprar',
-                          isEnabled: selectedMembershipIndex != null,
-                        )),
-                  ],
+                      Padding(
+                          padding: const EdgeInsets.symmetric(vertical: 50.0),
+                          child: YellowButton(
+                            isLoading: isLoadingPurchase,
+                            onPressed: _handlePurchase,
+                            text: 'Comprar',
+                            isEnabled: selectedMembershipIndex != null,
+                          )),
+                    ],
+                  ),
                 ),
     );
   }
