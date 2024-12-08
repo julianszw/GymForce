@@ -32,7 +32,7 @@ class WorkoutService {
         return null;
       }
     } catch (e) {
-      throw Exception('Error al generar la rutina: $e');
+      throw Exception('Error al generar la rutina');
     }
   }
 
@@ -44,7 +44,7 @@ class WorkoutService {
 
       await _firestore.collection('workouts').add(workoutData.toJson());
     } catch (e) {
-      throw Exception('Error al agregar la rutina: $e');
+      throw Exception('Error al agregar la rutina');
     }
   }
 
@@ -59,7 +59,7 @@ class WorkoutService {
 
       return querySnapshot.docs.map((doc) => doc.data()).toList();
     } catch (e) {
-      throw Exception('Error al obtener las rutinas del usuario: $e');
+      throw Exception('Error al obtener las rutinas del usuario');
     }
   }
 
@@ -75,7 +75,7 @@ class WorkoutService {
         throw Exception('No se encontró la rutina con el id: $id');
       }
     } catch (e) {
-      throw Exception('Error al actualizar la rutina: $e');
+      throw Exception('Error al actualizar la rutina');
     }
   }
 
@@ -92,7 +92,7 @@ class WorkoutService {
         throw Exception('No se encontró la rutina con el id: $id');
       }
     } catch (e) {
-      throw Exception('Error al eliminar la rutina: $e');
+      throw Exception('Error al eliminar la rutina');
     }
   }
 }

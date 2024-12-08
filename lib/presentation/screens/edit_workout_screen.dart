@@ -189,7 +189,6 @@ class EditWorkoutScreenState extends ConsumerState<EditWorkoutScreen> {
 
   @override
   Widget build(BuildContext context) {
-    print(widget.workoutId);
     return Scaffold(
       resizeToAvoidBottomInset: false,
       body: isLoading

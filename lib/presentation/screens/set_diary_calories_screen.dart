@@ -184,8 +184,8 @@ class _SetDiaryCaloriesScreenState
     } catch (e) {
       if (mounted) {
         ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(
-            content: Text('Error al guardar el plan de calorías: $e'),
+          const SnackBar(
+            content: Text('Error al guardar el plan de calorías'),
             behavior: SnackBarBehavior.floating,
           ),
         );

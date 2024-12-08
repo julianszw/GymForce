@@ -1,20 +1,20 @@
-
 import 'package:cloud_firestore/cloud_firestore.dart';
 // Solo si necesitas un url especifico por foto.
 //import 'package:firebase_storage/firebase_storage.dart';
 
 class SucursalService {
-
   final FirebaseFirestore _firestore = FirebaseFirestore.instance;
-  
+
   // Solo si necesitas un url especifico por foto.
   //final FirebaseStorage _storage = FirebaseStorage.instance;
 
-  final String fotoSucursalBase = "https://firebasestorage.googleapis.com/v0/b/gymforce-cde2c.appspot.com/o/users%2Fprofile_pics%2FGimnasio.jpg?alt=media&token=56b713c1-502a-48e0-9a04-2b7c108848d6";
+  final String fotoSucursalBase =
+      "https://firebasestorage.googleapis.com/v0/b/gymforce-cde2c.appspot.com/o/users%2Fprofile_pics%2FGimnasio.jpg?alt=media&token=56b713c1-502a-48e0-9a04-2b7c108848d6";
 
-Future<List<Map<String, dynamic>>> getAllSucursales() async {
+  Future<List<Map<String, dynamic>>> getAllSucursales() async {
     try {
-      QuerySnapshot querySnapshot = await _firestore.collection('sucursales').get();
+      QuerySnapshot querySnapshot =
+          await _firestore.collection('sucursales').get();
 
       List<Map<String, dynamic>> sucursales = [];
 
@@ -36,7 +36,7 @@ Future<List<Map<String, dynamic>>> getAllSucursales() async {
 
       return sucursales;
     } catch (e) {
-      throw Exception('Error no se puede recibir datos de las sucursales: $e');
+      throw Exception('Error no se puede recibir datos de las sucursales');
     }
   }
 /*

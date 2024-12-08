@@ -3,6 +3,7 @@ import 'package:flutter/services.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 import 'package:gym_force/config/providers/ai_workout_provider.dart';
+import 'package:gym_force/main.dart';
 import 'package:gym_force/services/workout_services.dart';
 
 class CreateAiWorkoutScreen extends ConsumerStatefulWidget {
@@ -175,7 +176,7 @@ class CreateAiWorkoutScreenState extends ConsumerState<CreateAiWorkoutScreen> {
           }
         } else {
           if (mounted) {
-            ScaffoldMessenger.of(context).showSnackBar(
+            scaffoldMessengerKey.currentState?.showSnackBar(
               const SnackBar(
                 content: Text('Ha ocurrido un error al generar la rutina.'),
               ),
@@ -184,7 +185,7 @@ class CreateAiWorkoutScreenState extends ConsumerState<CreateAiWorkoutScreen> {
         }
       } catch (e) {
         if (mounted) {
-          ScaffoldMessenger.of(context).showSnackBar(
+          scaffoldMessengerKey.currentState?.showSnackBar(
             const SnackBar(
               content: Text('Ha ocurrido un error al generar la rutina.'),
             ),

@@ -24,7 +24,7 @@ class CaloriesServices {
         return null;
       }
     } catch (e) {
-      throw Exception("Error al obtener el plan de calorías: $e");
+      throw Exception("Error al obtener el plan de calorías");
     }
   }
 
@@ -35,7 +35,7 @@ class CaloriesServices {
           .add(caloriesPlan.toMap());
       await docRef.update({'id': docRef.id});
     } catch (e) {
-      throw Exception("Error al guardar el plan de calorías: $e");
+      throw Exception("Error al guardar el plan de calorías");
     }
   }
 
@@ -43,7 +43,7 @@ class CaloriesServices {
     try {
       await _firestore.collection('daily_calories').add(dailyCalories.toMap());
     } catch (e) {
-      throw Exception("Error al agregar DailyCalories: $e");
+      throw Exception("Error al agregar las calorías diarias");
     }
   }
 
@@ -70,7 +70,7 @@ class CaloriesServices {
           .map((doc) => DailyCalories.fromMap(doc.data()))
           .toList();
     } catch (e) {
-      throw Exception("Error al obtener las Calorías Diarias: $e");
+      throw Exception("Error al obtener las calorías diarias");
     }
   }
 }

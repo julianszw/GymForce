@@ -152,16 +152,15 @@ class ProfileScreenState extends ConsumerState<ProfileScreen> {
                           );
                         } on FirebaseException catch (e) {
                           scaffoldMessengerKey.currentState?.showSnackBar(
-                            SnackBar(
-                              content: Text(
-                                  'Error al actualizar el perfil: ${e.message}'),
+                            const SnackBar(
+                              content: Text('Error al actualizar el perfil'),
                             ),
                           );
                         } catch (e) {
                           scaffoldMessengerKey.currentState?.showSnackBar(
-                            SnackBar(
+                            const SnackBar(
                               content: Text(
-                                  'Error inesperado al actualizar el perfil: $e'),
+                                  'Error inesperado al actualizar el perfil'),
                             ),
                           );
                         } finally {
