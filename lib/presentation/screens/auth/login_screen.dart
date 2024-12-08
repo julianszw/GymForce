@@ -141,7 +141,7 @@ class LoginScreenState extends ConsumerState<LoginScreen> {
         if (mounted) {
           ScaffoldMessenger.of(context).showSnackBar(
             const SnackBar(
-              content: Text('Error inesperado'),
+              content: Text('Error de autenticación'),
             ),
           );
         }
