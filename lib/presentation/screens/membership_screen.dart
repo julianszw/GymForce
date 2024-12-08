@@ -124,6 +124,9 @@ class MembershipScreenState extends ConsumerState<MembershipScreen>
         scaffoldMessengerKey.currentState?.showSnackBar(
           const SnackBar(content: Text('Error al crear la transacción.')),
         );
+        setState(() {
+          isLoadingPurchase = false;
+        });
       }
     }
   }
