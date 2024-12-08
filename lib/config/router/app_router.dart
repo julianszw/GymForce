@@ -16,8 +16,11 @@ import 'package:gym_force/presentation/screens/employee/employee_welcome.dart'; 
 import 'package:gym_force/presentation/screens/auth/login_screen.dart';
 import 'package:gym_force/presentation/screens/auth/register_basic_data.dart';
 import 'package:gym_force/presentation/screens/auth/register_extra_data_screen.dart';
+import 'package:gym_force/presentation/screens/payment_failed_screen.dart';
+import 'package:gym_force/presentation/screens/payment_pending_screen.dart';
 import 'package:gym_force/presentation/screens/set_diary_calories_screen.dart';
 import 'package:gym_force/presentation/screens/splash_screen.dart';
+import 'package:gym_force/presentation/screens/success_screen.dart';
 import 'package:gym_force/presentation/screens/train_workout_screen.dart';
 import 'package:gym_force/presentation/widgets/navigation/employee_bottom_nav.dart';
 import 'package:gym_force/utils/auth_guard.dart';
@@ -110,11 +113,14 @@ final GoRouter appRouter = GoRouter(
     ),
     GoRoute(
       path: '/calendar',
-      builder: (context, state) =>  CalendarScreen(),
+      builder: (context, state) => const CalendarScreen(),
     ),
     GoRoute(
-      path: '/membership',
-      builder: (context, state) => const MembershipScreen(),
+      path: '/membership/:status',
+      builder: (context, state) {
+        final status = state.pathParameters['status'];
+        return MembershipScreen(status: status);
+      },
     ),
     GoRoute(
       path: '/create-manually-workout',
@@ -164,6 +170,17 @@ final GoRouter appRouter = GoRouter(
     GoRoute(
         path: '/ai-workout',
         builder: (context, state) => const AIWorkoutScreen()),
+    GoRoute(
+      path: '/payment-succes',
+      builder: (context, state) => const SuccessScreen(),
+    ),
+    GoRoute(
+      path: '/payment-failed',
+      builder: (context, state) => const PaymentFailedScreen(),
+    ),
+    GoRoute(
+        path: '/payment-pending',
+        builder: (context, state) => const PaymentPendingScreen()),
     GoRoute(
         path: '/set-diary-calories',
         builder: (context, state) {

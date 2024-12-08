@@ -3,13 +3,15 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 import 'package:gym_force/config/providers/payment_provider.dart';
 import 'package:gym_force/config/providers/user_provider.dart';
+import 'package:gym_force/main.dart';
 import 'package:gym_force/presentation/widgets/yellow_button.dart';
 import 'package:gym_force/services/memberships_services.dart';
 import 'package:gym_force/services/payment_service.dart';
 import 'package:url_launcher/url_launcher.dart';
 
 class MembershipScreen extends ConsumerStatefulWidget {
-  const MembershipScreen({super.key});
+  final String? status;
+  const MembershipScreen({super.key, this.status});
 
   @override
   MembershipScreenState createState() => MembershipScreenState();
@@ -28,19 +30,15 @@ class MembershipScreenState extends ConsumerState<MembershipScreen>
     super.initState();
     WidgetsBinding.instance.addObserver(this);
     _fetchMemberships();
+    if (widget.status == 'success') {
+      _startPaymentVerification();
+    }
   }
 
   @override
   void dispose() {
     WidgetsBinding.instance.removeObserver(this);
     super.dispose();
-  }
-
-  @override
-  void didChangeAppLifecycleState(AppLifecycleState state) {
-    if (state == AppLifecycleState.resumed) {
-      _startPaymentVerification();
-    }
   }
 
   Future<void> _fetchMemberships() async {
@@ -64,13 +62,9 @@ class MembershipScreenState extends ConsumerState<MembershipScreen>
   }
 
   Future<void> _startPaymentVerification() async {
-    if (!isLoadingPayment) return;
     setState(() {
-      selectedMembershipIndex = null;
-      isLoadingPayment = true;
+      isLoading = true;
     });
-
-    await Future.delayed(const Duration(seconds: 15));
 
     try {
       final userState = ref.read(userProvider);
@@ -87,30 +81,15 @@ class MembershipScreenState extends ConsumerState<MembershipScreen>
             transactionId: payment['transactionId'],
             userId: payment['userId'],
             expirationDate: payment['expirationDate']);
-
-        ScaffoldMessenger.of(context).showSnackBar(
-          const SnackBar(
-            content: Text('¡Pago confirmado! Gracias por tu compra.'),
-          ),
-        );
-      } else {
-        ScaffoldMessenger.of(context).showSnackBar(
-          const SnackBar(
-            content:
-                Text('No se ha podido confirmar el pago. Inténtalo de nuevo.'),
-          ),
-        );
       }
     } catch (e) {
-      ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(
-          content: Text('Error al verificar el pago: $e'),
-        ),
-      );
+      print(e);
     } finally {
-      setState(() {
-        isLoadingPayment = false;
-      });
+      if (mounted) {
+        setState(() {
+          isLoading = false;
+        });
+      }
     }
   }
 
@@ -137,14 +116,12 @@ class MembershipScreenState extends ConsumerState<MembershipScreen>
             'https://www.mercadopago.com.ar/checkout/v1/redirect?pref_id=$transactionId';
         await launchUrl(Uri.parse(url));
 
-        //TODO Por ahora para que no se ejecute cada vez que se va al segundo plano por cualquier cosa, pero tendriamos que poder capturar de la redireccion si fue un success o que para luego si ejecutar el startPaymentVerification
-        await Future.delayed(const Duration(seconds: 2));
+        await Future.delayed(const Duration(seconds: 3));
         setState(() {
-          isLoadingPayment = true;
           isLoadingPurchase = false;
         });
       } else {
-        ScaffoldMessenger.of(context).showSnackBar(
+        scaffoldMessengerKey.currentState?.showSnackBar(
           const SnackBar(content: Text('Error al crear la transacción.')),
         );
       }
@@ -167,7 +144,13 @@ class MembershipScreenState extends ConsumerState<MembershipScreen>
               leading: IconButton(
                 icon: const Icon(Icons.arrow_back),
                 onPressed: () {
-                  context.pop();
+                  if (widget.status == 'success' ||
+                      widget.status == 'failed' ||
+                      widget.status == 'pending') {
+                    context.push('/');
+                  } else {
+                    context.pop();
+                  }
                 },
               ),
             ),

@@ -41,7 +41,7 @@ class DrawerNavMenu extends ConsumerWidget {
             title:
                 const Text('Membresías', style: TextStyle(color: Colors.white)),
             onTap: () {
-              context.push('/membership');
+              context.push('/membership/-');
             },
           ),
           ListTile(
