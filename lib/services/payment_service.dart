@@ -29,8 +29,7 @@ class PaymentService {
         return null;
       }
     } catch (e) {
-      throw Exception(
-          'Error al obtener el pago más reciente para el usuario. $e');
+      throw Exception('Error al obtener el pago más reciente para el usuario');
     }
   }
 }

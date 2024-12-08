@@ -23,7 +23,7 @@ class WorkoutRecordService {
 
       await _firestore.collection('workout_record').add(workoutRecordData);
     } catch (e) {
-      throw Exception('Error al agregar el registro de la rutina: $e');
+      throw Exception('Error al agregar el registro de la rutina');
     }
   }
 }

@@ -25,7 +25,7 @@ class BranchService {
       }).toList();
     } catch (e) {
       throw Exception(
-          'Error no se puede recibir datos de las sucursales en services: $e');
+          'Error no se puede recibir datos de las sucursales en services');
     }
   }
 
@@ -56,7 +56,7 @@ class BranchService {
 
       return null; // Retorna null si no se encuentra una sucursal con el barrio proporcionado
     } catch (e) {
-      throw Exception('Error buscando la sucursal por barrio: $e');
+      throw Exception('Error buscando la sucursal por barrio');
     }
   }
 }
