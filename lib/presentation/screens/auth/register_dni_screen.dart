@@ -3,6 +3,8 @@ import 'package:camera/camera.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 import 'package:gym_force/config/providers/user_registration_provider.dart';
+import 'package:gym_force/main.dart';
+import 'package:gym_force/services/auth_services.dart';
 import 'package:image_picker/image_picker.dart';
 import 'dart:io';
 
@@ -83,16 +85,57 @@ class RegisterDniScreenState extends ConsumerState<RegisterDniScreen> {
     }
   }
 
-  void _goToNextScreen() {
-    if (_image != null) {
-      final userRegistrationNotifier =
-          ref.read(userRegistrationProvider.notifier);
-      userRegistrationNotifier.updateDniPhotoPath(_image!);
-      context.push('/register_selfie');
-    } else {
+  void _goToNextScreen() async {
+    if (_image == null) {
       ScaffoldMessenger.of(context).showSnackBar(
         const SnackBar(
             content: Text('Por favor, selecciona o toma una foto de tu DNI.')),
+      );
+      return;
+    }
+
+    showDialog(
+      context: context,
+      barrierDismissible: false,
+      builder: (context) => const Center(child: CircularProgressIndicator()),
+    );
+
+    try {
+      final authService = AuthService();
+      final imageUrl = await authService.uploadImageToFirebase(_image!);
+
+      if (imageUrl == null) {
+        Navigator.of(context).pop();
+        scaffoldMessengerKey.currentState?.showSnackBar(
+          const SnackBar(content: Text('Error al subir la imagen.')),
+        );
+        return;
+      }
+
+      final validationResponse = await authService.detectDni(imageUrl);
+
+      Navigator.of(context).pop();
+
+      if (validationResponse != null &&
+          (validationResponse.contains('portrait') &&
+                  validationResponse.contains('paper') ||
+              validationResponse.contains('document') &&
+                  validationResponse.contains('paper'))) {
+        final userRegistrationNotifier =
+            ref.read(userRegistrationProvider.notifier);
+        userRegistrationNotifier.updateDniPhotoPath(_image!);
+        context.push('/register_selfie');
+      } else {
+        scaffoldMessengerKey.currentState?.showSnackBar(
+          const SnackBar(
+              content: Text(
+                  'El documetno no es válido. Recomendamos sacar la foto en una superficie plana')),
+        );
+      }
+    } catch (e) {
+      Navigator.of(context).pop();
+      scaffoldMessengerKey.currentState?.showSnackBar(
+        SnackBar(content: Text(e.toString())),
       );
     }
   }
