@@ -78,7 +78,11 @@ bool validateAge(String birthDateString) {
       age--;
     }
 
-    return age >= 18;
+    if (age < 18 || age > 110) {
+      return false;
+    }
+
+    return true;
   } catch (e) {
     print("Error al analizar la fecha: $e");
     return false;

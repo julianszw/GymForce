@@ -1,11 +1,14 @@
+import 'dart:convert';
 import 'dart:io';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_storage/firebase_storage.dart';
+import 'package:http/http.dart' as http;
 
 class AuthService {
   final FirebaseAuth _auth = FirebaseAuth.instance;
   final FirebaseFirestore _firestore = FirebaseFirestore.instance;
+  final String _baseUrl = 'https://backend-8zgw.onrender.com';
 
   Future<UserCredential?> loginUser(String email, String password) async {
     try {
@@ -88,6 +91,32 @@ class AuthService {
       return downloadUrl;
     } catch (e) {
       throw Exception('Error al subir la imagen a Firebase.');
+    }
+  }
+
+  Future<List<dynamic>?> detectDni(String imageUrl) async {
+    try {
+      final url = Uri.parse('$_baseUrl/api/clarifai/document-recognition');
+      final response = await http.post(url,
+          headers: {
+            'Content-Type': 'application/json',
+          },
+          body: jsonEncode({'imageUrl': imageUrl}));
+      print('Image URL: $url');
+      print('Response status: ${response.statusCode}');
+      print('Response body: ${response.body}');
+      if (response.statusCode == 200) {
+        final data = jsonDecode(response.body);
+        final imageDetections = data['response'];
+        print('Detections: $imageDetections');
+        return imageDetections;
+      } else {
+        return null;
+      }
+    } catch (e) {
+      print('Error al validar DNI: $e');
+      throw Exception(
+          'Ingresa un dni válido. Sacale una foto en un superficie plana');
     }
   }
 }
