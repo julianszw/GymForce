@@ -101,24 +101,6 @@ class _CaloriesScreenState extends ConsumerState<CaloriesScreen> {
                         children: [
                           Column(
                             children: [
-                              EasyDateTimeLinePicker(
-                                headerOptions: const HeaderOptions(
-                                    headerType: HeaderType.none),
-                                firstDate: DateTime(2024, 11, 1),
-                                lastDate: DateTime(2030, 3, 18),
-                                focusedDate: _selectedDate,
-                                itemExtent: 64.0,
-                                locale: const Locale('es'),
-                                timelineOptions:
-                                    const TimelineOptions(height: 90),
-                                disableStrategy:
-                                    const DisableStrategy.afterToday(),
-                                onDateChange: (date) {
-                                  setState(() {
-                                    _selectedDate = date;
-                                  });
-                                },
-                              ),
                               Row(
                                 mainAxisAlignment: MainAxisAlignment.end,
                                 children: [
