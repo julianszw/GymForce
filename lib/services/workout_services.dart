@@ -10,7 +10,7 @@ class WorkoutService {
   final FirebaseFirestore _firestore = FirebaseFirestore.instance;
   // Cualquier cosa se vuelve al backend anterior por si falla el nuevo
   // final String _baseUrl = 'https://prfinal-backend.onrender.com/api';
-  final String _baseUrl = 'https://backend-8zgw.onrender.com';
+  final String _baseUrl = 'https://backend-8zgw.onrender.com/api';
 
   Future<Workout?> createAIWorkout(
       List<String> muscleGroups, String numExercises) async {
@@ -26,7 +26,6 @@ class WorkoutService {
       if (response.statusCode == 200) {
         final data = jsonDecode(response.body);
         final workoutData = jsonDecode(data['response']);
-
         return Workout.backendFromJson(workoutData);
       } else {
         return null;
