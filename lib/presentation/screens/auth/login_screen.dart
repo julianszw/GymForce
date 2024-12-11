@@ -28,7 +28,6 @@ class LoginScreenState extends ConsumerState<LoginScreen> {
   final TextEditingController _passwordController = TextEditingController();
 
   bool _isEmailValid = true;
-  bool _isPasswordValid = true;
   bool _isLoading = false;
 
   Future<void> _login() async {
@@ -42,10 +41,9 @@ class LoginScreenState extends ConsumerState<LoginScreen> {
 
     setState(() {
       _isEmailValid = validateEmail(email);
-      _isPasswordValid = validatePassword(password);
     });
 
-    if (_isEmailValid && _isPasswordValid) {
+    if (_isEmailValid) {
       try {
         setState(() {
           _isLoading = true;
@@ -153,76 +151,73 @@ class LoginScreenState extends ConsumerState<LoginScreen> {
     }
   }
 
-@override
-Widget build(BuildContext context) {
-  return Scaffold(
-    appBar: AppBar(),
-    body: SingleChildScrollView(
-      child: Center(
-        child: Padding(
-          padding: const EdgeInsets.all(16.0),
-          child: SizedBox(
-            width: 325,
-            child: Column(
-              mainAxisAlignment: MainAxisAlignment.start,
-              children: [
-                const SizedBox(height: 60),
-                const Text(
-                  'Iniciar Sesión',
-                  style: TextStyle(
-                    color: Colors.white,
-                    fontSize: 36,
-                    fontWeight: FontWeight.bold,
+  @override
+  Widget build(BuildContext context) {
+    return Scaffold(
+      appBar: AppBar(),
+      body: SingleChildScrollView(
+        child: Center(
+          child: Padding(
+            padding: const EdgeInsets.all(16.0),
+            child: SizedBox(
+              width: 325,
+              child: Column(
+                mainAxisAlignment: MainAxisAlignment.start,
+                children: [
+                  const SizedBox(height: 60),
+                  const Text(
+                    'Iniciar Sesión',
+                    style: TextStyle(
+                      color: Colors.white,
+                      fontSize: 36,
+                      fontWeight: FontWeight.bold,
+                    ),
                   ),
-                ),
-                const SizedBox(height: 80),
-                TextField(
-                  controller: _emailController,
-                  style: const TextStyle(
-                      fontSize: 16, height: 1, color: Colors.black),
-                  keyboardType: TextInputType.emailAddress,
-                  decoration: InputDecoration(
-                    hintText: 'Email',
-                    errorText: _isEmailValid
-                        ? null
-                        : 'Por favor, ingrese un email válido',
+                  const SizedBox(height: 80),
+                  TextField(
+                    controller: _emailController,
+                    style: const TextStyle(
+                        fontSize: 16, height: 1, color: Colors.black),
+                    keyboardType: TextInputType.emailAddress,
+                    decoration: InputDecoration(
+                      hintText: 'Email',
+                      errorText: _isEmailValid
+                          ? null
+                          : 'Por favor, ingrese un email válido',
+                    ),
                   ),
-                ),
-                const SizedBox(height: 20),
-                TextField(
-                  controller: _passwordController,
-                  obscureText: true,
-                  style: const TextStyle(
-                      fontSize: 16, height: 1, color: Colors.black),
-                  decoration: InputDecoration(
-                    hintText: 'Contraseña',
-                    errorText: _isPasswordValid
-                        ? null
-                        : 'Por favor, ingrese su contraseña',
+                  const SizedBox(height: 20),
+                  TextField(
+                    controller: _passwordController,
+                    obscureText: true,
+                    style: const TextStyle(
+                        fontSize: 16, height: 1, color: Colors.black),
+                    decoration: const InputDecoration(
+                      hintText: 'Contraseña',
+                    ),
                   ),
-                ),
-                const SizedBox(height: 20),
-                _isLoading
-                    ? const CircularProgressIndicator()
-                    : SizedBox(
-                        width: double.infinity,
-                        child: ElevatedButton(
-                          onPressed: _login,
-                          child: const Text(
-                            'Ingresar',
-                            style: TextStyle(
-                                color: Colors.black,
-                                fontSize: 18,
-                                fontWeight: FontWeight.bold),
+                  const SizedBox(height: 20),
+                  _isLoading
+                      ? const CircularProgressIndicator()
+                      : SizedBox(
+                          width: double.infinity,
+                          child: ElevatedButton(
+                            onPressed: _login,
+                            child: const Text(
+                              'Ingresar',
+                              style: TextStyle(
+                                  color: Colors.black,
+                                  fontSize: 18,
+                                  fontWeight: FontWeight.bold),
+                            ),
                           ),
                         ),
-                      ),
-              ],
+                ],
+              ),
             ),
           ),
         ),
       ),
-    ),
-  );
-}
+    );
+  }
 }
