@@ -16,7 +16,7 @@ class BranchService {
           capacity: data['capacity'] ?? 0,
           cierre: (data['cierre'] as Timestamp?)?.toDate(),
           geoPoint: data['geoPoint'],
-          outsidePic: data['outsidePic'] ?? '',
+          outsidePic: data['outside_pic'] ?? '',
           remodeling: data['remodeling'] ?? false,
           sectors: List<String>.from(data['sectors'] ?? []),
           telefono: data['telefono'] ?? '',

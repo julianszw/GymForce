@@ -257,35 +257,50 @@ class TrainWorkoutScreenState extends ConsumerState<TrainWorkoutScreen> {
                           child: Row(
                             mainAxisAlignment: MainAxisAlignment.spaceBetween,
                             children: [
-                              Text(
-                                (workout?.name != null &&
-                                        workout!.name.length > 8)
-                                    ? '${workout!.name.substring(0, 8)}...'
-                                    : workout?.name ?? '',
-                                style: TextStyle(
-                                  fontSize: 18,
-                                  fontWeight: FontWeight.bold,
-                                  color: Theme.of(context).colorScheme.primary,
+                              Expanded(
+                                flex: 3,
+                                child: Text(
+                                  (workout?.name != null &&
+                                          workout!.name.length > 8)
+                                      ? '${workout!.name.substring(0, 8)}...'
+                                      : workout?.name ?? '',
+                                  style: TextStyle(
+                                    fontSize: 18,
+                                    fontWeight: FontWeight.bold,
+                                    color:
+                                        Theme.of(context).colorScheme.primary,
+                                  ),
+                                  overflow: TextOverflow.ellipsis,
                                 ),
-                                textAlign: TextAlign.center,
                               ),
-                              Text(
-                                formatTime(_elapsedSeconds),
-                                style: TextStyle(
-                                  fontSize: 18,
-                                  fontWeight: FontWeight.bold,
-                                  color: Theme.of(context).colorScheme.primary,
+                              Expanded(
+                                flex: 2,
+                                child: Center(
+                                  child: Text(
+                                    formatTime(_elapsedSeconds),
+                                    style: TextStyle(
+                                      fontSize: 18,
+                                      fontWeight: FontWeight.bold,
+                                      color: Theme.of(context)
+                                          .colorScheme
+                                          .primary,
+                                    ),
+                                  ),
                                 ),
-                                textAlign: TextAlign.center,
                               ),
-                              Text(
-                                '${exercises.length} ${exercises.length == 1 ? "ejercicio" : "ejercicios"}',
-                                style: TextStyle(
-                                  fontSize: 18,
-                                  fontWeight: FontWeight.bold,
-                                  color: Theme.of(context).colorScheme.primary,
+                              Expanded(
+                                flex: 3,
+                                child: Text(
+                                  '${exercises.length} ${exercises.length == 1 ? "ejercicio" : "ejercicios"}',
+                                  style: TextStyle(
+                                    fontSize: 18,
+                                    fontWeight: FontWeight.bold,
+                                    color:
+                                        Theme.of(context).colorScheme.primary,
+                                  ),
+                                  textAlign: TextAlign.end,
+                                  overflow: TextOverflow.ellipsis,
                                 ),
-                                textAlign: TextAlign.center,
                               ),
                             ],
                           ),

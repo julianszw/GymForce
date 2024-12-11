@@ -153,11 +153,12 @@ class LoginScreenState extends ConsumerState<LoginScreen> {
     }
   }
 
-  @override
-  Widget build(BuildContext context) {
-    return Scaffold(
-      appBar: AppBar(),
-      body: Center(
+@override
+Widget build(BuildContext context) {
+  return Scaffold(
+    appBar: AppBar(),
+    body: SingleChildScrollView(
+      child: Center(
         child: Padding(
           padding: const EdgeInsets.all(16.0),
           child: SizedBox(
@@ -221,6 +222,7 @@ class LoginScreenState extends ConsumerState<LoginScreen> {
           ),
         ),
       ),
-    );
-  }
+    ),
+  );
+}
 }

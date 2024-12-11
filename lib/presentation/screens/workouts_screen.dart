@@ -156,20 +156,23 @@ class WorkoutsScreenState extends ConsumerState<WorkoutsScreen> {
                             color: Colors.black,
                             child: ListTile(
                               title: Row(
-                                mainAxisAlignment:
-                                    MainAxisAlignment.spaceBetween,
+                                mainAxisAlignment: MainAxisAlignment.spaceBetween,
                                 children: [
-                                  Text(
-                                    workout.name.length > 20
-                                        ? '${workout.name.substring(0, 20)}...'
-                                        : workout.name,
-                                    style: const TextStyle(
-                                        color: Colors.white,
-                                        fontSize: 18,
-                                        fontWeight: FontWeight.bold),
+                                  Flexible(
+                                    child: Text(
+                                      workout.name,
+                                      style: const TextStyle(
+                                          color: Colors.white,
+                                          fontSize: 18,
+                                          fontWeight: FontWeight.bold),
+                                      overflow: TextOverflow.ellipsis,
+                                      maxLines: 1,
+                                    ),
                                   ),
                                   Text(
-                                      '${workout.exercises.length} ${workout.exercises.length == 1 ? "ejercicio" : "ejercicios"}')
+                                    '${workout.exercises.length} ${workout.exercises.length == 1 ? "ejercicio" : "ejercicios"}',
+                                    style: const TextStyle(color: Colors.white),
+                                  )
                                 ],
                               ),
                               subtitle: Column(
@@ -177,27 +180,23 @@ class WorkoutsScreenState extends ConsumerState<WorkoutsScreen> {
                                 children: [
                                   Container(
                                     height: 2,
-                                    color:
-                                        Theme.of(context).colorScheme.primary,
-                                    margin: const EdgeInsets.only(
-                                        top: 5, bottom: 14),
+                                    color: Theme.of(context).colorScheme.primary,
+                                    margin: const EdgeInsets.only(top: 5, bottom: 14),
                                   ),
                                   Text(
-                                    exerciseNames.length > 80
-                                        ? '${exerciseNames.substring(0, 80)}...'
-                                        : exerciseNames,
+                                    exerciseNames,
                                     style: const TextStyle(
                                         color: Colors.white, fontSize: 14),
+                                    overflow: TextOverflow.ellipsis,
+                                    maxLines: 2,
                                   ),
                                   const SizedBox(height: 8),
                                   Row(
-                                    mainAxisAlignment:
-                                        MainAxisAlignment.spaceAround,
+                                    mainAxisAlignment: MainAxisAlignment.spaceAround,
                                     children: [
                                       YellowButton(
                                         onPressed: () {
-                                          context.push(
-                                              '/train-workout/${workout.id}');
+                                          context.push('/train-workout/${workout.id}');
                                         },
                                         text: 'Entrenar',
                                         width: 80,
@@ -205,8 +204,7 @@ class WorkoutsScreenState extends ConsumerState<WorkoutsScreen> {
                                       ),
                                       YellowButton(
                                         onPressed: () {
-                                          context.push(
-                                              '/edit-workout/${workout.id}');
+                                          context.push('/edit-workout/${workout.id}');
                                         },
                                         text: 'Editar',
                                         width: 80,
