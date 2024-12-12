@@ -97,22 +97,19 @@ class ExerciseCardState extends State<ExerciseCard> {
                           children: [
                             TableRow(
                               children: [
-                                Padding(
-                                  padding: const EdgeInsets.symmetric(
-                                      vertical: 12.0),
-                                  child: TableCell(
-                                    child: Text(
-                                      'Set',
-                                      style: TextStyle(
-                                          fontSize: 16,
-                                          color: Theme.of(context)
-                                              .colorScheme
-                                              .primary,
-                                          fontWeight: FontWeight.bold),
-                                      textAlign: TextAlign.center,
-                                    ),
+                                TableCell(
+                                  child: Text(
+                                    'Set',
+                                    style: TextStyle(
+                                        fontSize: 16,
+                                        color: Theme.of(context)
+                                            .colorScheme
+                                            .primary,
+                                        fontWeight: FontWeight.bold),
+                                    textAlign: TextAlign.center,
                                   ),
                                 ),
+
                                 TableCell(
                                   child: Text(
                                     'Kg',
