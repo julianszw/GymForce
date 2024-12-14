@@ -28,12 +28,13 @@ class CaloriesServices {
     }
   }
 
-  Future<void> createCaloriesPlan(Calories caloriesPlan) async {
+  Future<String> createCaloriesPlan(Calories caloriesPlan) async {
     try {
       final docRef = await _firestore
           .collection('calories_plans')
           .add(caloriesPlan.toMap());
       await docRef.update({'id': docRef.id});
+      return docRef.id;
     } catch (e) {
       throw Exception("Error al guardar el plan de calorías");
     }

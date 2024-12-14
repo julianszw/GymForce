@@ -9,29 +9,39 @@ bool validateEmail(String email) {
 
 bool validatePassword(String password) {
   final passwordRegex =
-      RegExp(r'^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)[A-Za-z\d]{8,25}$');
+      RegExp(r'^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)[A-Za-z\d\S]{8,25}$');
 
   return passwordRegex.hasMatch(password);
 }
 
 bool validateName(String name) {
+  // Eliminar espacios al inicio y al final del nombre
+  name = name.trim();
+
   List<String> words = name.split(' ');
+
+  // Validar que tenga al menos dos palabras
   if (words.length < 2) return false;
 
+  // Verificar que cada palabra tenga al menos 3 caracteres
   for (String word in words) {
-    if (word.length < 3) return false;
+    if (word.trim().length < 3) return false;
   }
 
   return true;
 }
 
 bool validateAddress(String location) {
-  final RegExp invalidChars = RegExp(r'[^a-zA-Z0-9\s]');
+  // Permitir letras, dígitos, espacios y caracteres especiales válidos (acentos, ñ, ü)
+  final RegExp invalidChars = RegExp(r'[^a-zA-ZáéíóúÁÉÍÓÚüÜñÑ0-9\s]');
   if (invalidChars.hasMatch(location)) return false;
 
-  final RegExp hasWordWithThreeLetters = RegExp(r'\b[a-zA-Z]{3,}\b');
+  // Verificar si hay al menos una palabra de 3 letras o más
+  final RegExp hasWordWithThreeLetters =
+      RegExp(r'\b[a-zA-ZáéíóúÁÉÍÓÚüÜñÑ]{3,}\b');
   if (!hasWordWithThreeLetters.hasMatch(location)) return false;
 
+  // Verificar si contiene un número entre 1 y 20000
   final RegExp numbersPattern = RegExp(r'\b\d{1,5}\b');
   final Iterable<Match> matches = numbersPattern.allMatches(location);
   final List<int> numbers =
@@ -39,7 +49,9 @@ bool validateAddress(String location) {
 
   if (numbers.isEmpty || numbers.any((n) => n > 20000)) return false;
 
-  final RegExp hasInvalidMixedWords = RegExp(r'\b[a-zA-Z]+\d+|\d+[a-zA-Z]+\b');
+  // Evitar combinaciones inválidas de palabras mezcladas con números
+  final RegExp hasInvalidMixedWords =
+      RegExp(r'\b[a-zA-ZáéíóúÁÉÍÓÚüÜñÑ]+\d+|\d+[a-zA-ZáéíóúÁÉÍÓÚüÜñÑ]+\b');
   if (hasInvalidMixedWords.hasMatch(location)) return false;
 
   return true;

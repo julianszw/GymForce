@@ -23,6 +23,14 @@ class _AiCaloriesScreenState extends ConsumerState<AiCaloriesScreen> {
   String? activityLevel;
   String? goal;
 
+  @override
+  void dispose() {
+    _weightController.dispose();
+    _heightController.dispose();
+    _fatPercentageController.dispose();
+    super.dispose();
+  }
+
   void _validateInputs() {
     String weight = _weightController.text;
     String height = _heightController.text;
@@ -91,11 +99,11 @@ class _AiCaloriesScreenState extends ConsumerState<AiCaloriesScreen> {
     if (mounted) {
       context.push('/set-diary-calories',
           extra: {'initialCalories': tdee.toString()});
+      setState(() {
+        _isLoading = false;
+      });
       await Future.delayed(const Duration(seconds: 2));
     }
-    setState(() {
-      _isLoading = false;
-    });
   }
 
   @override

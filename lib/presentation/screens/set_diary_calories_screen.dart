@@ -7,6 +7,7 @@ import 'package:gym_force/config/providers/daily_calories_provider.dart';
 import 'package:gym_force/config/providers/user_provider.dart';
 import 'package:gym_force/domain/calorie_plan_domain.dart';
 import 'package:gym_force/domain/daily_calories_domain.dart';
+import 'package:gym_force/main.dart';
 import 'package:gym_force/presentation/widgets/calories/macros_input.dart';
 import 'package:gym_force/presentation/widgets/yellow_button.dart';
 import 'package:gym_force/services/calories_services.dart';
@@ -33,6 +34,7 @@ class _SetDiaryCaloriesScreenState
   bool isUpdating = false;
   bool isLoading = false;
   bool isAddedCalories = false;
+  late bool _isDisposed = false;
 
   @override
   void initState() {
@@ -42,7 +44,7 @@ class _SetDiaryCaloriesScreenState
     _proteinsController.addListener(_onMacrosChanged);
     _carbsController.addListener(_onMacrosChanged);
     _fatsController.addListener(_onMacrosChanged);
-
+    isLoading = false;
     if (widget.initialCalories != null) {
       _caloriesController.text = widget.initialCalories!;
       _onCaloriesChanged();
@@ -54,6 +56,7 @@ class _SetDiaryCaloriesScreenState
 
   @override
   void dispose() {
+    _isDisposed = true;
     _caloriesController.removeListener(_onCaloriesChanged);
     _proteinsController.removeListener(_onMacrosChanged);
     _carbsController.removeListener(_onMacrosChanged);
@@ -129,10 +132,12 @@ class _SetDiaryCaloriesScreenState
     if (!_validateInputs()) {
       return;
     }
-    try {
+    if (!_isDisposed && mounted) {
       setState(() {
         isLoading = true;
       });
+    }
+    try {
       final userId = ref.watch(userProvider).uid;
 
       final calories = _caloriesController.text;
@@ -165,13 +170,25 @@ class _SetDiaryCaloriesScreenState
             carbs: carbs,
             fats: fats);
 
-        await CaloriesServices().createCaloriesPlan(caloriesPlan);
-        ref.watch(caloriePlanProvider.notifier).setCaloriePlan(caloriesPlan);
+        final planId =
+            await CaloriesServices().createCaloriesPlan(caloriesPlan);
+        ref.watch(caloriePlanProvider.notifier).setCaloriePlan(
+              CaloriePlan(
+                id: planId,
+                userId: userId,
+                date: DateTime.now(),
+                calories: calories,
+                proteins: proteins,
+                carbs: carbs,
+                fats: fats,
+              ),
+            );
       }
 
-      if (mounted) {
+      if (!_isDisposed && mounted) {
         context.go('/calories');
-        ScaffoldMessenger.of(context).showSnackBar(
+
+        scaffoldMessengerKey.currentState?.showSnackBar(
           SnackBar(
             content: Text(isAddedCalories
                 ? 'Calorías guardads existosamente'
@@ -182,18 +199,23 @@ class _SetDiaryCaloriesScreenState
         await Future.delayed(const Duration(milliseconds: 200));
       }
     } catch (e) {
-      if (mounted) {
+      if (!_isDisposed && mounted) {
         ScaffoldMessenger.of(context).showSnackBar(
           const SnackBar(
             content: Text('Error al guardar el plan de calorías'),
             behavior: SnackBarBehavior.floating,
           ),
         );
+        setState(() {
+          isLoading = true;
+        });
       }
     } finally {
-      setState(() {
-        isLoading = true;
-      });
+      if (!_isDisposed && mounted) {
+        setState(() {
+          isLoading = false;
+        });
+      }
     }
   }
 
